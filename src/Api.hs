@@ -5,6 +5,7 @@
 module Api (API, api, server) where
 
 import Api.Auth (AuthAPI, authServer)
+import Api.Courses (CoursesAPI, coursesServer)
 import Api.Universities (UniversitiesAPI, universitiesServer)
 import Api.Users (UsersAPI, usersServer)
 import Control.Lens
@@ -17,7 +18,7 @@ import Servant.Auth.Swagger ()
 import Servant.Swagger
 import Servant.Swagger.UI
 
-type API' = AuthAPI :<|> UsersAPI :<|> UniversitiesAPI
+type API' = AuthAPI :<|> UsersAPI :<|> UniversitiesAPI :<|> CoursesAPI
 
 authOpts :: Traversal' Swagger Operation
 authOpts = subOperations (Proxy :: Proxy AuthAPI) (Proxy :: Proxy API')
@@ -27,6 +28,9 @@ usersOpts = subOperations (Proxy :: Proxy UsersAPI) (Proxy :: Proxy API')
 
 universitiesOpts :: Traversal' Swagger Operation
 universitiesOpts = subOperations (Proxy :: Proxy UniversitiesAPI) (Proxy :: Proxy API')
+
+coursesOpts :: Traversal' Swagger Operation
+coursesOpts = subOperations (Proxy :: Proxy CoursesAPI) (Proxy :: Proxy API')
 
 type API = API' :<|> SwaggerSchemaUI "swagger-ui" "swagger.json"
 
@@ -40,12 +44,17 @@ swaggerDoc =
         & applyTagsFor authOpts ["authentication" & description ?~ "Authenticating to the site"]
         & applyTagsFor usersOpts ["users" & description ?~ "Operations on users"]
         & applyTagsFor universitiesOpts ["universities" & description ?~ "Operations on universities"]
+        & applyTagsFor coursesOpts ["courses" & description ?~ "Operations on courses"]
 
 api :: Proxy API
 api = Proxy
 
 server' :: Pool Connection -> JWTSettings -> Server API'
-server' conns jwts = authServer conns jwts :<|> usersServer conns :<|> universitiesServer conns
+server' conns jwts =
+    authServer conns jwts
+        :<|> usersServer conns
+        :<|> universitiesServer conns
+        :<|> coursesServer conns
 
 server :: Pool Connection -> JWTSettings -> Server API
 server conns jwts = server' conns jwts :<|> swaggerSchemaUIServer swaggerDoc

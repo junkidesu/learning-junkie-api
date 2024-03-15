@@ -27,6 +27,7 @@ library
   exposed-modules:
       Api
       Api.Auth
+      Api.Courses
       Api.Universities
       Api.Users
       Database
@@ -38,6 +39,8 @@ library
       Types.Auth.Credentials
       Types.Auth.Response
       Types.Auth.User
+      Types.Course
+      Types.Course.Difficulty
       Types.University
       Types.University.NewUniversity
       Types.User
