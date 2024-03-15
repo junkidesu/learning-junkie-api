@@ -6,12 +6,12 @@ cabal-version: 2.2
 
 name:           learning-junkie-api
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/learning-junkie-api#readme>
-homepage:       https://github.com/githubuser/learning-junkie-api#readme
-bug-reports:    https://github.com/githubuser/learning-junkie-api/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2024 Author name here
+description:    Please see the README on GitHub at <https://github.com/luminous-or-me/learning-junkie-api#readme>
+homepage:       https://github.com/luminous-or-me/learning-junkie-api#readme
+bug-reports:    https://github.com/luminous-or-me/learning-junkie-api/issues
+author:         Anvar Sheryatullayev
+maintainer:     alvaro.sh03@gmail.com
+copyright:      2024 Anvar Sheryatullayev
 license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
@@ -21,11 +21,20 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/learning-junkie-api
+  location: https://github.com/luminous-or-me/learning-junkie-api
 
 library
   exposed-modules:
+      Api
+      Api.Users
+      Database
+      Database.Operations.Users
+      Database.Queries.Users
       Lib
+      Types.User
+      Types.User.Education
+      Types.User.NewUser
+      Types.User.Role
   other-modules:
       Paths_learning_junkie_api
   autogen-modules:
@@ -34,7 +43,29 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , http-types
+    , lens
+    , password
+    , postgresql-simple
+    , resource-pool
+    , servant
+    , servant-auth
+    , servant-auth-server
+    , servant-auth-swagger
+    , servant-server
+    , servant-swagger
+    , servant-swagger-ui
+    , string-conversions
+    , swagger2
+    , text
+    , time
+    , utf8-string
+    , wai
+    , wai-logger
+    , warp
   default-language: Haskell2010
 
 executable learning-junkie-api-exe
@@ -47,8 +78,30 @@ executable learning-junkie-api-exe
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , http-types
     , learning-junkie-api
+    , lens
+    , password
+    , postgresql-simple
+    , resource-pool
+    , servant
+    , servant-auth
+    , servant-auth-server
+    , servant-auth-swagger
+    , servant-server
+    , servant-swagger
+    , servant-swagger-ui
+    , string-conversions
+    , swagger2
+    , text
+    , time
+    , utf8-string
+    , wai
+    , wai-logger
+    , warp
   default-language: Haskell2010
 
 test-suite learning-junkie-api-test
@@ -62,6 +115,28 @@ test-suite learning-junkie-api-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , http-types
     , learning-junkie-api
+    , lens
+    , password
+    , postgresql-simple
+    , resource-pool
+    , servant
+    , servant-auth
+    , servant-auth-server
+    , servant-auth-swagger
+    , servant-server
+    , servant-swagger
+    , servant-swagger-ui
+    , string-conversions
+    , swagger2
+    , text
+    , time
+    , utf8-string
+    , wai
+    , wai-logger
+    , warp
   default-language: Haskell2010

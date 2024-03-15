@@ -1,10 +1,10 @@
 name:                learning-junkie-api
 version:             0.1.0.0
-github:              "githubuser/learning-junkie-api"
+github:              "luminous-or-me/learning-junkie-api"
 license:             BSD-3-Clause
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2024 Author name here"
+author:              "Anvar Sheryatullayev"
+maintainer:          "alvaro.sh03@gmail.com"
+copyright:           "2024 Anvar Sheryatullayev"
 
 extra-source-files:
 - README.md
@@ -17,10 +17,33 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/learning-junkie-api#readme>
+description:         Please see the README on GitHub at <https://github.com/luminous-or-me/learning-junkie-api#readme>
 
 dependencies:
 - base >= 4.7 && < 5
+- aeson
+- servant
+- servant-server
+- servant-auth
+- servant-auth-server
+- servant-auth-swagger
+- postgresql-simple
+- wai
+- time
+- resource-pool
+- lens
+- password
+- string-conversions
+- wai-logger
+- warp
+- postgresql-simple
+- http-types
+- swagger2
+- servant-swagger
+- servant-swagger-ui
+- text
+- bytestring
+- utf8-string
 
 ghc-options:
 - -Wall
