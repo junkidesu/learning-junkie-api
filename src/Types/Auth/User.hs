@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Types.Auth.User where
+module Types.Auth.User (AuthUser (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)

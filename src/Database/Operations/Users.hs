@@ -3,6 +3,7 @@ module Database.Operations.Users (
         insertUser,
         userById,
         userByEmail,
+        deleteUser,
 ) where
 
 import Data.Password.Bcrypt
@@ -50,3 +51,9 @@ userByEmail conns e = withResource conns $
                 case found of
                         [] -> pure Nothing
                         (user : _) -> pure . Just $ user
+
+deleteUser :: Pool Connection -> Int -> IO ()
+deleteUser conns userId = withResource conns $
+        \conn -> do
+                _ <- execute conn deleteUserQ (Only userId)
+                return ()

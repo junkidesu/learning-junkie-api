@@ -33,3 +33,10 @@ userByEmailQ =
                 , "FROM users"
                 , "WHERE email = ?"
                 ]
+
+deleteUserQ :: Query
+deleteUserQ =
+        toSqlQuery
+                [ "DELETE FROM users"
+                , "WHERE id = ?"
+                ]

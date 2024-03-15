@@ -9,9 +9,14 @@ import Data.Pool (Pool)
 import Database.Operations.Users
 import Database.PostgreSQL.Simple (Connection)
 import Servant
+import Servant.Auth
+import Servant.Auth.Server
+import qualified Types.Auth.User as AU
 import Types.User
 import qualified Types.User.NewUser as NU
 import Types.User.Role (Role (Admin))
+
+type JWTAuth = Auth '[JWT] AU.AuthUser
 
 type GetAllUsers =
     Summary "Get all users"
@@ -27,15 +32,26 @@ type GetUserById =
         :> Capture' '[Required, Description "The ID of the user"] "id" Int
         :> Get '[JSON] User
 
+type DeleteUserById =
+    Summary "Delete user with the given ID"
+        :> JWTAuth
+        :> Capture' '[Required, Description "The ID of the user"] "id" Int
+        :> Verb 'DELETE 204 '[JSON] NoContent
+
 type UsersAPI =
     "users"
         :> ( GetAllUsers
                 :<|> CreateUser
                 :<|> GetUserById
+                :<|> DeleteUserById
            )
 
 usersServer :: Pool Connection -> Server UsersAPI
-usersServer conns = getAllUsers :<|> createUser :<|> getUserById
+usersServer conns =
+    getAllUsers
+        :<|> createUser
+        :<|> getUserById
+        :<|> deleteUserById
   where
     getAllUsers :: Handler [User]
     getAllUsers = liftIO $ allUsers conns
@@ -52,3 +68,16 @@ usersServer conns = getAllUsers :<|> createUser :<|> getUserById
         case mbUser of
             Nothing -> throwError err404
             Just user -> return user
+    deleteUserById :: AuthResult AU.AuthUser -> Int -> Handler NoContent
+    deleteUserById (Authenticated authUser) userId =
+        case AU.role authUser of
+            Admin -> do
+                liftIO $ deleteUser conns userId
+                return NoContent
+            _ ->
+                if AU.id authUser /= userId
+                    then throwError err401
+                    else do
+                        liftIO $ deleteUser conns userId
+                        return NoContent
+    deleteUserById _ _ = throwError err401
