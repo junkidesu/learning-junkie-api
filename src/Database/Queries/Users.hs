@@ -25,3 +25,11 @@ userByIdQ =
                 , "FROM users"
                 , "WHERE id = ?"
                 ]
+
+userByEmailQ :: Query
+userByEmailQ =
+        toSqlQuery
+                [ "SELECT *"
+                , "FROM users"
+                , "WHERE email = ?"
+                ]

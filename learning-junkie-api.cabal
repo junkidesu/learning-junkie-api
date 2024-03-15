@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Api
+      Api.Auth
       Api.Universities
       Api.Users
       Database
@@ -34,6 +35,9 @@ library
       Database.Queries.Universities
       Database.Queries.Users
       Lib
+      Types.Auth.Credentials
+      Types.Auth.Response
+      Types.Auth.User
       Types.University
       Types.University.NewUniversity
       Types.User

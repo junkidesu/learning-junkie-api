@@ -2,10 +2,12 @@ module Database.Operations.Users (
         allUsers,
         insertUser,
         userById,
+        userByEmail,
 ) where
 
 import Data.Password.Bcrypt
 import Data.Pool
+import Data.Text (Text)
 import Database.PostgreSQL.Simple
 import Database.Queries.Users
 import Types.User
@@ -39,3 +41,12 @@ userById conns userId = do
                         case found of
                                 [] -> pure Nothing
                                 (user : _) -> pure . Just $ user
+
+userByEmail :: Pool Connection -> Text -> IO (Maybe User)
+userByEmail conns e = withResource conns $
+        \conn -> do
+                found <- query conn userByEmailQ (Only e)
+
+                case found of
+                        [] -> pure Nothing
+                        (user : _) -> pure . Just $ user
