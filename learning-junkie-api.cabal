@@ -26,11 +26,16 @@ source-repository head
 library
   exposed-modules:
       Api
+      Api.Universities
       Api.Users
       Database
+      Database.Operations.Universities
       Database.Operations.Users
+      Database.Queries.Universities
       Database.Queries.Users
       Lib
+      Types.University
+      Types.University.NewUniversity
       Types.User
       Types.User.Education
       Types.User.NewUser
