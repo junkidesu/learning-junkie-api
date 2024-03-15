@@ -10,7 +10,8 @@ import Database.Operations.Users
 import Database.PostgreSQL.Simple (Connection)
 import Servant
 import Types.User
-import Types.User.NewUser
+import qualified Types.User.NewUser as NU
+import Types.User.Role (Role (Admin))
 
 type GetAllUsers =
     Summary "Get all users"
@@ -18,7 +19,7 @@ type GetAllUsers =
 
 type CreateUser =
     Summary "Create a new user"
-        :> ReqBody '[JSON] NewUser
+        :> ReqBody '[JSON] NU.NewUser
         :> PostCreated '[JSON] User
 
 type GetUserById =
@@ -39,8 +40,10 @@ usersServer conns = getAllUsers :<|> createUser :<|> getUserById
     getAllUsers :: Handler [User]
     getAllUsers = liftIO $ allUsers conns
 
-    createUser :: NewUser -> Handler User
-    createUser = liftIO . insertUser conns
+    createUser :: NU.NewUser -> Handler User
+    createUser newUser = case NU.role newUser of
+        Admin -> throwError err400
+        _ -> liftIO $ insertUser conns newUser
 
     getUserById :: Int -> Handler User
     getUserById userId = do
