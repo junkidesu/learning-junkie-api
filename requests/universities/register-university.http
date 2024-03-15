@@ -1,0 +1,8 @@
+POST http://localhost:3001/universities
+Content-Type: application/json
+
+{
+	"name": "",
+	"abbreviation": "",
+	"year": 2000
+}
