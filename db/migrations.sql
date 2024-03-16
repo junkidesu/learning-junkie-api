@@ -9,6 +9,9 @@ CREATE TABLE IF NOT EXISTS users (
 	passwordHash TEXT NOT NULL
 );
 
+INSERT INTO users (name, birthday, education, role, email, passwordHash)
+VALUES ('Anwar', '2003-08-24', 'bachelor', 'admin', 'anwar-admin@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu')
+
 CREATE TABLE IF NOT EXISTS universities (
 	id SERIAL PRIMARY KEY,
 	name TEXT NOT NULL UNIQUE,
