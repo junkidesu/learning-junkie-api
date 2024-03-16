@@ -14,6 +14,8 @@ import Servant.Auth
 import Servant.Auth.Server
 import qualified Types.Auth.User as AU
 import Types.Course (Course)
+import qualified Types.Course.Lesson as L
+import qualified Types.Course.Lesson.EditLesson as EL
 import Types.User (User)
 import Types.User.Role (Role (Admin))
 
@@ -48,12 +50,47 @@ type Enrollments =
     :> "enrollments"
     :> (EnrollInCourse :<|> EnrolledUsers)
 
+type GetLessons =
+  Summary "Get all lessons in the course"
+    :> Get '[JSON] [L.Lesson]
+
+type GetLessonById =
+  Summary "Get lesson in a course by lesson number"
+    :> Capture' '[Required, Description "Number of the lesson"] "number" Int
+    :> Get '[JSON] L.Lesson
+
+type AddLesson =
+  Summary "Add a lesson to a course"
+    :> PostCreated '[JSON] L.Lesson
+
+type DeleteLesson =
+  Summary "Remove a lesson from a course"
+    :> Capture' '[Required, Description "Number of the lesson"] "number" Int
+    :> Verb 'DELETE 204 '[JSON] NoContent
+
+type EditLesson =
+  Summary "Edit a lesson in the course"
+    :> Capture' '[Required, Description "Number of the lesson"] "number" Int
+    :> ReqBody '[JSON] EL.EditLesson
+    :> Put '[JSON] L.Lesson
+
+type CourseLessons =
+  Capture' '[Required, Description "ID of the course"] "id" Int
+    :> "lessons"
+    :> ( GetLessons
+          :<|> GetLessonById
+          :<|> AddLesson
+          :<|> DeleteLesson
+          :<|> EditLesson
+       )
+
 type CoursesAPI =
   "courses"
     :> ( GetAllCourses
           :<|> GetCourseById
           :<|> DeleteCourseById
           :<|> Enrollments
+          :<|> CourseLessons
        )
 
 coursesServer :: Pool Connection -> Server CoursesAPI
@@ -62,6 +99,7 @@ coursesServer conns =
     :<|> getCourseById
     :<|> deleteCourseById
     :<|> enrollments
+    :<|> undefined
  where
   getAllCourses :: Handler [Course]
   getAllCourses = liftIO $ allCourses conns

@@ -45,6 +45,9 @@ library
       Types.Auth.User
       Types.Course
       Types.Course.Difficulty
+      Types.Course.Lesson
+      Types.Course.Lesson.EditLesson
+      Types.Course.Lesson.NewLesson
       Types.Course.NewCourse
       Types.University
       Types.University.NewUniversity
