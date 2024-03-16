@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Types.Course.NewCourse where
+module Types.Course.NewCourse (NewCourse (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Swagger (ToSchema)
