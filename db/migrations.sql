@@ -1,7 +1,8 @@
-DROP TABLE enrollments;
-DROP TABLE courses;
-DROP TABLE users;
-DROP TABLE universities;
+DROP TABLE IF EXISTS enrollments;
+DROP TABLE IF EXISTS participants;
+DROP TABLE IF EXISTS courses;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS universities;
 
 CREATE TABLE IF NOT EXISTS universities (
 	id SERIAL PRIMARY KEY,
@@ -11,6 +12,9 @@ CREATE TABLE IF NOT EXISTS universities (
 	url TEXT NOT NULL UNIQUE,
 	joined TIMESTAMPTZ DEFAULT (now() at time zone('utc'))
 );
+
+INSERT INTO universities (name, abbreviation, year, url)
+VALUES ('Fictional University', 'FU', 2003, 'https://fictional-university.edu');
 
 CREATE TABLE IF NOT EXISTS users (
 	id SERIAL PRIMARY KEY,
@@ -26,13 +30,21 @@ CREATE TABLE IF NOT EXISTS users (
 INSERT INTO users (name, birthday, education, role, email, passwordHash)
 VALUES ('Anwar', '2003-08-24', 'bachelor', 'admin', 'anwar-admin@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
 
+INSERT INTO users (name, birthday, education, role, email, passwordHash)
+VALUES ('John Doe', '1980-01-12', 'phd', 'instructor', 'johndoe@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
+
+INSERT INTO users (name, birthday, education, role, email, passwordHash)
+VALUES ('Junki', '2003-08-24', 'bachelor', 'student', 'junki@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
+
 CREATE TABLE IF NOT EXISTS courses (
 	id SERIAL PRIMARY KEY,
 	title TEXT NOT NULL,
 	description TEXT NOT NULL,
 	difficulty TEXT NOT NULL,
 	university INT NOT NULL,
-	FOREIGN KEY (university) REFERENCES universities(id)
+	instructor INT NOT NULL,
+	FOREIGN KEY (university) REFERENCES universities(id),
+	FOREIGN KEY (instructor) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS enrollments (

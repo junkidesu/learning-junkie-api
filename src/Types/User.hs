@@ -33,7 +33,7 @@ data User = User
     , email :: !Text
     , passwordHash :: !Text
     }
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Read, Show, Generic)
 
 instance FromJSON User
 instance ToJSON User where

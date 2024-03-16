@@ -11,10 +11,13 @@ allCoursesQ =
         toSqlQuery
                 [ "SELECT"
                 , "c.id, c.title, c.description, c.difficulty,"
-                , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined"
+                , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash"
                 , "FROM courses c"
                 , "JOIN universities u"
                 , "ON c.university = u.id"
+                , "JOIN users us"
+                , "ON c.instructor = us.id"
                 ]
 
 courseByIdQ :: Query
@@ -22,10 +25,13 @@ courseByIdQ =
         toSqlQuery
                 [ "SELECT"
                 , "c.id, c.title, c.description, c.difficulty,"
-                , "u.id, u.name, u.abbreviation, u.year, u.url u.joined"
+                , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash"
                 , "FROM courses c"
                 , "JOIN universities u"
                 , "ON c.university = u.id"
+                , "JOIN users us"
+                , "ON c.instructor = us.id"
                 , "WHERE c.id = ?"
                 ]
 
@@ -33,14 +39,17 @@ insertCourseQ :: Query
 insertCourseQ =
         toSqlQuery
                 [ "WITH inserted_course AS ("
-                , "INSERT INTO courses (title, description, difficulty, university)"
-                , "VALUES (?, ?, ?, ?)"
+                , "INSERT INTO courses (title, description, difficulty, university, instructor)"
+                , "VALUES (?, ?, ?, ?, ?)"
                 , "RETURNING *)"
                 , "SELECT ic.id, ic.title, ic.description, ic.difficulty,"
-                , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined"
+                , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash"
                 , "FROM inserted_course ic"
                 , "JOIN universities u"
                 , "ON ic.university = u.id"
+                , "JOIN users us"
+                , "ON ic.instructor = us.id"
                 ]
 
 deleteCourseQ :: Query
@@ -49,14 +58,18 @@ deleteCourseQ =
                 [ "DELETE FROM courses"
                 , "WHERE id = ?"
                 ]
+
 universityCoursesByIdQ :: Query
 universityCoursesByIdQ =
         toSqlQuery
                 [ "SELECT"
                 , "c.id, c.title, c.description, c.difficulty,"
-                , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined"
+                , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash"
                 , "FROM courses c"
                 , "JOIN universities u"
                 , "ON c.university = u.id"
+                , "JOIN users us"
+                , "ON c.instructor = us.id"
                 , "WHERE u.id = ?"
                 ]

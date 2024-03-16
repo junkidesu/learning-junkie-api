@@ -12,6 +12,7 @@ data NewCourse = NewCourse
     { title :: !Text
     , description :: !Text
     , difficulty :: !Difficulty
+    , instructorId :: !Int
     }
     deriving (Eq, Show, Read, Generic)
 

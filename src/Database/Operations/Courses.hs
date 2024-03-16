@@ -43,6 +43,7 @@ insertCourse conns universityId newCourse =
                                 , NC.description newCourse
                                 , NC.difficulty newCourse
                                 , universityId
+                                , NC.instructorId newCourse
                                 )
                 return course
 
