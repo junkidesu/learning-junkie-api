@@ -41,14 +41,15 @@ library
       Database.Queries.Users
       Lib
       Types.Auth.Credentials
+      Types.Auth.JWTAuth
       Types.Auth.Response
       Types.Auth.User
       Types.Course
       Types.Course.Difficulty
-      Types.Course.Lesson
-      Types.Course.Lesson.EditLesson
-      Types.Course.Lesson.NewLesson
       Types.Course.NewCourse
+      Types.Lesson
+      Types.Lesson.EditLesson
+      Types.Lesson.NewLesson
       Types.University
       Types.University.NewUniversity
       Types.User

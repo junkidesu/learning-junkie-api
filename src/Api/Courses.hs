@@ -10,16 +10,14 @@ import Database.Operations.Courses (allCourses, courseById, deleteCourse)
 import Database.Operations.Courses.Enrollments (enrollUserInCourse, usersEnrolledInCourse)
 import Database.PostgreSQL.Simple (Connection)
 import Servant
-import Servant.Auth
 import Servant.Auth.Server
+import Types.Auth.JWTAuth
 import qualified Types.Auth.User as AU
 import Types.Course (Course)
-import qualified Types.Course.Lesson as L
-import qualified Types.Course.Lesson.EditLesson as EL
+import qualified Types.Lesson as L
+import qualified Types.Lesson.EditLesson as EL
 import Types.User (User)
 import Types.User.Role (Role (Admin))
-
-type JWTAuth = Auth '[JWT] AU.AuthUser
 
 type GetAllCourses =
   Summary "Get all courses"

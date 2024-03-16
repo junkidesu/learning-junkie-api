@@ -10,16 +10,14 @@ import Database.Operations.Courses (insertCourse, universityCoursesById)
 import Database.Operations.Universities (allUniversities, insertUniversity)
 import Database.PostgreSQL.Simple (Connection)
 import Servant
-import Servant.Auth
 import Servant.Auth.Server
+import Types.Auth.JWTAuth
 import qualified Types.Auth.User as AU
 import Types.Course (Course)
 import qualified Types.Course.NewCourse as NC
 import Types.University
 import qualified Types.University.NewUniversity as NU
 import Types.User.Role (Role (Admin))
-
-type JWTAuth = Auth '[JWT] AU.AuthUser
 
 type GetAllUniversities =
   Summary "Get all universities"

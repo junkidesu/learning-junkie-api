@@ -9,14 +9,12 @@ import Data.Pool (Pool)
 import Database.Operations.Users
 import Database.PostgreSQL.Simple (Connection)
 import Servant
-import Servant.Auth
 import Servant.Auth.Server
+import Types.Auth.JWTAuth
 import qualified Types.Auth.User as AU
 import Types.User
 import qualified Types.User.NewUser as NU
 import Types.User.Role (Role (Admin))
-
-type JWTAuth = Auth '[JWT] AU.AuthUser
 
 type GetAllUsers =
     Summary "Get all users"
