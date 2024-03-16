@@ -17,6 +17,18 @@ allCoursesQ =
                 , "ON c.university = u.id"
                 ]
 
+courseByIdQ :: Query
+courseByIdQ =
+        toSqlQuery
+                [ "SELECT"
+                , "c.id, c.title, c.description, c.difficulty,"
+                , "u.id, u.name, u.abbreviation, u.year, u.joined"
+                , "FROM courses c"
+                , "JOIN universities u"
+                , "ON c.university = u.id"
+                , "WHERE c.id = ?"
+                ]
+
 insertCourseQ :: Query
 insertCourseQ =
         toSqlQuery
@@ -31,8 +43,14 @@ insertCourseQ =
                 , "ON ic.university = u.id"
                 ]
 
-universityCoursesQ :: Query
-universityCoursesQ =
+deleteCourseQ :: Query
+deleteCourseQ =
+        toSqlQuery
+                [ "DELETE FROM courses"
+                , "WHERE id = ?"
+                ]
+universityCoursesByIdQ :: Query
+universityCoursesByIdQ =
         toSqlQuery
                 [ "SELECT"
                 , "c.id, c.title, c.description, c.difficulty,"

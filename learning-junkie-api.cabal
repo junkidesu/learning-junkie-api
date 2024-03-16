@@ -32,9 +32,11 @@ library
       Api.Users
       Database
       Database.Operations.Courses
+      Database.Operations.Courses.Enrollments
       Database.Operations.Universities
       Database.Operations.Users
       Database.Queries.Courses
+      Database.Queries.Courses.Enrollments
       Database.Queries.Universities
       Database.Queries.Users
       Lib

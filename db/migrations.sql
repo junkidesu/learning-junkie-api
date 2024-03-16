@@ -27,3 +27,11 @@ CREATE TABLE IF NOT EXISTS courses (
 	university INT NOT NULL,
 	FOREIGN KEY (university) REFERENCES universities(id)
 );
+
+CREATE TABLE IF NOT EXISTS enrollments (
+	userId INT NOT NULL,
+	courseId INT NOT NULL,
+	enrolled TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
+	FOREIGN KEY (userId) REFERENCES users(id),
+	FOREIGN KEY (courseId) REFERENCES courses(id)
+);

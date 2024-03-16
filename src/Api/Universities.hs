@@ -6,7 +6,7 @@ module Api.Universities (UniversitiesAPI, universitiesServer) where
 
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
-import Database.Operations.Courses (insertCourse, universityCourses)
+import Database.Operations.Courses (insertCourse, universityCoursesById)
 import Database.Operations.Universities (allUniversities, insertUniversity)
 import Database.PostgreSQL.Simple (Connection)
 import Servant
@@ -31,28 +31,28 @@ type RegisterUniversity =
     :> ReqBody '[JSON] NU.NewUniversity
     :> PostCreated '[JSON] University
 
-type AddCourseById =
+type AddCourse =
   Summary "Add course to the university"
     :> JWTAuth
-    :> Capture' '[Required, Description "ID of the university"] "id" Int
-    :> "courses"
     :> ReqBody '[JSON] NC.NewCourse
     :> PostCreated '[JSON] Course
 
-type UniversityCoursesById =
+type GetCourses =
   Summary "Get courses by university with given ID"
-    :> Capture' '[Required, Description "ID of the university"] "id" Int
-    :> "courses"
     :> Get '[JSON] [Course]
 
-type UniversitiesAPI = "universities" :> (GetAllUniversities :<|> RegisterUniversity :<|> AddCourseById :<|> UniversityCoursesById)
+type UniversityCourses =
+  Capture' '[Required, Description "ID of the university"] "id" Int
+    :> "courses"
+    :> (AddCourse :<|> GetCourses)
+
+type UniversitiesAPI = "universities" :> (GetAllUniversities :<|> RegisterUniversity :<|> UniversityCourses)
 
 universitiesServer :: Pool Connection -> Server UniversitiesAPI
 universitiesServer conns =
   getAllUniversities
     :<|> registerUniversity
-    :<|> addCourseById
-    :<|> universityCoursesById
+    :<|> universityCourses
  where
   getAllUniversities :: Handler [University]
   getAllUniversities = liftIO $ allUniversities conns
@@ -64,12 +64,14 @@ universitiesServer conns =
       _ -> throwError err401
   registerUniversity _ _ = throwError err401
 
-  addCourseById :: AuthResult AU.AuthUser -> Int -> NC.NewCourse -> Handler Course
-  addCourseById (Authenticated authUser) universityId newCourse =
-    case AU.role authUser of
-      Admin -> liftIO $ insertCourse conns universityId newCourse
-      _ -> throwError err401
-  addCourseById _ _ _ = throwError err401
+  universityCourses universityId = addCourse :<|> getCourses
+   where
+    addCourse :: AuthResult AU.AuthUser -> NC.NewCourse -> Handler Course
+    addCourse (Authenticated authUser) newCourse =
+      case AU.role authUser of
+        Admin -> liftIO $ insertCourse conns universityId newCourse
+        _ -> throwError err401
+    addCourse _ _ = throwError err401
 
-  universityCoursesById :: Int -> Handler [Course]
-  universityCoursesById = liftIO <$> universityCourses conns
+    getCourses :: Handler [Course]
+    getCourses = liftIO $ universityCoursesById conns universityId
