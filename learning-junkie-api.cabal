@@ -28,7 +28,10 @@ library
       Api
       Api.Auth
       Api.Courses
+      Api.Courses.Enrollments
+      Api.Courses.Lessons
       Api.Universities
+      Api.Universities.Courses
       Api.Users
       Database
       Database.Operations.Courses
