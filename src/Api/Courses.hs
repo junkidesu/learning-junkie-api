@@ -6,7 +6,8 @@ module Api.Courses where
 
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
-import Database.Operations.Universities (allUniversities, insertUniversity)
+import Database.Operations.Courses (allCourses)
+import Database.Operations.Universities
 import Database.PostgreSQL.Simple (Connection)
 import Servant
 import Servant.Auth
@@ -37,7 +38,7 @@ coursesServer :: Pool Connection -> Server CoursesAPI
 coursesServer conns = getAllCourses :<|> getCourseById :<|> deleteCourseById
  where
   getAllCourses :: Handler [Course]
-  getAllCourses = undefined
+  getAllCourses = liftIO $ allCourses conns
 
   getCourseById :: Int -> Handler Course
   getCourseById courseId = undefined

@@ -31,8 +31,10 @@ library
       Api.Universities
       Api.Users
       Database
+      Database.Operations.Courses
       Database.Operations.Universities
       Database.Operations.Users
+      Database.Queries.Courses
       Database.Queries.Universities
       Database.Queries.Users
       Lib
@@ -41,6 +43,7 @@ library
       Types.Auth.User
       Types.Course
       Types.Course.Difficulty
+      Types.Course.NewCourse
       Types.University
       Types.University.NewUniversity
       Types.User
