@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Types.User.Education (Education (..)) where
@@ -19,11 +20,13 @@ instance ToJSON Education
 instance ToSchema Education
 
 instance ToField Education where
+    toField :: Education -> Action
     toField Bachelor = Escape "bachelor"
     toField Master = Escape "master"
     toField PhD = Escape "phd"
 
 instance FromField Education where
+    fromField :: FieldParser Education
     fromField f mdata =
         if typeOid f /= typoid text
             then returnError Incompatible f ""

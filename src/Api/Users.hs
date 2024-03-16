@@ -29,13 +29,13 @@ type CreateUser =
 
 type GetUserById =
     Summary "Get user by ID"
-        :> Capture' '[Required, Description "The ID of the user"] "id" Int
+        :> Capture' '[Required, Description "ID of the user"] "id" Int
         :> Get '[JSON] User
 
 type DeleteUserById =
     Summary "Delete user with the given ID"
         :> JWTAuth
-        :> Capture' '[Required, Description "The ID of the user"] "id" Int
+        :> Capture' '[Required, Description "ID of the user"] "id" Int
         :> Verb 'DELETE 204 '[JSON] NoContent
 
 type UsersAPI =
