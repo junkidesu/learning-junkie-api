@@ -1,3 +1,17 @@
+DROP TABLE enrollments;
+DROP TABLE courses;
+DROP TABLE users;
+DROP TABLE universities;
+
+CREATE TABLE IF NOT EXISTS universities (
+	id SERIAL PRIMARY KEY,
+	name TEXT NOT NULL UNIQUE,
+	abbreviation TEXT,
+	year INT NOT NULL,
+	url TEXT NOT NULL UNIQUE,
+	joined TIMESTAMPTZ DEFAULT (now() at time zone('utc'))
+);
+
 CREATE TABLE IF NOT EXISTS users (
 	id SERIAL PRIMARY KEY,
 	joined TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
@@ -10,17 +24,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 INSERT INTO users (name, birthday, education, role, email, passwordHash)
-VALUES ('Anwar', '2003-08-24', 'bachelor', 'admin', 'anwar-admin@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu')
-
-CREATE TABLE IF NOT EXISTS universities (
-	id SERIAL PRIMARY KEY,
-	name TEXT NOT NULL UNIQUE,
-	abbreviation TEXT,
-	year INT NOT NULL,
-	joined TIMESTAMPTZ DEFAULT (now() at time zone('utc'))
-);
-
-DROP TABLE IF EXISTS courses;
+VALUES ('Anwar', '2003-08-24', 'bachelor', 'admin', 'anwar-admin@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
 
 CREATE TABLE IF NOT EXISTS courses (
 	id SERIAL PRIMARY KEY,

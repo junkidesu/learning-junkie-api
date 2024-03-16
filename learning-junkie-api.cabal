@@ -46,6 +46,7 @@ library
       Types.Course
       Types.Course.Difficulty
       Types.Course.NewCourse
+      Types.Lesson
       Types.University
       Types.University.NewUniversity
       Types.User

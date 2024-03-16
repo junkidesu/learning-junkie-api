@@ -14,6 +14,7 @@ data University = University
     , name :: !Text
     , abbreviation :: !(Maybe Text)
     , year :: !Int
+    , url :: !Text
     , joined :: !UTCTime
     }
     deriving (Eq, Show, Read, Generic)

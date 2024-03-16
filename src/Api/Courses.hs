@@ -44,8 +44,8 @@ type EnrolledUsers =
     :> Get '[JSON] [User]
 
 type Enrollments =
-  "enrollments"
-    :> Capture' '[Required, Description "ID of the course"] "id" Int
+  Capture' '[Required, Description "ID of the course"] "id" Int
+    :> "enrollments"
     :> (EnrollInCourse :<|> EnrolledUsers)
 
 type CoursesAPI =

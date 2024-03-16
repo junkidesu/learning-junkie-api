@@ -12,7 +12,7 @@ allUniversitiesQ = "SELECT * FROM universities"
 insertUniversityQ :: Query
 insertUniversityQ =
         toSqlQuery
-                [ "INSERT INTO universities (name, abbreviation, year)"
+                [ "INSERT INTO universities (name, abbreviation, year, url)"
                 , "VALUES (?, ?, ?)"
                 , "RETURNING *"
                 ]

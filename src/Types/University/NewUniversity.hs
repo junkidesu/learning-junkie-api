@@ -12,6 +12,7 @@ data NewUniversity = NewUniversity
     { name :: !Text
     , abbreviation :: !(Maybe Text)
     , year :: !Int
+    , url :: !Text
     }
     deriving (Show, Eq, Read, Generic)
 

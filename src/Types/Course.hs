@@ -36,6 +36,7 @@ instance FromRow Course where
                     <*> field
                     <*> field
                     <*> field
+                    <*> field
                 )
 
 instance ToRow Course where

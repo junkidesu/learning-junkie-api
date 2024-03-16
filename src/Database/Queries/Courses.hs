@@ -11,7 +11,7 @@ allCoursesQ =
         toSqlQuery
                 [ "SELECT"
                 , "c.id, c.title, c.description, c.difficulty,"
-                , "u.id, u.name, u.abbreviation, u.year, u.joined"
+                , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined"
                 , "FROM courses c"
                 , "JOIN universities u"
                 , "ON c.university = u.id"
@@ -22,7 +22,7 @@ courseByIdQ =
         toSqlQuery
                 [ "SELECT"
                 , "c.id, c.title, c.description, c.difficulty,"
-                , "u.id, u.name, u.abbreviation, u.year, u.joined"
+                , "u.id, u.name, u.abbreviation, u.year, u.url u.joined"
                 , "FROM courses c"
                 , "JOIN universities u"
                 , "ON c.university = u.id"
@@ -37,7 +37,7 @@ insertCourseQ =
                 , "VALUES (?, ?, ?, ?)"
                 , "RETURNING *)"
                 , "SELECT ic.id, ic.title, ic.description, ic.difficulty,"
-                , "u.id, u.name, u.abbreviation, u.year, u.joined"
+                , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined"
                 , "FROM inserted_course ic"
                 , "JOIN universities u"
                 , "ON ic.university = u.id"
@@ -54,7 +54,7 @@ universityCoursesByIdQ =
         toSqlQuery
                 [ "SELECT"
                 , "c.id, c.title, c.description, c.difficulty,"
-                , "u.id, u.name, u.abbreviation, u.year, u.joined"
+                , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined"
                 , "FROM courses c"
                 , "JOIN universities u"
                 , "ON c.university = u.id"
