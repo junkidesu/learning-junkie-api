@@ -6,6 +6,8 @@ module Api.Courses.Enrollments (EnrollmentsAPI, enrollmentsServer) where
 
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
+import Database (ensureExists)
+import Database.Operations.Courses (courseById)
 import Database.Operations.Courses.Enrollments (enrollUserInCourse, usersEnrolledInCourse)
 import Database.PostgreSQL.Simple (Connection)
 import Servant
@@ -31,8 +33,13 @@ type EnrollmentsAPI =
 enrollmentsServer :: Pool Connection -> Server EnrollmentsAPI
 enrollmentsServer conns courseId = enrollInCourse :<|> enrolledUsers
  where
+  -- helper function to throw error if course does not exist
+  ensureCourseExists :: Handler ()
+  ensureCourseExists = ensureExists conns courseById courseId
+
   enrollInCourse :: AuthResult AU.AuthUser -> Handler NoContent
   enrollInCourse (Authenticated authUser) = do
+    ensureCourseExists
     result <- liftIO $ enrollUserInCourse conns (AU.id authUser) courseId
     case result of
       Left _ -> throwError err400
@@ -40,4 +47,6 @@ enrollmentsServer conns courseId = enrollInCourse :<|> enrolledUsers
   enrollInCourse _ = throwError err401
 
   enrolledUsers :: Handler [User]
-  enrolledUsers = liftIO $ usersEnrolledInCourse conns courseId
+  enrolledUsers = do
+    ensureCourseExists
+    liftIO $ usersEnrolledInCourse conns courseId

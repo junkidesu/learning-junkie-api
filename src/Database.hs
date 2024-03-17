@@ -7,14 +7,17 @@ module Database (
     insertReturning,
     getOne,
     delete,
+    ensureExists,
 ) where
 
 import Control.Monad (void)
+import Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Data.ByteString.Char8 as BS
 import Data.ByteString.UTF8 (fromString)
 import Data.Pool (Pool, defaultPoolConfig, newPool, setNumStripes, withResource)
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query (Query))
+import Servant (Handler, err404, throwError)
 import System.Environment (getEnv)
 
 initializeConnectionPool :: IO (Pool Connection)
@@ -66,3 +69,13 @@ delete conns q args =
     withResource conns $
         \conn ->
             void $ execute conn q args
+
+-- Helper function to ensure that a resource exists
+-- If it does not, error 404 is thrown
+ensureExists :: Pool Connection -> (Pool Connection -> b -> IO (Maybe a)) -> b -> Handler ()
+ensureExists conns getter identifier = do
+    mbFound <- liftIO $ getter conns identifier
+
+    case mbFound of
+        Nothing -> throwError err404
+        Just _ -> return ()

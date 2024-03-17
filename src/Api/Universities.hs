@@ -64,7 +64,11 @@ universitiesServer conns =
   registerUniversity :: AuthResult AU.AuthUser -> NU.NewUniversity -> Handler University
   registerUniversity (Authenticated authUser) newUniversity = do
     requireAdmin authUser
-    result <- liftIO (try $ insertUniversity conns newUniversity :: IO (Either SqlError University))
+    result <-
+      liftIO $
+        try $
+          insertUniversity conns newUniversity ::
+        Handler (Either SqlError University)
 
     case result of
       Left _ -> throwError err400

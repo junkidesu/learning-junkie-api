@@ -7,7 +7,9 @@ module Api.Universities.Courses (CoursesAPI, coursesServer) where
 import Control.Exception (try)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
+import Database (ensureExists)
 import Database.Operations.Courses (insertCourse, universityCoursesById)
+import Database.Operations.Universities (universityById)
 import Database.PostgreSQL.Simple (Connection, SqlError)
 import Servant
 import Servant.Auth.Server
@@ -34,9 +36,13 @@ type CoursesAPI =
 coursesServer :: Pool Connection -> Server CoursesAPI
 coursesServer conns universityId = addCourse :<|> getCourses
  where
+  ensureUniversityExists :: Handler ()
+  ensureUniversityExists = ensureExists conns universityById universityId
+
   addCourse :: AuthResult AU.AuthUser -> NC.NewCourse -> Handler Course
   addCourse (Authenticated authUser) newCourse = do
     requireAdmin authUser
+    ensureUniversityExists
     result <-
       liftIO $
         try $
@@ -49,4 +55,6 @@ coursesServer conns universityId = addCourse :<|> getCourses
   addCourse _ _ = throwError err401
 
   getCourses :: Handler [Course]
-  getCourses = liftIO $ universityCoursesById conns universityId
+  getCourses = do
+    ensureUniversityExists
+    liftIO $ universityCoursesById conns universityId

@@ -6,7 +6,7 @@ module Database.Operations.Courses (
         universityCoursesById,
 ) where
 
-import Data.Pool (Pool, withResource)
+import Data.Pool (Pool)
 import Database
 import Database.PostgreSQL.Simple
 import Database.Queries.Courses (
