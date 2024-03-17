@@ -14,7 +14,6 @@ data NewUser = NewUser
     { name :: !(Maybe Text)
     , birthday :: !(Maybe Day)
     , education :: !(Maybe Education)
-    , role :: !Role
     , email :: !Text
     , password :: !Text
     }

@@ -1,6 +1,7 @@
+DROP TABLE IF EXISTS lessons;
 DROP TABLE IF EXISTS enrollments;
-DROP TABLE IF EXISTS participants;
 DROP TABLE IF EXISTS courses;
+DROP TABLE IF EXISTS instructors;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS universities;
 
@@ -25,6 +26,13 @@ CREATE TABLE IF NOT EXISTS users (
 	role TEXT NOT NULL,
 	email TEXT NOT NULL UNIQUE,
 	passwordHash TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS instructors (
+	id INT NOT NULL,
+	university INT NOT NULL,
+	FOREIGN KEY (id) REFERENCES users(id),
+	FOREIGN KEY (university) REFERENCES universities(id)
 );
 
 INSERT INTO users (name, birthday, education, role, email, passwordHash)
@@ -53,4 +61,13 @@ CREATE TABLE IF NOT EXISTS enrollments (
 	enrolled TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
 	FOREIGN KEY (userId) REFERENCES users(id),
 	FOREIGN KEY (courseId) REFERENCES courses(id)
+);
+
+CREATE TABLE IF NOT EXISTS lessons (
+	number INT NOT NULL,
+	title TEXT NOT NULL,
+	description TEXT NOT NULL,
+	content TEXT NOT NULL,
+	course INT NOT NULL,
+	PRIMARY KEY(number, course)
 );

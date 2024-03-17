@@ -7,6 +7,7 @@ module Api.Courses.Lessons (LessonsAPI, lessonsServer) where
 import Data.Pool (Pool)
 import Database.PostgreSQL.Simple (Connection)
 import Servant
+import Types.Auth.JWTAuth (JWTAuth)
 import qualified Types.Lesson as L
 import qualified Types.Lesson.EditLesson as EL
 
@@ -21,15 +22,18 @@ type GetLessonById =
 
 type AddLesson =
   Summary "Add a lesson to a course"
+    :> JWTAuth
     :> PostCreated '[JSON] L.Lesson
 
 type DeleteLesson =
   Summary "Remove a lesson from a course"
+    :> JWTAuth
     :> Capture' '[Required, Description "Number of the lesson"] "number" Int
     :> Verb 'DELETE 204 '[JSON] NoContent
 
 type EditLesson =
   Summary "Edit a lesson in the course"
+    :> JWTAuth
     :> Capture' '[Required, Description "Number of the lesson"] "number" Int
     :> ReqBody '[JSON] EL.EditLesson
     :> Put '[JSON] L.Lesson
@@ -45,4 +49,4 @@ type LessonsAPI =
        )
 
 lessonsServer :: Pool Connection -> Server LessonsAPI
-lessonsServer conns = undefined
+lessonsServer _ = undefined

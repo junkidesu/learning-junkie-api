@@ -6,6 +6,7 @@ module Database.Operations.Users (
         deleteUser,
 ) where
 
+import Control.Monad (void)
 import Data.Password.Bcrypt
 import Data.Pool
 import Data.Text (Text)
@@ -29,11 +30,11 @@ insertUser conns newUser = withResource conns $
                                 ( NU.name newUser
                                 , NU.birthday newUser
                                 , NU.education newUser
-                                , NU.role newUser
                                 , NU.email newUser
                                 , unPasswordHash hashedPassword
                                 )
                 return user
+
 userById :: Pool Connection -> Int -> IO (Maybe User)
 userById conns userId = do
         withResource conns $
@@ -54,6 +55,4 @@ userByEmail conns e = withResource conns $
 
 deleteUser :: Pool Connection -> Int -> IO ()
 deleteUser conns userId = withResource conns $
-        \conn -> do
-                _ <- execute conn deleteUserQ (Only userId)
-                return ()
+        \conn -> void $ execute conn deleteUserQ (Only userId)

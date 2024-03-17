@@ -15,7 +15,6 @@ import Servant.Auth.Server
 import Types.Auth.JWTAuth
 import qualified Types.Auth.User as AU
 import Types.Course (Course)
-import Types.User.Role (Role (Admin))
 
 type GetAllCourses =
   Summary "Get all courses"
@@ -61,10 +60,8 @@ coursesServer conns =
       Just course -> return course
 
   deleteCourseById :: AuthResult AU.AuthUser -> Int -> Handler NoContent
-  deleteCourseById (Authenticated authUser) courseId =
-    case AU.role authUser of
-      Admin -> do
-        liftIO $ deleteCourse conns courseId
-        return NoContent
-      _ -> throwError err401
+  deleteCourseById (Authenticated authUser) courseId = do
+    requireAdmin authUser
+    liftIO $ deleteCourse conns courseId
+    return NoContent
   deleteCourseById _ _ = throwError err401

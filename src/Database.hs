@@ -21,3 +21,6 @@ initializeConnectionPool = do
 
 toSqlQuery :: [BS.ByteString] -> Query
 toSqlQuery = Query . BS.unlines
+
+fetch :: Pool Connection -> Query -> IO [a]
+fetch = undefined

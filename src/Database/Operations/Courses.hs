@@ -45,6 +45,7 @@ insertCourse conns universityId newCourse =
                                 , universityId
                                 , NC.instructorId newCourse
                                 )
+
                 return course
 
 deleteCourse :: Pool Connection -> Int -> IO ()

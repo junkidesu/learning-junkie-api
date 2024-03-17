@@ -32,6 +32,7 @@ library
       Api.Courses.Lessons
       Api.Universities
       Api.Universities.Courses
+      Api.Universities.Instructors
       Api.Users
       Database
       Database.Operations.Courses
@@ -50,6 +51,7 @@ library
       Types.Course
       Types.Course.Difficulty
       Types.Course.NewCourse
+      Types.Instructor
       Types.Lesson
       Types.Lesson.EditLesson
       Types.Lesson.NewLesson

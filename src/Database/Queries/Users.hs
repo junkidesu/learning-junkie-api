@@ -14,7 +14,7 @@ insertUserQ =
         toSqlQuery
                 [ "INSERT INTO users"
                 , "(name, birthday, education, role, email, passwordHash)"
-                , "VALUES (?, ?, ?, ?, ?, ?)"
+                , "VALUES (?, ?, ?, 'student', ?, ?)"
                 , "RETURNING *"
                 ]
 

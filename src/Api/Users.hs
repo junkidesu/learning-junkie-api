@@ -4,10 +4,11 @@
 
 module Api.Users (UsersAPI, usersServer) where
 
+import Control.Exception (try)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database.Operations.Users
-import Database.PostgreSQL.Simple (Connection)
+import Database.PostgreSQL.Simple (Connection, SqlError (SqlError))
 import Servant
 import Servant.Auth.Server
 import Types.Auth.JWTAuth
@@ -22,6 +23,7 @@ type GetAllUsers =
 
 type CreateUser =
     Summary "Create a new user"
+        :> Description "Only prospective students can use this endpoint"
         :> ReqBody '[JSON] NU.NewUser
         :> PostCreated '[JSON] User
 
@@ -55,9 +57,16 @@ usersServer conns =
     getAllUsers = liftIO $ allUsers conns
 
     createUser :: NU.NewUser -> Handler User
-    createUser newUser = case NU.role newUser of
-        Admin -> throwError err400
-        _ -> liftIO $ insertUser conns newUser
+    createUser newUser = do
+        result <-
+            liftIO $
+                try $
+                    insertUser conns newUser ::
+                Handler (Either SqlError User)
+
+        case result of
+            Left _ -> throwError err400
+            Right user -> return user
 
     getUserById :: Int -> Handler User
     getUserById userId = do
@@ -66,6 +75,7 @@ usersServer conns =
         case mbUser of
             Nothing -> throwError err404
             Just user -> return user
+
     deleteUserById :: AuthResult AU.AuthUser -> Int -> Handler NoContent
     deleteUserById (Authenticated authUser) userId =
         case AU.role authUser of

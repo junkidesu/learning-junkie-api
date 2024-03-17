@@ -14,7 +14,6 @@ import Types.Auth.JWTAuth
 import qualified Types.Auth.User as AU
 import Types.Course (Course)
 import qualified Types.Course.NewCourse as NC
-import Types.User.Role (Role (Admin))
 
 type AddCourse =
   Summary "Add course to the university"
@@ -35,10 +34,9 @@ coursesServer :: Pool Connection -> Server CoursesAPI
 coursesServer conns universityId = addCourse :<|> getCourses
  where
   addCourse :: AuthResult AU.AuthUser -> NC.NewCourse -> Handler Course
-  addCourse (Authenticated authUser) newCourse =
-    case AU.role authUser of
-      Admin -> liftIO $ insertCourse conns universityId newCourse
-      _ -> throwError err401
+  addCourse (Authenticated authUser) newCourse = do
+    requireAdmin authUser
+    liftIO $ insertCourse conns universityId newCourse
   addCourse _ _ = throwError err401
 
   getCourses :: Handler [Course]
