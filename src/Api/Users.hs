@@ -8,7 +8,7 @@ import Control.Exception (try)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database.Operations.Users
-import Database.PostgreSQL.Simple (Connection, SqlError (SqlError))
+import Database.PostgreSQL.Simple (Connection, SqlError)
 import Servant
 import Servant.Auth.Server
 import Types.Auth.JWTAuth
