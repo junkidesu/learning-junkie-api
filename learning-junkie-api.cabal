@@ -37,11 +37,13 @@ library
       Database
       Database.Operations.Courses
       Database.Operations.Courses.Enrollments
+      Database.Operations.Lessons
       Database.Operations.Universities
       Database.Operations.Universities.Instructors
       Database.Operations.Users
       Database.Queries.Courses
       Database.Queries.Courses.Enrollments
+      Database.Queries.Lessons
       Database.Queries.Universities
       Database.Queries.Universities.Instructors
       Database.Queries.Users

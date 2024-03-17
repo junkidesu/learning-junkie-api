@@ -13,7 +13,6 @@ data NewLesson = NewLesson
     , title :: !Text
     , description :: !Text
     , content :: !Text
-    , courseId :: !Int
     }
     deriving (Show, Read, Generic)
 

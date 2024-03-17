@@ -8,14 +8,12 @@ import Data.Text (Text)
 import Database.PostgreSQL.Simple (FromRow)
 import Database.PostgreSQL.Simple.FromRow (FromRow (fromRow), field)
 import GHC.Generics (Generic)
-import Types.Course (Course)
 
 data Lesson = Lesson
     { number :: !Int
     , title :: !Text
     , description :: !Text
     , content :: !Text
-    , course :: !Course
     }
     deriving (Show, Read, Generic)
 
@@ -28,6 +26,5 @@ instance FromRow Lesson where
             <*> field
             <*> field
             <*> field
-            <*> fromRow
 
 instance ToSchema Lesson

@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS instructors (
-	id INT NOT NULL,
+	id INT NOT NULL REFERENCES users
+		ON DELETE CASCADE,
 	university INT NOT NULL,
 	FOREIGN KEY (id) REFERENCES users(id),
 	FOREIGN KEY (university) REFERENCES universities(id)
