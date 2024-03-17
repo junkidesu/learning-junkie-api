@@ -41,13 +41,11 @@ coursesServer conns universityId = addCourse :<|> getCourses
       liftIO $
         try $
           insertCourse conns universityId newCourse ::
-        Handler (Either SqlError (Maybe Course))
+        Handler (Either SqlError Course)
 
     case result of
       Left _ -> throwError err400
-      Right mbCourse -> case mbCourse of
-        Nothing -> throwError err400
-        Just course -> return course
+      Right course -> return course
   addCourse _ _ = throwError err401
 
   getCourses :: Handler [Course]

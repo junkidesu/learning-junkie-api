@@ -7,6 +7,7 @@ module Database.Operations.Courses (
 ) where
 
 import Data.Pool (Pool, withResource)
+import Database
 import Database.PostgreSQL.Simple
 import Database.Queries.Courses (
         allCoursesQ,
@@ -19,45 +20,33 @@ import Types.Course (Course)
 import qualified Types.Course.NewCourse as NC
 
 allCourses :: Pool Connection -> IO [Course]
-allCourses conns =
-        withResource conns $ \conn ->
-                query_ conn allCoursesQ
+allCourses conns = getMany_ conns allCoursesQ
 
 courseById :: Pool Connection -> Int -> IO (Maybe Course)
 courseById conns courseId =
-        withResource conns $ \conn -> do
-                found <- query conn courseByIdQ (Only courseId)
+        getOne
+                conns
+                courseByIdQ
+                (Only courseId)
 
-                case found of
-                        [] -> pure Nothing
-                        (course : _) -> pure . Just $ course
-
-insertCourse :: Pool Connection -> Int -> NC.NewCourse -> IO (Maybe Course)
+insertCourse :: Pool Connection -> Int -> NC.NewCourse -> IO Course
 insertCourse conns universityId newCourse =
-        withResource conns $ \conn -> do
-                queryResult <-
-                        query
-                                conn
-                                insertCourseQ
-                                ( NC.title newCourse
-                                , NC.description newCourse
-                                , NC.difficulty newCourse
-                                , universityId
-                                , NC.instructorId newCourse
-                                )
-
-                case queryResult of
-                        [] -> return Nothing
-                        (course : _) -> return . pure $ course
+        insertReturning
+                conns
+                insertCourseQ
+                ( NC.title newCourse
+                , NC.description newCourse
+                , NC.difficulty newCourse
+                , universityId
+                , NC.instructorId newCourse
+                )
 
 deleteCourse :: Pool Connection -> Int -> IO ()
 deleteCourse conns courseId =
-        withResource conns $
-                \conn -> do
-                        _ <- execute conn deleteCourseQ (Only courseId)
-                        return ()
+        delete
+                conns
+                deleteCourseQ
+                (Only courseId)
 
 universityCoursesById :: Pool Connection -> Int -> IO [Course]
-universityCoursesById conns universityId =
-        withResource conns $ \conn ->
-                query conn universityCoursesByIdQ (Only universityId)
+universityCoursesById conns universityId = getMany conns universityCoursesByIdQ (Only universityId)
