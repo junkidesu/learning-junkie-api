@@ -10,8 +10,8 @@ import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database (ensureExists, ensureExistsReturning)
 import Database.Operations.Courses (courseById)
-import Database.Operations.Lessons (allLessons, deleteLesson, insertLesson, lessonByNumber)
-import Database.PostgreSQL.Simple (Connection, SqlError)
+import Database.Operations.Lessons (allLessons, deleteLesson, insertLesson, lessonByNumber, updateLesson)
+import Database.PostgreSQL.Simple
 import Servant
 import Servant.Auth.Server
 import Types.Auth.JWTAuth (JWTAuth)
@@ -67,7 +67,7 @@ lessonsServer conns courseId =
     :<|> getLessonByNumber
     :<|> addLesson
     :<|> deleteLessonByNumber
-    :<|> undefined
+    :<|> editLesson
  where
   -- helper function to throw error if course does not exist
   ensureCourseExists :: Handler ()
@@ -138,3 +138,34 @@ lessonsServer conns courseId =
         liftIO $ deleteLesson conns courseId lessonNumber
         return NoContent
   deleteLessonByNumber _ _ = throwError err401
+
+  editLesson :: AuthResult AU.AuthUser -> Int -> EL.EditLesson -> Handler L.Lesson
+  editLesson (Authenticated authUser) lessonNumber el =
+    case AU.role authUser of
+      Admin -> do
+        ensureCourseExists
+        editLesson'
+      Instructor -> do
+        course <- getCurrentCourse
+
+        when
+          ((U.id . C.instructor $ course) /= AU.id authUser)
+          $ throwError err401
+
+        editLesson'
+      Student -> throwError err401
+   where
+    editLesson' :: Handler L.Lesson
+    editLesson' = do
+      result <-
+        liftIO $
+          try $
+            updateLesson conns courseId lessonNumber el ::
+          Handler (Either SqlError (Maybe L.Lesson))
+
+      case result of
+        Left _ -> throwError err400
+        Right mbLesson -> case mbLesson of
+          Nothing -> throwError err404
+          Just lesson -> return lesson
+  editLesson _ _ _ = throwError err401

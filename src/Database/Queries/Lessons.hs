@@ -47,3 +47,12 @@ deleteLessonQ =
                 , "FROM lessons"
                 , "WHERE course = ? AND number = ?"
                 ]
+
+updateLessonQ :: Query
+updateLessonQ =
+        toSqlQuery
+                [ "UPDATE lessons"
+                , "SET content = ?, description = ?"
+                , "WHERE course = ? AND number = ?"
+                , "RETURNING number, title, description, content"
+                ]

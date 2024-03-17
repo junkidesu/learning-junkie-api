@@ -3,13 +3,15 @@ module Database.Operations.Lessons (
         insertLesson,
         lessonByNumber,
         deleteLesson,
+        updateLesson,
 ) where
 
 import Data.Pool (Pool)
 import Database
 import Database.PostgreSQL.Simple (Connection, Only (Only))
-import Database.Queries.Lessons (allLessonsQ, deleteLessonQ, insertLessonQ, lessonByNumberQ)
+import Database.Queries.Lessons (allLessonsQ, deleteLessonQ, insertLessonQ, lessonByNumberQ, updateLessonQ)
 import Types.Lesson (Lesson)
+import qualified Types.Lesson.EditLesson as UL
 import qualified Types.Lesson.NewLesson as NL
 
 allLessons :: Pool Connection -> Int -> IO [Lesson]
@@ -36,3 +38,14 @@ insertLesson conns courseId newLesson =
 
 deleteLesson :: Pool Connection -> Int -> Int -> IO ()
 deleteLesson conns courseId lessonNumber = delete conns deleteLessonQ (courseId, lessonNumber)
+
+updateLesson :: Pool Connection -> Int -> Int -> UL.EditLesson -> IO (Maybe Lesson)
+updateLesson conns courseId lessonNumber editLesson =
+        updateReturning
+                conns
+                updateLessonQ
+                ( UL.content editLesson
+                , UL.description editLesson
+                , courseId
+                , lessonNumber
+                )

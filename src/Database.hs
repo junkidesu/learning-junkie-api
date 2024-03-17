@@ -7,6 +7,7 @@ module Database (
     insertReturning,
     getOne,
     delete,
+    updateReturning,
     ensureExistsReturning,
     ensureExists,
 ) where
@@ -70,6 +71,16 @@ delete conns q args =
     withResource conns $
         \conn ->
             void $ execute conn q args
+
+updateReturning :: (FromRow a, ToRow b) => Pool Connection -> Query -> b -> IO (Maybe a)
+updateReturning conns q args =
+    withResource conns $
+        \conn -> do
+            result <- query conn q args
+
+            case result of
+                [] -> return Nothing
+                (row : _) -> return . pure $ row
 
 -- Helper function to ensure that a resource exists
 -- If the resource exists, it is returned
