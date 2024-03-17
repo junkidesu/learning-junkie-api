@@ -39,3 +39,11 @@ insertLessonQ =
                 , "JOIN courses c"
                 , "ON c.id = l.course"
                 ]
+
+deleteLessonQ :: Query
+deleteLessonQ =
+        toSqlQuery
+                [ "DELETE"
+                , "FROM lessons"
+                , "WHERE course = ? AND number = ?"
+                ]

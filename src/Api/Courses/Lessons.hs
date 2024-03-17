@@ -5,19 +5,22 @@
 module Api.Courses.Lessons (LessonsAPI, lessonsServer) where
 
 import Control.Exception (try)
+import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
-import Database (ensureExists)
+import Database (ensureExists, ensureExistsReturning)
 import Database.Operations.Courses (courseById)
-import Database.Operations.Lessons (allLessons, insertLesson, lessonByNumber)
+import Database.Operations.Lessons (allLessons, deleteLesson, insertLesson, lessonByNumber)
 import Database.PostgreSQL.Simple (Connection, SqlError)
 import Servant
 import Servant.Auth.Server
 import Types.Auth.JWTAuth (JWTAuth)
 import qualified Types.Auth.User as AU
+import qualified Types.Course as C
 import qualified Types.Lesson as L
 import qualified Types.Lesson.EditLesson as EL
 import qualified Types.Lesson.NewLesson as NL
+import qualified Types.User as U
 import Types.User.Role (Role (Admin, Instructor, Student))
 
 type GetLessons =
@@ -63,11 +66,15 @@ lessonsServer conns courseId =
   getAllLessons
     :<|> getLessonByNumber
     :<|> addLesson
+    :<|> deleteLessonByNumber
     :<|> undefined
  where
   -- helper function to throw error if course does not exist
   ensureCourseExists :: Handler ()
   ensureCourseExists = ensureExists conns courseById courseId
+
+  getCurrentCourse :: Handler C.Course
+  getCurrentCourse = ensureExistsReturning conns courseById courseId
 
   getAllLessons :: Handler [L.Lesson]
   getAllLessons = do
@@ -88,12 +95,20 @@ lessonsServer conns courseId =
   addLesson (Authenticated authUser) newLesson = do
     case AU.role authUser of
       Student -> throwError err401
-      Admin -> addLesson'
-      Instructor -> addLesson'
+      Admin -> do
+        ensureCourseExists
+        addLesson'
+      Instructor -> do
+        course <- getCurrentCourse
+
+        when
+          ((U.id . C.instructor $ course) /= AU.id authUser)
+          $ throwError err401
+
+        addLesson'
    where
     addLesson' :: Handler L.Lesson
     addLesson' = do
-      ensureCourseExists
       result <-
         liftIO $
           try $
@@ -104,3 +119,22 @@ lessonsServer conns courseId =
         Left _ -> throwError err400
         Right lesson -> return lesson
   addLesson _ _ = throwError err401
+
+  deleteLessonByNumber :: AuthResult AU.AuthUser -> Int -> Handler NoContent
+  deleteLessonByNumber (Authenticated authUser) lessonNumber =
+    case AU.role authUser of
+      Student -> throwError err401
+      Admin -> do
+        ensureCourseExists
+        liftIO $ deleteLesson conns courseId lessonNumber
+        return NoContent
+      Instructor -> do
+        course <- getCurrentCourse
+
+        when
+          ((U.id . C.instructor $ course) /= AU.id authUser)
+          $ throwError err401
+
+        liftIO $ deleteLesson conns courseId lessonNumber
+        return NoContent
+  deleteLessonByNumber _ _ = throwError err401

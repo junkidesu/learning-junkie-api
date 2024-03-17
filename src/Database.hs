@@ -7,6 +7,7 @@ module Database (
     insertReturning,
     getOne,
     delete,
+    ensureExistsReturning,
     ensureExists,
 ) where
 
@@ -71,7 +72,17 @@ delete conns q args =
             void $ execute conn q args
 
 -- Helper function to ensure that a resource exists
+-- If the resource exists, it is returned
 -- If it does not, error 404 is thrown
+ensureExistsReturning :: Pool Connection -> (Pool Connection -> b -> IO (Maybe a)) -> b -> Handler a
+ensureExistsReturning conns getter identifier = do
+    mbFound <- liftIO $ getter conns identifier
+
+    case mbFound of
+        Nothing -> throwError err404
+        Just found -> return found
+
+-- Same as ensureExistsReturning, but does not return the found resource
 ensureExists :: Pool Connection -> (Pool Connection -> b -> IO (Maybe a)) -> b -> Handler ()
 ensureExists conns getter identifier = do
     mbFound <- liftIO $ getter conns identifier

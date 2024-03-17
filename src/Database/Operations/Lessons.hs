@@ -2,12 +2,13 @@ module Database.Operations.Lessons (
         allLessons,
         insertLesson,
         lessonByNumber,
+        deleteLesson,
 ) where
 
 import Data.Pool (Pool)
 import Database
 import Database.PostgreSQL.Simple (Connection, Only (Only))
-import Database.Queries.Lessons (allLessonsQ, insertLessonQ, lessonByNumberQ)
+import Database.Queries.Lessons (allLessonsQ, deleteLessonQ, insertLessonQ, lessonByNumberQ)
 import Types.Lesson (Lesson)
 import qualified Types.Lesson.NewLesson as NL
 
@@ -32,3 +33,6 @@ insertLesson conns courseId newLesson =
                 , NL.content newLesson
                 , courseId
                 )
+
+deleteLesson :: Pool Connection -> Int -> Int -> IO ()
+deleteLesson conns courseId lessonNumber = delete conns deleteLessonQ (courseId, lessonNumber)

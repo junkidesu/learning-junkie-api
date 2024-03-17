@@ -40,9 +40,6 @@ INSERT INTO users (name, birthday, education, role, email, passwordHash)
 VALUES ('Anwar', '2003-08-24', 'bachelor', 'admin', 'anwar-admin@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
 
 INSERT INTO users (name, birthday, education, role, email, passwordHash)
-VALUES ('John Doe', '1980-01-12', 'phd', 'instructor', 'johndoe@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
-
-INSERT INTO users (name, birthday, education, role, email, passwordHash)
 VALUES ('Junki', '2003-08-24', 'bachelor', 'student', 'junki@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
 
 CREATE TABLE IF NOT EXISTS courses (
