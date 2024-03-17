@@ -9,6 +9,9 @@ import Database.PostgreSQL.Simple (Query)
 allUniversitiesQ :: Query
 allUniversitiesQ = "SELECT * FROM universities"
 
+universityByIdQ :: Query
+universityByIdQ = "SELECT * FROM universities WHERE id = ?"
+
 insertUniversityQ :: Query
 insertUniversityQ =
         toSqlQuery
