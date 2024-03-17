@@ -16,6 +16,16 @@ allLessonsQ =
                 , "WHERE c.id = ?"
                 ]
 
+lessonByNumberQ :: Query
+lessonByNumberQ =
+        toSqlQuery
+                [ "SELECT l.number, l.title, l.description, l.content"
+                , "FROM lessons l"
+                , "JOIN courses c"
+                , "ON l.course = c.id"
+                , "WHERE c.id = ? AND l.number = ?"
+                ]
+
 insertLessonQ :: Query
 insertLessonQ =
         toSqlQuery

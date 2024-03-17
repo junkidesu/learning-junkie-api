@@ -6,7 +6,6 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.Swagger (ToSchema)
 import Data.Text (Text)
 import Database.PostgreSQL.Simple (FromRow)
-import Database.PostgreSQL.Simple.FromRow (FromRow (fromRow), field)
 import GHC.Generics (Generic)
 
 data Lesson = Lesson
@@ -19,12 +18,5 @@ data Lesson = Lesson
 
 instance ToJSON Lesson
 instance FromJSON Lesson
-instance FromRow Lesson where
-    fromRow =
-        Lesson
-            <$> field
-            <*> field
-            <*> field
-            <*> field
-
+instance FromRow Lesson
 instance ToSchema Lesson

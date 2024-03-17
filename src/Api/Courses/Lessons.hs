@@ -9,7 +9,7 @@ import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database.Operations.Courses (courseById)
-import Database.Operations.Lessons (allLessons, insertLesson)
+import Database.Operations.Lessons (allLessons, insertLesson, lessonByNumber)
 import Database.PostgreSQL.Simple (Connection, SqlError)
 import Servant
 import Servant.Auth.Server
@@ -63,12 +63,20 @@ type LessonsAPI =
 lessonsServer :: Pool Connection -> Server LessonsAPI
 lessonsServer conns courseId =
   getAllLessons
-    :<|> undefined
+    :<|> getLessonByNumber
     :<|> addLesson
     :<|> undefined
  where
   getAllLessons :: Handler [L.Lesson]
   getAllLessons = liftIO $ allLessons conns courseId
+
+  getLessonByNumber :: Int -> Handler L.Lesson
+  getLessonByNumber number = do
+    mbLesson <- liftIO $ lessonByNumber conns courseId number
+
+    case mbLesson of
+      Nothing -> throwError err404
+      Just lesson -> return lesson
 
   addLesson :: AuthResult AU.AuthUser -> NL.NewLesson -> Handler L.Lesson
   addLesson (Authenticated authUser) newLesson = do
