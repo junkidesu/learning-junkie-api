@@ -33,8 +33,10 @@ enrollmentsServer conns courseId = enrollInCourse :<|> enrolledUsers
  where
   enrollInCourse :: AuthResult AU.AuthUser -> Handler NoContent
   enrollInCourse (Authenticated authUser) = do
-    liftIO $ enrollUserInCourse conns (AU.id authUser) courseId
-    return NoContent
+    result <- liftIO $ enrollUserInCourse conns (AU.id authUser) courseId
+    case result of
+      Left _ -> throwError err400
+      Right _ -> return NoContent
   enrollInCourse _ = throwError err401
 
   enrolledUsers :: Handler [User]

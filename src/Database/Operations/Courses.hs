@@ -32,10 +32,10 @@ courseById conns courseId =
                         [] -> pure Nothing
                         (course : _) -> pure . Just $ course
 
-insertCourse :: Pool Connection -> Int -> NC.NewCourse -> IO Course
+insertCourse :: Pool Connection -> Int -> NC.NewCourse -> IO (Maybe Course)
 insertCourse conns universityId newCourse =
         withResource conns $ \conn -> do
-                [course] <-
+                queryResult <-
                         query
                                 conn
                                 insertCourseQ
@@ -46,7 +46,9 @@ insertCourse conns universityId newCourse =
                                 , NC.instructorId newCourse
                                 )
 
-                return course
+                case queryResult of
+                        [] -> return Nothing
+                        (course : _) -> return . pure $ course
 
 deleteCourse :: Pool Connection -> Int -> IO ()
 deleteCourse conns courseId =

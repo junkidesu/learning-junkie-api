@@ -4,6 +4,7 @@ module Database.Operations.Courses.Enrollments (
 ) where
 
 import Data.Pool (Pool, withResource)
+import Database.Operations.Courses (courseById)
 import Database.PostgreSQL.Simple (Connection, Only (Only), execute, query)
 import Database.Queries.Courses.Enrollments (enrollUserInCourseQ, usersEnrolledInCourseQ)
 import Types.User (User)
@@ -13,9 +14,14 @@ usersEnrolledInCourse conns courseId =
         withResource conns $
                 \conn -> query conn usersEnrolledInCourseQ (Only courseId)
 
-enrollUserInCourse :: Pool Connection -> Int -> Int -> IO ()
+enrollUserInCourse :: Pool Connection -> Int -> Int -> IO (Either String String)
 enrollUserInCourse conns userId courseId =
         withResource conns $
                 \conn -> do
-                        _ <- execute conn enrollUserInCourseQ (userId, courseId)
-                        return ()
+                        mbCourse <- courseById conns courseId
+
+                        case mbCourse of
+                                Nothing -> return (Left "Course not found")
+                                Just _ -> do
+                                        _ <- execute conn enrollUserInCourseQ (userId, courseId)
+                                        return (Right "Successfully enrolled!")
