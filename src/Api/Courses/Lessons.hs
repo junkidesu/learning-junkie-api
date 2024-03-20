@@ -6,6 +6,7 @@ module Api.Courses.Lessons (LessonsAPI, lessonsServer) where
 
 import Api.Courses.Essays (EssaysAPI, essaysServer)
 import Api.Courses.Questions (QuestionsAPI, questionsServer)
+import Api.Courses.Quizzes (QuizzesAPI, quizzesServer)
 import Control.Exception (try)
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO (liftIO))
@@ -63,6 +64,7 @@ type LessonsAPI =
           :<|> EditLesson
           :<|> QuestionsAPI
           :<|> EssaysAPI
+          :<|> QuizzesAPI
        )
 
 lessonsServer :: Pool Connection -> Server LessonsAPI
@@ -74,6 +76,7 @@ lessonsServer conns courseId =
     :<|> editLesson
     :<|> questionsServer conns courseId
     :<|> essaysServer conns courseId
+    :<|> quizzesServer conns courseId
  where
   -- helper function to throw error if course does not exist
   ensureCourseExists :: Handler ()

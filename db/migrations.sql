@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS quizzes;
 DROP TABLE IF EXISTS essays;
 DROP TABLE IF EXISTS questions;
 DROP TABLE IF EXISTS exercises;
@@ -144,14 +145,34 @@ CREATE TABLE IF NOT EXISTS essays (
 	FOREIGN KEY (id) REFERENCES exercises(id)
 );
 
+CREATE TABLE IF NOT EXISTS quizzes (
+	id INT NOT NULL PRIMARY KEY,
+	question TEXT NOT NULL,
+	optionA TEXT NOT NULL,
+	optionB TEXT NOT NULL,
+	optionC TEXT NOT NULL,
+	optionD TEXT NOT NULL,
+	correct TEXT NOT NULL,
+	FOREIGN KEY (id) REFERENCES exercises(id)
+);
+
+-- question
 INSERT INTO exercises (grade, lesson, course)
 VALUES (1, 1, 1);
 
 INSERT INTO questions (id, question, answer)
 VALUES (1, 'What data type is the value "Hello world?"', 'string');
 
+-- essays
 INSERT INTO exercises (grade, lesson, course)
 VALUES (3, 1, 1);
 
 INSERT INTO essays (id, task, model)
-VALUES (2, 'Write an essay on the history of the Python programming language.', 'This is a model answer to the essay.')
+VALUES (2, 'Write an essay on the history of the Python programming language.', 'This is a model answer to the essay.');
+
+-- quiz
+INSERT INTO exercises (grade, lesson, course)
+VALUES (1, 1, 1);
+
+INSERT INTO quizzes (id, question, optionA, optionB, optionC, optionD, correct)
+VALUES (3, 'We can get user input with ...', 'print', 'def', 'input', 'while', 'c');
