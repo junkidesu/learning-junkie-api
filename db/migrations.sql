@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS questions;
+DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS lessons;
 DROP TABLE IF EXISTS enrollments;
 DROP TABLE IF EXISTS courses;
@@ -118,3 +120,24 @@ VALUES
 (1, 'Vectors and Vector Spaces', 'Learn about different vector spaces and subspaces.', '**Markdown content**', 4),
 (2, 'Linear Transformations', 'Learn about linear transformations and matrix multiplication.', '**Markdown content**', 4),
 (3, 'Systems of Linear Equations', 'Learn to solve systems of linear equations.', '**Markdown content**', 4);
+
+CREATE TABLE IF NOT EXISTS exercises (
+	id SERIAL PRIMARY KEY,
+	grade INT NOT NULL DEFAULT 1,
+	lesson INT NOT NULL,
+	course INT NOT NULL,
+	FOREIGN KEY (lesson, course) REFERENCES lessons(number, course)
+);
+
+CREATE TABLE IF NOT EXISTS questions (
+	id INT NOT NULL PRIMARY KEY,
+	question TEXT NOT NULL,
+	answer TEXT NOT NULL,
+	FOREIGN KEY (id) REFERENCES exercises(id)
+);
+
+INSERT INTO exercises (grade, lesson, course)
+VALUES (1, 1, 1);
+
+INSERT INTO questions (id, question, answer)
+VALUES (1, 'What data type is the value "Hello world?"', 'string');
