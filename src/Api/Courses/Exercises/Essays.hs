@@ -2,7 +2,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Api.Courses.Essays (EssaysAPI, essaysServer) where
+module Api.Courses.Exercises.Essays (EssaysAPI, essaysServer) where
 
 import Control.Exception (try)
 import Control.Monad (when)

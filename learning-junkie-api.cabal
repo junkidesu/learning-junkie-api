@@ -29,10 +29,10 @@ library
       Api.Auth
       Api.Courses
       Api.Courses.Enrollments
-      Api.Courses.Essays
+      Api.Courses.Exercises.Essays
+      Api.Courses.Exercises.Questions
+      Api.Courses.Exercises.Quizzes
       Api.Courses.Lessons
-      Api.Courses.Questions
-      Api.Courses.Quizzes
       Api.Universities
       Api.Universities.Courses
       Api.Universities.Instructors

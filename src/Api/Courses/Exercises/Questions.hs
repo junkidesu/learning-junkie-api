@@ -2,7 +2,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Api.Courses.Quizzes (QuizzesAPI, quizzesServer) where
+module Api.Courses.Exercises.Questions (QuestionsAPI, questionsServer) where
 
 import Control.Exception (try)
 import Control.Monad (when)
@@ -10,7 +10,7 @@ import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database (ensureExists, ensureExistsReturning)
 import Database.Operations.Courses (courseById)
-import Database.Operations.Exercises.Quizzes
+import Database.Operations.Exercises.Questions (allQuestions, insertQuestion)
 import Database.Operations.Lessons (lessonByNumber)
 import Database.PostgreSQL.Simple (Connection, SqlError)
 import Servant
@@ -18,66 +18,66 @@ import Servant.Auth.Server (AuthResult (Authenticated))
 import Types.Auth.JWTAuth (JWTAuth)
 import qualified Types.Auth.User as AU
 import qualified Types.Course as C
-import qualified Types.Exercise.NewQuiz as NQ
-import Types.Exercise.Quiz (Quiz)
+import qualified Types.Exercise.NewQuestion as NQ
+import Types.Exercise.Question (Question)
 import qualified Types.User as U
 import Types.User.Role (Role (Admin, Instructor, Student))
 
-type GetAllQuizzes =
-  Summary "Get all quizzes in a lesson"
-    :> Get '[JSON] [Quiz]
+type GetAllQuestions =
+  Summary "Get all questions in a lesson"
+    :> Get '[JSON] [Question]
 
-type AddQuiz =
-  Summary "Add a quiz to a lesson"
+type AddQuestion =
+  Summary "Add a question to a lesson"
     :> JWTAuth
-    :> ReqBody '[JSON] NQ.NewQuiz
-    :> PostCreated '[JSON] Quiz
+    :> ReqBody '[JSON] NQ.NewQuestion
+    :> PostCreated '[JSON] Question
 
-type QuizzesAPI =
+type QuestionsAPI =
   Capture' '[Required, Description "Number of the lesson"] "number" Int
-    :> "quizzes"
-    :> ( GetAllQuizzes
-          :<|> AddQuiz
+    :> "questions"
+    :> ( GetAllQuestions
+          :<|> AddQuestion
        )
 
-quizzesServer :: Pool Connection -> Int -> Server QuizzesAPI
-quizzesServer conns courseId lessonNumber =
-  getAllQuizzes
-    :<|> addQuiz
+questionsServer :: Pool Connection -> Int -> Server QuestionsAPI
+questionsServer conns courseId lessonNumber =
+  getAllQuestions
+    :<|> addQuestion
  where
   ensureCourseExists = ensureExists conns courseById courseId
   ensureLessonExists = ensureExists conns (`lessonByNumber` courseId) lessonNumber
   getCurrentCourse = ensureExistsReturning conns courseById courseId
 
-  getAllQuizzes :: Handler [Quiz]
-  getAllQuizzes = do
+  getAllQuestions :: Handler [Question]
+  getAllQuestions = do
     ensureCourseExists
     ensureLessonExists
-    liftIO $ allQuizzes conns courseId lessonNumber
+    liftIO $ allQuestions conns courseId lessonNumber
 
-  addQuiz :: AuthResult AU.AuthUser -> NQ.NewQuiz -> Handler Quiz
-  addQuiz (Authenticated authUser) newQuiz =
+  addQuestion :: AuthResult AU.AuthUser -> NQ.NewQuestion -> Handler Question
+  addQuestion (Authenticated authUser) newQuestion =
     case AU.role authUser of
       Admin -> do
         ensureCourseExists
         ensureLessonExists
-        addQuiz'
+        addQuestion'
       Instructor -> do
         course <- getCurrentCourse
 
         when (AU.id authUser /= (U.id . C.instructor $ course)) (throwError err401)
 
-        addQuiz'
+        addQuestion'
       Student -> throwError err401
    where
-    addQuiz' = do
+    addQuestion' = do
       res <-
         liftIO $
           try $
-            insertQuiz conns courseId lessonNumber newQuiz ::
-          Handler (Either SqlError Quiz)
+            insertQuestion conns courseId lessonNumber newQuestion ::
+          Handler (Either SqlError Question)
 
       case res of
         Left _ -> throwError err400
-        Right quiz -> return quiz
-  addQuiz _ _ = throwError err401
+        Right question -> return question
+  addQuestion _ _ = throwError err401

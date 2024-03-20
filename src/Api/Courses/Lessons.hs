@@ -4,9 +4,9 @@
 
 module Api.Courses.Lessons (LessonsAPI, lessonsServer) where
 
-import Api.Courses.Essays (EssaysAPI, essaysServer)
-import Api.Courses.Questions (QuestionsAPI, questionsServer)
-import Api.Courses.Quizzes (QuizzesAPI, quizzesServer)
+import Api.Courses.Exercises.Essays (EssaysAPI, essaysServer)
+import Api.Courses.Exercises.Questions (QuestionsAPI, questionsServer)
+import Api.Courses.Exercises.Quizzes (QuizzesAPI, quizzesServer)
 import Control.Exception (try)
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO (liftIO))
