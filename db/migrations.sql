@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS solutions;
 DROP TABLE IF EXISTS quizzes;
 DROP TABLE IF EXISTS essays;
 DROP TABLE IF EXISTS questions;
@@ -176,3 +177,11 @@ VALUES (1, 1, 1);
 
 INSERT INTO quizzes (id, question, optionA, optionB, optionC, optionD, correct)
 VALUES (3, 'We can get user input with ...', 'print', 'def', 'input', 'while', 'c');
+
+CREATE TABLE IF NOT EXISTS solutions (
+	userId INT NOT NULL,
+	exerciseId INT NOT NULL,
+	solved TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
+	FOREIGN KEY(userId) REFERENCES users(id),
+	FOREIGN KEY (exerciseId) REFERENCES exercises(id)
+);

@@ -6,6 +6,7 @@ module Api (API, api, server) where
 
 import Api.Auth (AuthAPI, authServer)
 import Api.Courses (CoursesAPI, coursesServer)
+import Api.Exercises (ExercisesAPI, exercisesServer)
 import Api.Universities (UniversitiesAPI, universitiesServer)
 import Api.Users (UsersAPI, usersServer)
 import Control.Lens
@@ -18,7 +19,12 @@ import Servant.Auth.Swagger ()
 import Servant.Swagger
 import Servant.Swagger.UI
 
-type API' = AuthAPI :<|> UsersAPI :<|> UniversitiesAPI :<|> CoursesAPI
+type API' =
+    AuthAPI
+        :<|> UsersAPI
+        :<|> UniversitiesAPI
+        :<|> CoursesAPI
+        :<|> ExercisesAPI
 
 authOpts :: Traversal' Swagger Operation
 authOpts = subOperations (Proxy :: Proxy AuthAPI) (Proxy :: Proxy API')
@@ -31,6 +37,9 @@ universitiesOpts = subOperations (Proxy :: Proxy UniversitiesAPI) (Proxy :: Prox
 
 coursesOpts :: Traversal' Swagger Operation
 coursesOpts = subOperations (Proxy :: Proxy CoursesAPI) (Proxy :: Proxy API')
+
+exercisesOpts :: Traversal' Swagger Operation
+exercisesOpts = subOperations (Proxy :: Proxy ExercisesAPI) (Proxy :: Proxy API')
 
 type API = API' :<|> SwaggerSchemaUI "swagger-ui" "swagger.json"
 
@@ -45,6 +54,7 @@ swaggerDoc =
         & applyTagsFor usersOpts ["users" & description ?~ "Operations on users"]
         & applyTagsFor universitiesOpts ["universities" & description ?~ "Operations on universities"]
         & applyTagsFor coursesOpts ["courses" & description ?~ "Operations on courses"]
+        & applyTagsFor exercisesOpts ["exercises" & description ?~ "Operations on exercises"]
 
 api :: Proxy API
 api = Proxy
@@ -55,6 +65,7 @@ server' conns jwts =
         :<|> usersServer conns
         :<|> universitiesServer conns
         :<|> coursesServer conns
+        :<|> exercisesServer conns
 
 server :: Pool Connection -> JWTSettings -> Server API
 server conns jwts = server' conns jwts :<|> swaggerSchemaUIServer swaggerDoc

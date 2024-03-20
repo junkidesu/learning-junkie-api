@@ -33,6 +33,10 @@ library
       Api.Courses.Exercises.Questions
       Api.Courses.Exercises.Quizzes
       Api.Courses.Lessons
+      Api.Exercises
+      Api.Exercises.Essays
+      Api.Exercises.Questions
+      Api.Exercises.Quizzes
       Api.Universities
       Api.Universities.Courses
       Api.Universities.Instructors
@@ -75,6 +79,7 @@ library
       Types.Lesson
       Types.Lesson.EditLesson
       Types.Lesson.NewLesson
+      Types.Solutions.Question
       Types.University
       Types.University.NewUniversity
       Types.User
