@@ -4,6 +4,7 @@
 
 module Api.Courses.Lessons (LessonsAPI, lessonsServer) where
 
+import Api.Courses.Essays (EssaysAPI, essaysServer)
 import Api.Courses.Questions (QuestionsAPI, questionsServer)
 import Control.Exception (try)
 import Control.Monad (when)
@@ -61,6 +62,7 @@ type LessonsAPI =
           :<|> DeleteLesson
           :<|> EditLesson
           :<|> QuestionsAPI
+          :<|> EssaysAPI
        )
 
 lessonsServer :: Pool Connection -> Server LessonsAPI
@@ -71,6 +73,7 @@ lessonsServer conns courseId =
     :<|> deleteLessonByNumber
     :<|> editLesson
     :<|> questionsServer conns courseId
+    :<|> essaysServer conns courseId
  where
   -- helper function to throw error if course does not exist
   ensureCourseExists :: Handler ()

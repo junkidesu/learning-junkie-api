@@ -29,6 +29,7 @@ library
       Api.Auth
       Api.Courses
       Api.Courses.Enrollments
+      Api.Courses.Essays
       Api.Courses.Lessons
       Api.Courses.Questions
       Api.Universities
@@ -38,6 +39,7 @@ library
       Database
       Database.Operations.Courses
       Database.Operations.Courses.Enrollments
+      Database.Operations.Exercises.Essays
       Database.Operations.Exercises.Questions
       Database.Operations.Lessons
       Database.Operations.Universities
@@ -45,6 +47,7 @@ library
       Database.Operations.Users
       Database.Queries.Courses
       Database.Queries.Courses.Enrollments
+      Database.Queries.Exercises.Essays
       Database.Queries.Exercises.Questions
       Database.Queries.Lessons
       Database.Queries.Universities
@@ -58,6 +61,8 @@ library
       Types.Course
       Types.Course.Difficulty
       Types.Course.NewCourse
+      Types.Exercise.Essay
+      Types.Exercise.NewEssay
       Types.Exercise.NewQuestion
       Types.Exercise.Question
       Types.Instructor
