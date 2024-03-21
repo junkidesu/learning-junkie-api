@@ -44,6 +44,7 @@ library
       Database
       Database.Operations.Courses
       Database.Operations.Courses.Enrollments
+      Database.Operations.Exercises
       Database.Operations.Exercises.Essays
       Database.Operations.Exercises.Questions
       Database.Operations.Exercises.Quizzes
@@ -53,6 +54,7 @@ library
       Database.Operations.Users
       Database.Queries.Courses
       Database.Queries.Courses.Enrollments
+      Database.Queries.Exercises
       Database.Queries.Exercises.Essays
       Database.Queries.Exercises.Questions
       Database.Queries.Exercises.Quizzes
@@ -68,7 +70,11 @@ library
       Types.Course
       Types.Course.Difficulty
       Types.Course.NewCourse
+      Types.Exercise
       Types.Exercise.Choice
+      Types.Exercise.EditEssay
+      Types.Exercise.EditQuestion
+      Types.Exercise.EditQuiz
       Types.Exercise.Essay
       Types.Exercise.NewEssay
       Types.Exercise.NewQuestion

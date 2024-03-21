@@ -16,6 +16,16 @@ allEssaysQ =
                 , "WHERE ex.course = ? AND ex.lesson = ?"
                 ]
 
+essaysByIdQ :: Query
+essaysByIdQ =
+        toSqlQuery
+                [ "SELECT ex.id, ex.grade, es.task, es.model"
+                , "FROM essays es"
+                , "JOIN exercises ex"
+                , "ON es.id = ex.id"
+                , "WHERE ex.id = ?"
+                ]
+
 insertEssayQ :: Query
 insertEssayQ =
         toSqlQuery
@@ -32,5 +42,19 @@ insertEssayQ =
                 , "SELECT ex.id, ex.grade, es.task, es.model"
                 , "FROM inserted_essay es"
                 , "JOIN inserted_exercise ex"
+                , "ON es.id = ex.id"
+                ]
+
+updateEssayQ :: Query
+updateEssayQ =
+        toSqlQuery
+                [ "WITH updated_essay AS ("
+                , "UPDATE essays"
+                , "SET task = ?, model = ?"
+                , "WHERE id = ?"
+                , "RETURNING *)"
+                , "SELECT ex.id, ex.grade, es.task, es.model"
+                , "FROM updated_essay es"
+                , "JOIN exercises ex"
                 , "ON es.id = ex.id"
                 ]

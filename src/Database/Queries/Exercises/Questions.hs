@@ -16,6 +16,16 @@ allQuestionsQ =
                 , "WHERE e.course = ? AND e.lesson = ?"
                 ]
 
+questionByIdQ :: Query
+questionByIdQ =
+        toSqlQuery
+                [ "SELECT e.id, e.grade, q.question, q.answer"
+                , "FROM questions q"
+                , "JOIN exercises e"
+                , "ON q.id = e.id"
+                , "WHERE e.id = ?"
+                ]
+
 insertQuestionQ :: Query
 insertQuestionQ =
         toSqlQuery
@@ -33,4 +43,18 @@ insertQuestionQ =
                 , "FROM inserted_exercise e"
                 , "JOIN inserted_question q"
                 , "ON e.id = q.id"
+                ]
+
+updateQuestionQ :: Query
+updateQuestionQ =
+        toSqlQuery
+                [ "WITH updated_question AS ("
+                , "UPDATE questions"
+                , "SET question = ?, answer = ?"
+                , "WHERE id = ?"
+                , "RETURNING *)"
+                , "SELECT e.id, e.grade, q.question, q.answer"
+                , "FROM updated_question q"
+                , "JOIN exercises e"
+                , "ON q.id = e.id"
                 ]

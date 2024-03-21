@@ -125,7 +125,7 @@ VALUES
 (3, 'Systems of Linear Equations', 'Learn to solve systems of linear equations.', '**Markdown content**', 4);
 
 CREATE TABLE IF NOT EXISTS exercises (
-	id SERIAL PRIMARY KEY,
+	id SERIAL PRIMARY KEY ,
 	grade INT NOT NULL DEFAULT 1,
 	lesson INT NOT NULL,
 	course INT NOT NULL,
@@ -133,21 +133,21 @@ CREATE TABLE IF NOT EXISTS exercises (
 );
 
 CREATE TABLE IF NOT EXISTS questions (
-	id INT NOT NULL PRIMARY KEY,
+	id INT NOT NULL PRIMARY KEY REFERENCES exercises ON DELETE CASCADE,
 	question TEXT NOT NULL,
 	answer TEXT NOT NULL,
 	FOREIGN KEY (id) REFERENCES exercises(id)
 );
 
 CREATE TABLE IF NOT EXISTS essays (
-	id INT NOT NULL PRIMARY KEY,
+	id INT NOT NULL PRIMARY KEY REFERENCES exercises ON DELETE CASCADE,
 	task TEXT NOT NULL,
 	model TEXT NOT NULL,
 	FOREIGN KEY (id) REFERENCES exercises(id)
 );
 
 CREATE TABLE IF NOT EXISTS quizzes (
-	id INT NOT NULL PRIMARY KEY,
+	id INT NOT NULL PRIMARY KEY REFERENCES exercises ON DELETE CASCADE,
 	question TEXT NOT NULL,
 	optionA TEXT NOT NULL,
 	optionB TEXT NOT NULL,
@@ -181,7 +181,7 @@ VALUES (3, 'We can get user input with ...', 'print', 'def', 'input', 'while', '
 CREATE TABLE IF NOT EXISTS solutions (
 	userId INT NOT NULL,
 	exerciseId INT NOT NULL,
-	solved TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
+	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
 	FOREIGN KEY(userId) REFERENCES users(id),
 	FOREIGN KEY (exerciseId) REFERENCES exercises(id)
 );
