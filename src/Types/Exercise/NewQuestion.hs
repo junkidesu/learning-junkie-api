@@ -9,7 +9,8 @@ import Database.PostgreSQL.Simple (FromRow)
 import GHC.Generics (Generic)
 
 data NewQuestion = NewQuestion
-    { grade :: !(Maybe Int)
+    { title :: !(Maybe Text)
+    , grade :: !(Maybe Int)
     , question :: !Text
     , answer :: !Text
     }

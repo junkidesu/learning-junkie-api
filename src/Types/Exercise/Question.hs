@@ -10,6 +10,7 @@ import GHC.Generics (Generic)
 
 data Question = Question
     { id :: !Int
+    , title :: !(Maybe Text)
     , grade :: !Int
     , question :: !Text
     , answer :: !Text

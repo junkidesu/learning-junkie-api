@@ -9,7 +9,7 @@ import Database.PostgreSQL.Simple (Query)
 allQuizzesQ :: Query
 allQuizzesQ =
         toSqlQuery
-                [ "SELECT ex.id, ex.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct"
+                [ "SELECT ex.id, ex.title, ex.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct"
                 , "FROM quizzes q"
                 , "JOIN exercises ex"
                 , "ON q.id = ex.id"
@@ -19,7 +19,7 @@ allQuizzesQ =
 quizByIdQ :: Query
 quizByIdQ =
         toSqlQuery
-                [ "SELECT ex.id, ex.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct"
+                [ "SELECT ex.id, ex.title, ex.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct"
                 , "FROM quizzes q"
                 , "JOIN exercises ex"
                 , "ON q.id = ex.id"
@@ -30,7 +30,7 @@ insertQuizQ :: Query
 insertQuizQ =
         toSqlQuery
                 [ "WITH inserted_exercise AS ("
-                , "INSERT INTO exercises (grade, course, lesson)"
+                , "INSERT INTO exercises (grade, title, course, lesson)"
                 , "VALUES (?, ?, ?)"
                 , "RETURNING *),"
                 , "inserted_quiz AS ("
@@ -39,7 +39,7 @@ insertQuizQ =
                 , "(SELECT id FROM inserted_exercise),"
                 , "?, ?, ?, ?, ?, ?)"
                 , "RETURNING *)"
-                , "SELECT ex.id, ex.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct"
+                , "SELECT ex.id, ex.title, ex.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct"
                 , "FROM inserted_quiz q"
                 , "JOIN inserted_exercise ex"
                 , "ON q.id = ex.id"
@@ -53,7 +53,7 @@ updateQuizQ =
                 , "SET question = ?, optionA = ?, optionB = ?, optionC = ?, optionD = ?, correct = ?"
                 , "WHERE id = ?"
                 , "RETURNING *)"
-                , "SELECT e.id, e.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct"
+                , "SELECT e.id, e.title, e.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct"
                 , "FROM updated_quiz q"
                 , "JOIN exercises e"
                 , "ON q.id = e.id"

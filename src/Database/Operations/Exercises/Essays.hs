@@ -20,6 +20,7 @@ insertEssay conns courseId lessonNumber newEssay =
                 conns
                 insertEssayQ
                 ( NE.grade newEssay
+                , NE.title newEssay
                 , courseId
                 , lessonNumber
                 , NE.task newEssay

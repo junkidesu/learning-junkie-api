@@ -9,7 +9,7 @@ import Database.PostgreSQL.Simple (Query)
 exerciseByIdQ :: Query
 exerciseByIdQ =
         toSqlQuery
-                [ "SELECT e.id, e.grade,"
+                [ "SELECT e.id, e.title, e.grade,"
                 , "c.id, c.title, c.description, c.difficulty,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash"

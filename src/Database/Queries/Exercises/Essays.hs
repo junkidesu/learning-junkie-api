@@ -9,7 +9,7 @@ import Database.PostgreSQL.Simple (Query)
 allEssaysQ :: Query
 allEssaysQ =
         toSqlQuery
-                [ "SELECT ex.id, ex.grade, es.task, es.model"
+                [ "SELECT ex.id, ex.title, ex.grade, es.task, es.model"
                 , "FROM essays es"
                 , "JOIN exercises ex"
                 , "ON es.id = ex.id"
@@ -19,7 +19,7 @@ allEssaysQ =
 essaysByIdQ :: Query
 essaysByIdQ =
         toSqlQuery
-                [ "SELECT ex.id, ex.grade, es.task, es.model"
+                [ "SELECT ex.id, ex.title, ex.grade, es.task, es.model"
                 , "FROM essays es"
                 , "JOIN exercises ex"
                 , "ON es.id = ex.id"
@@ -30,8 +30,8 @@ insertEssayQ :: Query
 insertEssayQ =
         toSqlQuery
                 [ "WITH inserted_exercise AS ("
-                , "INSERT INTO exercises (grade, course, lesson)"
-                , "VALUES (?, ?, ?)"
+                , "INSERT INTO exercises (grade, title, course, lesson)"
+                , "VALUES (?, ?, ?, ?)"
                 , "RETURNING *),"
                 , "inserted_essay AS ("
                 , "INSERT INTO essays (id, task, model)"
@@ -39,7 +39,7 @@ insertEssayQ =
                 , "(SELECT id FROM inserted_exercise),"
                 , "?, ?)"
                 , "RETURNING *)"
-                , "SELECT ex.id, ex.grade, es.task, es.model"
+                , "SELECT ex.id, ex.title, ex.grade, es.task, es.model"
                 , "FROM inserted_essay es"
                 , "JOIN inserted_exercise ex"
                 , "ON es.id = ex.id"
@@ -53,7 +53,7 @@ updateEssayQ =
                 , "SET task = ?, model = ?"
                 , "WHERE id = ?"
                 , "RETURNING *)"
-                , "SELECT ex.id, ex.grade, es.task, es.model"
+                , "SELECT ex.id, ex.title, ex.grade, es.task, es.model"
                 , "FROM updated_essay es"
                 , "JOIN exercises ex"
                 , "ON es.id = ex.id"

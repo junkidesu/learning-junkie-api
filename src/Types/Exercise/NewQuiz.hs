@@ -9,7 +9,8 @@ import GHC.Generics
 import Types.Exercise.Choice
 
 data NewQuiz = NewQuiz
-    { grade :: !Int
+    { title :: !(Maybe Text)
+    , grade :: !(Maybe Int)
     , question :: !Text
     , options :: Choice -> Text
     , correct :: Choice

@@ -20,6 +20,7 @@ insertQuestion conns courseId lessonNumber newQuestion =
                 conns
                 insertQuestionQ
                 ( NQ.grade newQuestion
+                , NQ.title newQuestion
                 , courseId
                 , lessonNumber
                 , NQ.question newQuestion

@@ -8,7 +8,8 @@ import Data.Text (Text)
 import GHC.Generics (Generic)
 
 data NewEssay = NewEssay
-    { grade :: !Int
+    { title :: !(Maybe Text)
+    , grade :: !(Maybe Int)
     , task :: !Text
     , model :: !Text
     }

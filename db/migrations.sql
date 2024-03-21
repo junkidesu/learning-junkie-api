@@ -126,6 +126,7 @@ VALUES
 
 CREATE TABLE IF NOT EXISTS exercises (
 	id SERIAL PRIMARY KEY ,
+	title TEXT,
 	grade INT NOT NULL DEFAULT 1,
 	lesson INT NOT NULL,
 	course INT NOT NULL,
@@ -158,22 +159,22 @@ CREATE TABLE IF NOT EXISTS quizzes (
 );
 
 -- question
-INSERT INTO exercises (grade, lesson, course)
-VALUES (1, 1, 1);
+INSERT INTO exercises (grade, title, lesson, course)
+VALUES (1, 'Your first programming exercise', 1, 1);
 
 INSERT INTO questions (id, question, answer)
 VALUES (1, 'What data type is the value "Hello world?"', 'string');
 
 -- essays
-INSERT INTO exercises (grade, lesson, course)
-VALUES (3, 1, 1);
+INSERT INTO exercises (grade, title, lesson, course)
+VALUES (3, 'A bit of history', 1, 1);
 
 INSERT INTO essays (id, task, model)
 VALUES (2, 'Write an essay on the history of the Python programming language.', 'This is a model answer to the essay.');
 
 -- quiz
-INSERT INTO exercises (grade, lesson, course)
-VALUES (1, 1, 1);
+INSERT INTO exercises (grade, title, lesson, course)
+VALUES (1, 'Asking users', 1, 1);
 
 INSERT INTO quizzes (id, question, optionA, optionB, optionC, optionD, correct)
 VALUES (3, 'We can get user input with ...', 'print', 'def', 'input', 'while', 'c');

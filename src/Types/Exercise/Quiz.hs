@@ -13,6 +13,7 @@ import Types.Exercise.Choice
 
 data Quiz = Quiz
     { id :: !Int
+    , title :: !(Maybe Text)
     , grade :: !Int
     , question :: !Text
     , options :: Choice -> Text
@@ -28,6 +29,7 @@ instance FromRow Quiz where
     fromRow =
         Quiz
             <$> field
+            <*> field
             <*> field
             <*> field
             <*> ( do

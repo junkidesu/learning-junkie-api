@@ -10,6 +10,7 @@ import GHC.Generics (Generic)
 
 data Essay = Essay
     { id :: !Int
+    , title :: !(Maybe Text)
     , grade :: !Int
     , task :: !Text
     , model :: !Text
