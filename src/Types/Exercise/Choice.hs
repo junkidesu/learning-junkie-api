@@ -14,7 +14,9 @@ import qualified Data.ByteString.Char8 as BS
 import Data.Data (Proxy (Proxy))
 import Data.Swagger (HasProperties (properties), HasRequired (required), NamedSchema (NamedSchema), ToSchema (declareNamedSchema), declareSchemaRef)
 import Data.Text (Text)
+import Database.PostgreSQL.Simple (FromRow)
 import Database.PostgreSQL.Simple.FromField
+import Database.PostgreSQL.Simple.FromRow (FromRow (fromRow), RowParser, field)
 import Database.PostgreSQL.Simple.ToField (Action (Escape), ToField (toField))
 import Database.PostgreSQL.Simple.TypeInfo.Static (text)
 import GHC.Generics (Generic)
@@ -50,6 +52,18 @@ instance FromField Choice where
 instance ToJSON (Choice -> Text) where
     toJSON :: (Choice -> Text) -> Value
     toJSON os = object ["A" .= os A, "B" .= os B, "C" .= os C, "D" .= os D]
+
+instance FromRow (Choice -> Text) where
+    fromRow = do
+        optionA <- field :: RowParser Text
+        optionB <- field :: RowParser Text
+        optionC <- field :: RowParser Text
+        optionD <- field :: RowParser Text
+        return $ \case
+            A -> optionA
+            B -> optionB
+            C -> optionC
+            D -> optionD
 
 instance FromJSON (Choice -> Text) where
     parseJSON :: Value -> Parser (Choice -> Text)

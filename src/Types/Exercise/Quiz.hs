@@ -1,6 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE LambdaCase #-}
 
 module Types.Exercise.Quiz (Quiz (..)) where
 
@@ -28,19 +27,9 @@ instance FromRow Quiz where
     fromRow :: RowParser Quiz
     fromRow =
         Quiz
-            <$> field
-            <*> field
-            <*> field
-            <*> field
-            <*> ( do
-                    optionA <- field :: RowParser Text
-                    optionB <- field :: RowParser Text
-                    optionC <- field :: RowParser Text
-                    optionD <- field :: RowParser Text
-                    return $ \case
-                        A -> optionA
-                        B -> optionB
-                        C -> optionC
-                        D -> optionD
-                )
-            <*> field
+            <$> field -- id
+            <*> field -- title
+            <*> field -- grade
+            <*> field -- question
+            <*> fromRow -- options
+            <*> field -- correct
