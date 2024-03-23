@@ -81,14 +81,16 @@ library
       Types.Exercise.NewQuiz
       Types.Exercise.Question
       Types.Exercise.Quiz
-      Types.Gradable
       Types.Instructor
       Types.Lesson
       Types.Lesson.EditLesson
       Types.Lesson.NewLesson
+      Types.Solution.Essay
+      Types.Solution.ExerciseCheck
       Types.Solution.Question
+      Types.Solution.Quiz
       Types.Solution.Response
-      Types.Solutions.Question
+      Types.Solvable
       Types.University
       Types.University.NewUniversity
       Types.User

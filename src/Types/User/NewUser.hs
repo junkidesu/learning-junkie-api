@@ -8,7 +8,6 @@ import Data.Text (Text)
 import Data.Time (Day)
 import GHC.Generics (Generic)
 import Types.User.Education (Education)
-import Types.User.Role (Role)
 
 data NewUser = NewUser
     { name :: !(Maybe Text)

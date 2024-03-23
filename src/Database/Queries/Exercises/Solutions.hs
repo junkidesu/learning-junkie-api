@@ -12,4 +12,5 @@ insertSolutionQ =
                 [ "INSERT INTO solutions"
                 , "(userId, exerciseId, grade)"
                 , "VALUES (?, ?, ?)"
+                , "RETURNING grade"
                 ]

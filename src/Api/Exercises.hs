@@ -27,6 +27,9 @@ import Types.Exercise.EditQuiz (EditQuiz)
 import Types.Exercise.Essay (Essay)
 import Types.Exercise.Question (Question)
 import Types.Exercise.Quiz (Quiz)
+import Types.Solution.Essay (EssaySolution)
+import Types.Solution.Question (QuestionSolution)
+import Types.Solution.Quiz (QuizSolution)
 import qualified Types.User as U
 import Types.User.Role (Role (Admin, Instructor, Student))
 
@@ -41,11 +44,11 @@ type DeleteExercise =
     :> Capture' '[Required, Description "ID of the exercise"] "id" Int
     :> Verb 'DELETE 204 '[JSON] NoContent
 
-type QuestionsAPI = ExerciseAPI Question EditQuestion
+type QuestionsAPI = ExerciseAPI Question EditQuestion QuestionSolution
 
-type EssaysAPI = ExerciseAPI Essay EditEssay
+type EssaysAPI = ExerciseAPI Essay EditEssay EssaySolution
 
-type QuizzesAPI = ExerciseAPI Quiz EditQuiz
+type QuizzesAPI = ExerciseAPI Quiz EditQuiz QuizSolution
 
 type ExercisesAPI =
   ( "exercises"
@@ -93,6 +96,6 @@ exercisesServer conns =
   deleteExerciseById _ _ = throwError err401
 
   ensureExerciseExists = ensureExistsReturning conns exerciseById
-  questionsServer = exerciseServer (questionById conns) (updateQuestion conns) ensureExerciseExists
-  essaysServer = exerciseServer (essayById conns) (updateEssay conns) ensureExerciseExists
-  quizzesServer = exerciseServer (quizById conns) (updateQuiz conns) ensureExerciseExists
+  questionsServer = exerciseServer conns questionById updateQuestion
+  essaysServer = exerciseServer conns essayById updateEssay
+  quizzesServer = exerciseServer conns quizById updateQuiz

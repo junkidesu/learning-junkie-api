@@ -54,6 +54,7 @@ instance ToJSON (Choice -> Text) where
     toJSON os = object ["A" .= os A, "B" .= os B, "C" .= os C, "D" .= os D]
 
 instance FromRow (Choice -> Text) where
+    fromRow :: RowParser (Choice -> Text)
     fromRow = do
         optionA <- field :: RowParser Text
         optionB <- field :: RowParser Text

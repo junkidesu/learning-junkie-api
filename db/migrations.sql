@@ -182,7 +182,16 @@ VALUES (3, 'We can get user input with ...', 'print', 'def', 'input', 'while', '
 CREATE TABLE IF NOT EXISTS solutions (
 	userId INT NOT NULL,
 	exerciseId INT NOT NULL,
+	grade INT NOT NULL,
 	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
 	FOREIGN KEY(userId) REFERENCES users(id),
+	FOREIGN KEY (exerciseId) REFERENCES exercises(id)
+);
+
+CREATE TABLE IF NOT EXISTS pending_solutions (
+	userId INT NOT NULL,
+	exerciseId INT NOT NULL,
+	answer TEXT NOT NULL,
+	FOREIGN KEY (userId) REFERENCES users(id),
 	FOREIGN KEY (exerciseId) REFERENCES exercises(id)
 );

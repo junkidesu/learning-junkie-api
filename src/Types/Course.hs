@@ -1,16 +1,16 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE InstanceSigs #-}
 
 module Types.Course (Course (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Swagger (ToSchema)
 import Data.Text (Text)
-import Database.PostgreSQL.Simple (FromRow)
-import Database.PostgreSQL.Simple.FromRow (FromRow (fromRow), field)
+import Database.PostgreSQL.Simple.FromRow
 import GHC.Generics (Generic)
 import Types.Course.Difficulty (Difficulty)
-import Types.University (University (University))
-import Types.User (User (User))
+import Types.University (University)
+import Types.User (User)
 
 data Course = Course
     { id :: !Int
@@ -25,29 +25,14 @@ data Course = Course
 instance FromJSON Course
 instance ToJSON Course
 instance FromRow Course where
+    fromRow :: RowParser Course
     fromRow =
         Course
-            <$> field
-            <*> field
-            <*> field
-            <*> field
-            <*> ( University
-                    <$> field
-                    <*> field
-                    <*> field
-                    <*> field
-                    <*> field
-                    <*> field
-                )
-            <*> ( User
-                    <$> field
-                    <*> field
-                    <*> field
-                    <*> field
-                    <*> field
-                    <*> field
-                    <*> field
-                    <*> field
-                )
+            <$> field -- id
+            <*> field -- title
+            <*> field -- description
+            <*> field -- difficulty
+            <*> fromRow -- university
+            <*> fromRow -- instructor
 
 instance ToSchema Course
