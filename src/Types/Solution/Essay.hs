@@ -6,6 +6,7 @@ module Types.Solution.Essay (EssaySolution (..)) where
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Swagger (ToSchema)
 import Data.Text (Text)
+import Database.PostgreSQL.Simple (FromRow)
 import GHC.Generics (Generic)
 import qualified Types.Exercise.Essay as E
 import Types.Solution.ExerciseCheck (ExerciseCheck (ExercisePending))
@@ -22,3 +23,5 @@ instance ToSchema EssaySolution
 
 instance Solvable E.Essay EssaySolution where
     checkSolution _ _ = ExercisePending
+
+instance FromRow EssaySolution

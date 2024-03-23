@@ -12,7 +12,7 @@ import Data.Pool (Pool)
 import Database (ensureExistsReturning)
 import Database.Operations.Courses.Enrollments (userIsEnrolled)
 import Database.Operations.Exercises (exerciseById)
-import Database.Operations.Exercises.Solutions (insertSolution)
+import Database.Operations.Exercises.Solutions (insertSolution, userDidSolve)
 import Database.PostgreSQL.Simple (Connection, SqlError)
 import Servant
 import Servant.Auth.Server (AuthResult (Authenticated))
@@ -46,22 +46,32 @@ type PostSolution sol =
     :> ReqBody '[JSON] sol
     :> Post '[JSON] Response
 
+type GetSolution sol =
+  Summary "View solution to the exercise of given kind"
+    :> JWTAuth
+    :> Capture' '[Required, Description "ID of the exercise"] "id" Int
+    :> "solution"
+    :> Get '[JSON] sol
+
 type ExerciseAPI ex editEx sol =
   GetExerciseById ex
     :<|> EditExercise ex editEx
     :<|> PostSolution sol
+    :<|> GetSolution sol
 
 exerciseServer ::
   (Solvable ex sol) =>
   Pool Connection ->
   (Pool Connection -> Int -> IO (Maybe ex)) ->
   (Pool Connection -> Int -> editEx -> IO (Maybe ex)) ->
+  (Pool Connection -> Int -> IO (Maybe sol)) ->
   Server
     (ExerciseAPI ex editEx sol)
 exerciseServer
   conns
   exerciseById'
-  updateExercise =
+  updateExercise
+  solutionById =
     getExerciseById conns exerciseById'
       :<|> editExerciseById
         conns
@@ -71,6 +81,7 @@ exerciseServer
         conns
         exerciseById'
         getCurrentExercise
+      :<|> getSolution conns solutionById
    where
     getCurrentExercise = ensureExistsReturning conns exerciseById
 
@@ -122,6 +133,27 @@ editExerciseById
             Just exercise -> return exercise
       Student -> throwError err401
 editExerciseById _ _ _ _ _ _ = throwError err401
+
+getSolution :: Pool Connection -> (Pool Connection -> Int -> IO (Maybe sol)) -> AuthResult AU.AuthUser -> Int -> Handler sol
+getSolution conns solutionById (Authenticated authUser) exerciseId =
+  case AU.role authUser of
+    Admin -> do
+      mbSolution <- liftIO $ solutionById conns exerciseId
+
+      case mbSolution of
+        Nothing -> throwError err404
+        Just solution -> return solution
+    _ -> do
+      userSolved <- liftIO $ userDidSolve conns (AU.id authUser) exerciseId
+
+      unless userSolved $ throwError err401
+
+      mbSolution <- liftIO $ solutionById conns exerciseId
+
+      case mbSolution of
+        Nothing -> throwError err404
+        Just solution -> return solution
+getSolution _ _ _ _ = undefined
 
 postSolution ::
   (Solvable ex sol) =>

@@ -13,6 +13,7 @@ import Database.Operations.Exercises (deleteExercise, exerciseById)
 import Database.Operations.Exercises.Essays (essayById, updateEssay)
 import Database.Operations.Exercises.Questions (questionById, updateQuestion)
 import Database.Operations.Exercises.Quizzes (quizById, updateQuiz)
+import Database.Operations.Exercises.Solutions (essayModelSolution, questionSolution, quizSolution)
 import Database.PostgreSQL.Simple (Connection)
 import Servant
 import Servant.Auth.Server (AuthResult (Authenticated))
@@ -96,6 +97,6 @@ exercisesServer conns =
   deleteExerciseById _ _ = throwError err401
 
   ensureExerciseExists = ensureExistsReturning conns exerciseById
-  questionsServer = exerciseServer conns questionById updateQuestion
-  essaysServer = exerciseServer conns essayById updateEssay
-  quizzesServer = exerciseServer conns quizById updateQuiz
+  questionsServer = exerciseServer conns questionById updateQuestion questionSolution
+  essaysServer = exerciseServer conns essayById updateEssay essayModelSolution
+  quizzesServer = exerciseServer conns quizById updateQuiz quizSolution

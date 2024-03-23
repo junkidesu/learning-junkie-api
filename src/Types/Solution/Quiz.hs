@@ -5,6 +5,7 @@ module Types.Solution.Quiz (QuizSolution (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Swagger (ToSchema)
+import Database.PostgreSQL.Simple (FromRow)
 import GHC.Generics (Generic)
 import Types.Exercise.Choice (Choice)
 import qualified Types.Exercise.Quiz as Q
@@ -25,3 +26,5 @@ instance Solvable Q.Quiz QuizSolution where
         if Q.correct quiz == answer solution
             then ExerciseSuccess
             else ExerciseFailure
+
+instance FromRow QuizSolution
