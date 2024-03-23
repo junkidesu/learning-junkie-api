@@ -13,7 +13,7 @@ userCoursesByIdQ =
                 , "c.id, c.title, c.description, c.difficulty,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
-                , "COUNT(ex.id) totalExercises"
+                , "COUNT(ex.id) exercisesCount"
                 , "FROM courses c"
                 , "JOIN universities u"
                 , "ON c.university = u.id"
