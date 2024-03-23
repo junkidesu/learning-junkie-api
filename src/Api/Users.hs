@@ -4,6 +4,7 @@
 
 module Api.Users (UsersAPI, usersServer) where
 
+import Api.Users.Courses (CoursesAPI, coursesServer)
 import Control.Exception (try)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
@@ -44,6 +45,7 @@ type UsersAPI =
                 :<|> CreateUser
                 :<|> GetUserById
                 :<|> DeleteUserById
+                :<|> CoursesAPI
            )
 
 usersServer :: Pool Connection -> Server UsersAPI
@@ -52,6 +54,7 @@ usersServer conns =
         :<|> createUser
         :<|> getUserById
         :<|> deleteUserById
+        :<|> coursesServer conns
   where
     getAllUsers :: Handler [User]
     getAllUsers = liftIO $ allUsers conns

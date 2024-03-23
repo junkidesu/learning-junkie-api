@@ -39,6 +39,7 @@ library
       Api.Universities.Courses
       Api.Universities.Instructors
       Api.Users
+      Api.Users.Courses
       Database
       Database.Operations.Courses
       Database.Operations.Courses.Enrollments
@@ -51,6 +52,7 @@ library
       Database.Operations.Universities
       Database.Operations.Universities.Instructors
       Database.Operations.Users
+      Database.Operations.Users.Courses
       Database.Queries.Courses
       Database.Queries.Courses.Enrollments
       Database.Queries.Exercises
@@ -62,6 +64,7 @@ library
       Database.Queries.Universities
       Database.Queries.Universities.Instructors
       Database.Queries.Users
+      Database.Queries.Users.Courses
       Lib
       Types.Auth.Credentials
       Types.Auth.JWTAuth
