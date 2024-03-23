@@ -6,10 +6,11 @@
 module Api.Exercises.Exercise (ExerciseAPI, exerciseServer) where
 
 import Control.Exception (try)
-import Control.Monad (when)
+import Control.Monad (unless, when)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database (ensureExistsReturning)
+import Database.Operations.Courses.Enrollments (userIsEnrolled)
 import Database.Operations.Exercises (exerciseById)
 import Database.Operations.Exercises.Solutions (insertSolution)
 import Database.PostgreSQL.Simple (Connection, SqlError)
@@ -145,12 +146,15 @@ postSolution
       Just exercise -> do
         let res = checkSolution exercise solution
 
+        currentExercise <- getCurrentExercise exerciseId
+        isEnrolled <- liftIO $ userIsEnrolled conns (C.id . E.course $ currentExercise) (AU.id authUser)
+
+        unless isEnrolled (throwError err401)
+
         case res of
           ExerciseFailure -> return $ Response ExerciseFailure Nothing
           ExercisePending -> return $ Response ExercisePending Nothing
           ExerciseSuccess -> do
-            currentExercise <- getCurrentExercise exerciseId
-
             grade <-
               liftIO $
                 insertSolution
