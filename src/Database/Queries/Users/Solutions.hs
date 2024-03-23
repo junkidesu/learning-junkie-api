@@ -1,18 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
 
-module Database.Queries.Exercises where
+module Database.Queries.Users.Solutions where
 
 import Database (toSqlQuery)
 import Database.PostgreSQL.Simple (Query)
 
-exerciseByIdQ :: Query
-exerciseByIdQ =
+userSolutionsQ :: Query
+userSolutionsQ =
         toSqlQuery
                 [ "SELECT e.id, e.title, e.grade,"
                 , "c.id, c.title, c.description, c.difficulty,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
-                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "ins.id, ins.joined, ins.name, ins.birthday, ins.education, ins.role, ins.email, ins.passwordHash,"
                 , "(SELECT COUNT(exercises.id)"
                 , "FROM courses"
                 , "LEFT JOIN exercises"
@@ -21,18 +21,16 @@ exerciseByIdQ =
                 , "FROM courses"
                 , "LEFT JOIN enrollments"
                 , "ON courses.id = courseId WHERE courses.id = c.id) as enrollmentsCount"
-                , "FROM exercises e"
+                , "FROM users us"
+                , "JOIN solutions s"
+                , "ON us.id = s.userId"
+                , "JOIN exercises e"
+                , "ON e.id = s.exerciseId"
                 , "JOIN courses c"
-                , "ON e.course = c.id"
-                , "JOIN users us"
-                , "ON us.id = c.instructor"
+                , "ON c.id = e.course"
                 , "JOIN universities u"
                 , "ON u.id = c.university"
-                , "WHERE e.id = ?"
-                ]
-deleteExerciseQ :: Query
-deleteExerciseQ =
-        toSqlQuery
-                [ "DELETE FROM exercises"
-                , "WHERE id = ?"
+                , "JOIN users ins"
+                , "ON c.instructor = ins.id"
+                , "WHERE us.id = ?"
                 ]
