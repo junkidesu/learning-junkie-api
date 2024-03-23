@@ -40,6 +40,7 @@ library
       Api.Universities.Instructors
       Api.Users
       Api.Users.Courses
+      Api.Users.Progress
       Api.Users.Solutions
       Database
       Database.Operations.Courses
@@ -54,6 +55,7 @@ library
       Database.Operations.Universities.Instructors
       Database.Operations.Users
       Database.Operations.Users.Courses
+      Database.Operations.Users.Progress
       Database.Operations.Users.Solutions
       Database.Queries.Courses
       Database.Queries.Courses.Enrollments
@@ -67,6 +69,7 @@ library
       Database.Queries.Universities.Instructors
       Database.Queries.Users
       Database.Queries.Users.Courses
+      Database.Queries.Users.Progress
       Database.Queries.Users.Solutions
       Lib
       Types.Auth.Credentials
