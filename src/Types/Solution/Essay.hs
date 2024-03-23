@@ -9,7 +9,7 @@ import Data.Text (Text)
 import Database.PostgreSQL.Simple (FromRow)
 import GHC.Generics (Generic)
 import qualified Types.Exercise.Essay as E
-import Types.Solution.ExerciseCheck (ExerciseCheck (ExercisePending))
+import Types.Solution.ExerciseCheck (ExerciseCheck (ExerciseSuccess))
 import Types.Solvable (Solvable (checkSolution))
 
 newtype EssaySolution = EssaySolution
@@ -22,6 +22,6 @@ instance ToJSON EssaySolution
 instance ToSchema EssaySolution
 
 instance Solvable E.Essay EssaySolution where
-    checkSolution _ _ = ExercisePending
+    checkSolution _ _ = ExerciseSuccess
 
 instance FromRow EssaySolution

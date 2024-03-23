@@ -11,7 +11,7 @@ import Types.Course (Course)
 
 data Progress = Progress
     { course :: !Course
-    , solvedExercises :: !Int
+    , obtainedPoints :: !Int
     }
     deriving (Show, Generic)
 

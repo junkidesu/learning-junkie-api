@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS completions;
 DROP TABLE IF EXISTS solutions;
 DROP TABLE IF EXISTS quizzes;
 DROP TABLE IF EXISTS essays;
@@ -125,9 +126,10 @@ VALUES
 (3, 'Systems of Linear Equations', 'Learn to solve systems of linear equations.', '**Markdown content**', 4);
 
 CREATE TABLE IF NOT EXISTS exercises (
-	id SERIAL PRIMARY KEY ,
+	id SERIAL PRIMARY KEY,
 	title TEXT,
 	grade INT NOT NULL DEFAULT 1,
+	required BOOLEAN NOT NULL DEFAULT TRUE,
 	lesson INT NOT NULL,
 	course INT NOT NULL,
 	FOREIGN KEY (lesson, course) REFERENCES lessons(number, course)
@@ -182,16 +184,8 @@ VALUES (3, 'We can get user input with ...', 'print', 'def', 'input', 'while', '
 CREATE TABLE IF NOT EXISTS solutions (
 	userId INT NOT NULL,
 	exerciseId INT NOT NULL,
-	grade INT NOT NULL,
+	grade INT, 
 	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
 	FOREIGN KEY(userId) REFERENCES users(id),
-	FOREIGN KEY (exerciseId) REFERENCES exercises(id)
-);
-
-CREATE TABLE IF NOT EXISTS pending_solutions (
-	userId INT NOT NULL,
-	exerciseId INT NOT NULL,
-	answer TEXT NOT NULL,
-	FOREIGN KEY (userId) REFERENCES users(id),
 	FOREIGN KEY (exerciseId) REFERENCES exercises(id)
 );
