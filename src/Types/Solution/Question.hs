@@ -4,7 +4,7 @@
 
 module Types.Solution.Question (QuestionSolution (..)) where
 
-import Data.Aeson (FromJSON, ToJSON)
+import Data.Aeson
 import Data.Swagger (ToSchema)
 import Data.Text (Text)
 import GHC.Generics (Generic)
@@ -18,7 +18,7 @@ newtype QuestionSolution = QuestionSolution
     deriving (Show, Eq, Generic)
 
 instance FromJSON QuestionSolution
-instance ToJSON QuestionSolution
+
 instance ToSchema QuestionSolution
 
 instance Solvable Q.Question QuestionSolution where
