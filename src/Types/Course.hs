@@ -19,6 +19,7 @@ data Course = Course
     , difficulty :: !Difficulty
     , university :: !University
     , instructor :: !User
+    , totalExercises :: !Int
     }
     deriving (Show, Eq, Read, Generic)
 
@@ -34,5 +35,6 @@ instance FromRow Course where
             <*> field -- difficulty
             <*> fromRow -- university
             <*> fromRow -- instructor
+            <*> field -- totalExercises
 
 instance ToSchema Course

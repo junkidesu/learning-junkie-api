@@ -99,6 +99,7 @@ library
       Types.User
       Types.User.Education
       Types.User.NewUser
+      Types.User.Progress
       Types.User.Role
   other-modules:
       Paths_learning_junkie_api
