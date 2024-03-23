@@ -19,7 +19,7 @@ data Course = Course
     , difficulty :: !Difficulty
     , university :: !University
     , instructor :: !User
-    , exercisesCount :: !Int
+    , totalPoints :: !Int
     , enrollmentsCount :: !Int
     }
     deriving (Show, Eq, Read, Generic)

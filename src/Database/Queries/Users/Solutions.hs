@@ -13,7 +13,7 @@ userSolutionsQ =
                 , "c.id, c.title, c.description, c.difficulty,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
                 , "ins.id, ins.joined, ins.name, ins.birthday, ins.education, ins.role, ins.email, ins.passwordHash,"
-                , "(SELECT COUNT(exercises.id)"
+                , "(SELECT CASE WHEN SUM(grade) IS NULL THEN 0 ELSE SUM(grade) END"
                 , "FROM courses"
                 , "LEFT JOIN exercises"
                 , "ON courses.id = course WHERE courses.id = c.id) as exercisesCount,"
