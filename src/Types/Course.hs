@@ -20,6 +20,7 @@ data Course = Course
     , university :: !University
     , instructor :: !User
     , exercisesCount :: !Int
+    , enrollmentsCount :: !Int
     }
     deriving (Show, Eq, Read, Generic)
 
@@ -36,5 +37,6 @@ instance FromRow Course where
             <*> fromRow -- university
             <*> fromRow -- instructor
             <*> field -- exercisesCount
+            <*> field -- enrollmentsCount
 
 instance ToSchema Course
