@@ -10,7 +10,7 @@ import GHC.Generics (Generic)
 import Types.User.Education (Education)
 
 data NewUser = NewUser
-    { name :: !(Maybe Text)
+    { name :: !Text
     , birthday :: !(Maybe Day)
     , education :: !(Maybe Education)
     , email :: !Text

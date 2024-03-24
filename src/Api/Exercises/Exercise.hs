@@ -10,9 +10,11 @@ import Control.Monad (unless, when)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database (ensureExistsReturning)
+import Database.Operations.Courses.Completions (courseCompletion, insertCompletion)
 import Database.Operations.Courses.Enrollments (userIsEnrolled)
 import Database.Operations.Exercises (exerciseById)
 import Database.Operations.Exercises.Solutions (insertSolution, userDidSolve)
+import Database.Operations.Users.Progress (userCourseProgress)
 import Database.PostgreSQL.Simple (Connection, SqlError)
 import Servant
 import Servant.Auth.Server (AuthResult (Authenticated))
@@ -24,6 +26,7 @@ import Types.Solution.ExerciseCheck
 import Types.Solution.Response (Response (Response))
 import Types.Solvable (Solvable (checkSolution))
 import qualified Types.User as U
+import Types.User.Progress (courseFinished)
 import Types.User.Role (Role (..))
 
 type GetExerciseById ex =
@@ -179,7 +182,11 @@ postSolution
         let res = checkSolution exercise solution
 
         currentExercise <- getCurrentExercise exerciseId
-        isEnrolled <- liftIO $ userIsEnrolled conns (C.id . E.course $ currentExercise) (AU.id authUser)
+
+        let courseId = C.id . E.course $ currentExercise
+            userId = AU.id authUser
+
+        isEnrolled <- liftIO $ userIsEnrolled conns courseId userId
 
         unless isEnrolled (throwError err401)
 
@@ -194,6 +201,17 @@ postSolution
                   (AU.id authUser)
                   exerciseId
                   (E.grade currentExercise)
+
+            mbCompletion <- liftIO $ courseCompletion conns courseId userId
+
+            case mbCompletion of
+              Nothing -> do
+                mbProgress <- liftIO $ userCourseProgress conns userId courseId
+
+                case mbProgress of
+                  Nothing -> throwError err404
+                  Just progress -> when (courseFinished progress) (liftIO $ insertCompletion conns courseId userId)
+              Just _ -> return ()
 
             return $ Response ExerciseSuccess (Just grade)
 postSolution _ _ _ _ _ _ = throwError err401

@@ -26,7 +26,7 @@ import Prelude hiding (id)
 data User = User
     { id :: !Int
     , joined :: !UTCTime
-    , name :: !(Maybe Text)
+    , name :: !Text
     , birthday :: !(Maybe Day)
     , education :: !(Maybe Education)
     , role :: Role
@@ -71,4 +71,4 @@ instance ToSchema User where
                            , ("role", roleSchema)
                            , ("email", textSchema)
                            ]
-                    & required .~ ["id", "joined", "role", "email"]
+                    & required .~ ["id", "joined", "name", "role", "email"]

@@ -44,6 +44,9 @@ dependencies:
 - text
 - bytestring
 - utf8-string
+- diagrams-lib
+- diagrams-core
+- diagrams-rasterific
 
 ghc-options:
 - -Wall

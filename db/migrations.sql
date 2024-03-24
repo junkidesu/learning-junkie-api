@@ -27,7 +27,7 @@ VALUES ('Fictional University in Tashkent', 'FUT', 2003, 'https://fictional-univ
 CREATE TABLE IF NOT EXISTS users (
 	id SERIAL PRIMARY KEY,
 	joined TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
-	name TEXT,
+	name TEXT NOT NULL,
 	birthday DATE,
 	education TEXT,
 	role TEXT NOT NULL,
@@ -187,5 +187,13 @@ CREATE TABLE IF NOT EXISTS solutions (
 	grade INT, 
 	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
 	FOREIGN KEY(userId) REFERENCES users(id),
-	FOREIGN KEY (exerciseId) REFERENCES exercises(id)
+	FOREIGN KEY(exerciseId) REFERENCES exercises(id)
+);
+
+CREATE TABLE IF NOT EXISTS completions (
+	courseId INT NOT NULL,
+	userId INT NOT NULL,
+	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
+	FOREIGN KEY(courseId) REFERENCES courses(id),
+	FOREIGN KEY(userId) REFERENCES users(id)
 );
