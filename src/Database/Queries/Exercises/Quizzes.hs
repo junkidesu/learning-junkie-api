@@ -31,7 +31,7 @@ insertQuizQ =
         toSqlQuery
                 [ "WITH inserted_exercise AS ("
                 , "INSERT INTO exercises (grade, title, course, lesson)"
-                , "VALUES (?, ?, ?)"
+                , "VALUES (?, ?, ?, ?)"
                 , "RETURNING *),"
                 , "inserted_quiz AS ("
                 , "INSERT INTO quizzes (id, question, optionA, optionB, optionC, optionD, correct)"
