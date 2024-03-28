@@ -8,17 +8,17 @@ import Data.Pool (Pool)
 import Database
 import Database.PostgreSQL.Simple (Connection, Only (Only))
 import Database.Queries.Universities.Instructors (allInstructorsQ, insertInstructorQ)
-import Types.Instructor (Instructor)
+import Types.User (User)
 import qualified Types.User.NewUser as NU
 
-allInstructors :: Pool Connection -> Int -> IO [Instructor]
+allInstructors :: Pool Connection -> Int -> IO [User]
 allInstructors conns universityId =
         getMany
                 conns
                 allInstructorsQ
                 (Only universityId)
 
-insertInstructor :: Pool Connection -> Int -> NU.NewUser -> IO Instructor
+insertInstructor :: Pool Connection -> Int -> NU.NewUser -> IO User
 insertInstructor conns universityId newUser = do
         hashedPassword <- hashPassword . mkPassword . NU.password $ newUser
 

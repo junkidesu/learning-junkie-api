@@ -36,7 +36,7 @@ instance FromRow Course where
             <*> field -- difficulty
             <*> fromRow -- university
             <*> fromRow -- instructor
-            <*> field -- exercisesCount
+            <*> field -- totalPoints
             <*> field -- enrollmentsCount
 
 instance ToSchema Course

@@ -15,18 +15,18 @@ import Servant
 import Servant.Auth.Server
 import Types.Auth.JWTAuth (JWTAuth, requireAdmin)
 import qualified Types.Auth.User as AU
-import Types.Instructor (Instructor)
+import Types.User (User)
 import qualified Types.User.NewUser as NU
 
 type GetInstructors =
   Summary "Get all instructors in a university"
-    :> Get '[JSON] [Instructor]
+    :> Get '[JSON] [User]
 
 type AddInstructor =
   Summary "Add an instructor to a university"
     :> JWTAuth
     :> ReqBody '[JSON] NU.NewUser
-    :> PostCreated '[JSON] Instructor
+    :> PostCreated '[JSON] User
 
 type InstructorsAPI =
   Capture' '[Required, Description "ID of the university"] "id" Int
@@ -39,12 +39,12 @@ instructorsServer conns universityId = getInstructors :<|> addInstructor
   ensureUniversityExists :: Handler ()
   ensureUniversityExists = ensureExists conns universityById universityId
 
-  getInstructors :: Handler [Instructor]
+  getInstructors :: Handler [User]
   getInstructors = do
     ensureUniversityExists
     liftIO $ allInstructors conns universityId
 
-  addInstructor :: AuthResult AU.AuthUser -> NU.NewUser -> Handler Instructor
+  addInstructor :: AuthResult AU.AuthUser -> NU.NewUser -> Handler User
   addInstructor (Authenticated authUser) newInstructor = do
     requireAdmin authUser
     ensureUniversityExists
@@ -52,7 +52,7 @@ instructorsServer conns universityId = getInstructors :<|> addInstructor
       liftIO $
         try $
           insertInstructor conns universityId newInstructor ::
-        Handler (Either SqlError Instructor)
+        Handler (Either SqlError User)
 
     case result of
       Left _ -> throwError err400

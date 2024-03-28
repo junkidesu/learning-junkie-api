@@ -18,10 +18,13 @@ insertSolutionQ =
 userDidSolveQ :: Query
 userDidSolveQ =
         toSqlQuery
-                [ "SELECT u.id, u.joined, u.name, u.birthday, u.education, u.role, u.email, u.passwordHash"
+                [ "SELECT u.id, u.joined, u.name, u.birthday, u.education, u.role, u.email, u.passwordHash,"
+                , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
                 , "FROM solutions s"
                 , "JOIN users u"
                 , "ON s.userId = u.id"
+                , "LEFT JOIN universities un"
+                , "ON un.id = u.university"
                 , "WHERE exerciseId = ? AND userId = ?"
                 ]
 

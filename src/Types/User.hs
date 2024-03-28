@@ -18,7 +18,9 @@ import Data.Swagger (
 import Data.Text (Text)
 import Data.Time (Day, UTCTime)
 import Database.PostgreSQL.Simple (FromRow)
+import Database.PostgreSQL.Simple.FromRow (FromRow (fromRow), field)
 import GHC.Generics (Generic)
+import Types.University (University)
 import Types.User.Education (Education)
 import Types.User.Role
 import Prelude hiding (id)
@@ -32,6 +34,7 @@ data User = User
     , role :: Role
     , email :: !Text
     , passwordHash :: !Text
+    , university :: !(Maybe University)
     }
     deriving (Eq, Read, Show, Generic)
 
@@ -47,9 +50,22 @@ instance ToJSON User where
             , "education" .= education user
             , "role" .= role user
             , "email" .= email user
+            , "university" .= university user
             ]
 
-instance FromRow User
+instance FromRow User where
+    fromRow =
+        User
+            <$> field -- id
+            <*> field -- joined
+            <*> field -- name
+            <*> field -- birthday
+            <*> field -- education
+            <*> field -- role
+            <*> field -- email
+            <*> field -- passwordHash
+            <*> fromRow -- university
+
 instance ToSchema User where
     declareNamedSchema _ = do
         intSchema <- declareSchemaRef (Proxy :: Proxy Int)

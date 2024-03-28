@@ -10,13 +10,11 @@ allInstructorsQ :: Query
 allInstructorsQ =
         toSqlQuery
                 [ "SELECT"
-                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined"
-                , "FROM instructors i"
-                , "JOIN users us"
-                , "ON i.id = us.id"
+                , "FROM users us"
                 , "JOIN universities u"
-                , "ON i.university = u.id"
+                , "ON u.id = us.university"
                 , "WHERE u.id = ?"
                 ]
 
@@ -25,20 +23,14 @@ insertInstructorQ =
         toSqlQuery
                 [ "WITH inserted_user AS ("
                 , "INSERT INTO users"
-                , "(name, birthday, education, role, email, passwordHash)"
-                , "VALUES (?, ?, ?, 'instructor', ?, ?)"
-                , "RETURNING *), inserted_instructor AS ("
-                , "INSERT INTO instructors"
-                , "(id, university)"
-                , "VALUES ((SELECT id FROM inserted_user), ?)"
+                , "(name, birthday, education, role, email, passwordHash, university)"
+                , "VALUES (?, ?, ?, 'instructor', ?, ?, ?)"
                 , "RETURNING *)"
                 , "SELECT"
-                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined"
                 , "FROM inserted_user us"
-                , "JOIN inserted_instructor i"
-                , "ON i.id = us.id"
                 , "JOIN universities u"
-                , "ON i.university = u.id"
-                , "WHERE u.id = i.university"
+                , "ON us.university = u.id"
+                , "WHERE u.id = us.university"
                 ]

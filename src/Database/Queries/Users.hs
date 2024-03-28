@@ -7,31 +7,53 @@ import Database (toSqlQuery)
 import Database.PostgreSQL.Simple (Query)
 
 allUsersQ :: Query
-allUsersQ = "SELECT * FROM users"
+allUsersQ =
+        toSqlQuery
+                [ "SELECT"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
+                , "FROM users us"
+                , "LEFT JOIN universities un"
+                , "ON us.university = un.id"
+                ]
 
 insertUserQ :: Query
 insertUserQ =
         toSqlQuery
-                [ "INSERT INTO users"
+                [ "WITH inserted_user AS (INSERT INTO users"
                 , "(name, birthday, education, role, email, passwordHash)"
                 , "VALUES (?, ?, ?, 'student', ?, ?)"
-                , "RETURNING *"
+                , "RETURNING *)"
+                , "SELECT"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
+                , "FROM inserted_user us"
+                , "LEFT JOIN universities un"
+                , "ON us.university = un.id"
                 ]
 
 userByIdQ :: Query
 userByIdQ =
         toSqlQuery
-                [ "SELECT *"
-                , "FROM users"
-                , "WHERE id = ?"
+                [ "SELECT"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
+                , "FROM users us"
+                , "LEFT JOIN universities un"
+                , "ON us.university = un.id"
+                , "WHERE us.id = ?"
                 ]
 
 userByEmailQ :: Query
 userByEmailQ =
         toSqlQuery
-                [ "SELECT *"
-                , "FROM users"
-                , "WHERE email = ?"
+                [ "SELECT"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
+                , "FROM users us"
+                , "LEFT JOIN universities un"
+                , "ON us.university = un.id"
+                , "WHERE us.email = ?"
                 ]
 
 deleteUserQ :: Query

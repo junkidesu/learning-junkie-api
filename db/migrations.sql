@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS universities (
 
 INSERT INTO universities (name, abbreviation, year, url)
 VALUES ('Fictional University in Tashkent', 'FUT', 2003, 'https://fictional-university.edu'),
-('Imaginary University in Tashkent', 'IUT', 2006, 'https://imaginary-university.edu');
+('Imaginary University in Tashkent', NULL, 2006, 'https://imaginary-university.edu');
 
 CREATE TABLE IF NOT EXISTS users (
 	id SERIAL PRIMARY KEY,
@@ -32,37 +32,25 @@ CREATE TABLE IF NOT EXISTS users (
 	education TEXT,
 	role TEXT NOT NULL,
 	email TEXT NOT NULL UNIQUE,
-	passwordHash TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS instructors (
-	id INT NOT NULL REFERENCES users
-		ON DELETE CASCADE,
-	university INT NOT NULL,
-	FOREIGN KEY (id) REFERENCES users(id),
-	FOREIGN KEY (university) REFERENCES universities(id)
+	passwordHash TEXT NOT NULL,
+	university INT
 );
 
 -- admins
 INSERT INTO users (name, birthday, education, role, email, passwordHash)
-VALUES ('Anwar', '2003-08-24', 'bachelor', 'admin', 'anwar-admin@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
+VALUES ('Admin', '2003-08-24', 'bachelor', 'admin', 'admin@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
 
 -- students
-INSERT INTO users (name, birthday, education, role, email, passwordHash)
+INSERT INTO users (name, birthday, education, role, email, passwordHash, university)
 VALUES
-('Junki', '2003-08-24', 'bachelor', 'student', 'junki@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu'),
-('Alvaro', '2003-08-24', NULL, 'student', 'alvaro@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
+('Junki', '2003-08-24', 'bachelor', 'student', 'junki@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', NULL),
+('Alvaro', '2003-08-24', NULL, 'student', 'alvaro@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', NULL);
 
 -- instructors
-INSERT INTO users (name, birthday, education, role, email, passwordHash)
+INSERT INTO users (name, birthday, education, role, email, passwordHash, university)
 VALUES
-('Jake', '1990-08-24', 'master', 'instructor', 'jake@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu'),
-('John', '1985-08-24', 'phd', 'instructor', 'john@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
-
-INSERT INTO instructors (id, university)
-VALUES
-(4, 1),
-(5, 2);
+('Jake', '1990-08-24', 'master', 'instructor', 'jake@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', 1),
+('John', '1985-08-24', 'phd', 'instructor', 'john@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', 2);
 
 CREATE TABLE IF NOT EXISTS courses (
 	id SERIAL PRIMARY KEY,

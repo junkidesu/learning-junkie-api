@@ -47,6 +47,7 @@ dependencies:
 - diagrams-lib
 - diagrams-core
 - diagrams-rasterific
+- transformers
 
 ghc-options:
 - -Wall

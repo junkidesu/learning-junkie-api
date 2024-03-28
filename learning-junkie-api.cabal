@@ -94,7 +94,6 @@ library
       Types.Exercise.NewQuiz
       Types.Exercise.Question
       Types.Exercise.Quiz
-      Types.Instructor
       Types.Lesson
       Types.Lesson.EditLesson
       Types.Lesson.NewLesson
@@ -142,6 +141,7 @@ library
     , swagger2
     , text
     , time
+    , transformers
     , utf8-string
     , wai
     , wai-logger
@@ -181,6 +181,7 @@ executable learning-junkie-api-exe
     , swagger2
     , text
     , time
+    , transformers
     , utf8-string
     , wai
     , wai-logger
@@ -221,6 +222,7 @@ test-suite learning-junkie-api-test
     , swagger2
     , text
     , time
+    , transformers
     , utf8-string
     , wai
     , wai-logger
