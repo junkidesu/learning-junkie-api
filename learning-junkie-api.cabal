@@ -34,7 +34,9 @@ library
       Api.Courses.Exercises.Quizzes
       Api.Courses.Lessons
       Api.Exercises
-      Api.Exercises.Exercise
+      Api.Exercises.Essays
+      Api.Exercises.Questions
+      Api.Exercises.Quizzes
       Api.Universities
       Api.Universities.Courses
       Api.Universities.Instructors
@@ -94,6 +96,7 @@ library
       Types.Exercise.NewQuiz
       Types.Exercise.Question
       Types.Exercise.Quiz
+      Types.HasCourse
       Types.Lesson
       Types.Lesson.EditLesson
       Types.Lesson.NewLesson

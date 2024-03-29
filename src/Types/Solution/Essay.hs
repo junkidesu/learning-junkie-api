@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 module Types.Solution.Essay (EssaySolution (..)) where
@@ -22,6 +23,7 @@ instance ToJSON EssaySolution
 instance ToSchema EssaySolution
 
 instance Solvable E.Essay EssaySolution where
+    checkSolution :: E.Essay -> EssaySolution -> ExerciseCheck
     checkSolution _ _ = ExerciseSuccess
 
 instance FromRow EssaySolution

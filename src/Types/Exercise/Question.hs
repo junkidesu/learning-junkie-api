@@ -11,7 +11,9 @@ import Data.Data (Proxy (Proxy))
 import Data.Swagger (HasProperties (properties), HasRequired (required), NamedSchema (NamedSchema), ToSchema (declareNamedSchema), declareSchemaRef)
 import Data.Text (Text)
 import Database.PostgreSQL.Simple (FromRow)
+import Database.PostgreSQL.Simple.FromRow (FromRow (fromRow), field)
 import GHC.Generics (Generic)
+import Types.Course (Course)
 import Prelude hiding (id)
 
 data Question = Question
@@ -20,6 +22,7 @@ data Question = Question
     , grade :: !Int
     , question :: !Text
     , answer :: !Text
+    , course :: !Course
     }
     deriving (Show, Read, Generic)
 
@@ -33,14 +36,24 @@ instance ToJSON Question where
             , "title" .= title q
             , "grade" .= grade q
             , "question" .= question q
+            , "course" .= course q
             ]
 
-instance FromRow Question
+instance FromRow Question where
+    fromRow =
+        Question
+            <$> field -- id
+            <*> field -- title
+            <*> field -- grade
+            <*> field -- question
+            <*> field -- answer
+            <*> fromRow -- course
 
 instance ToSchema Question where
     declareNamedSchema _ = do
         intSchema <- declareSchemaRef (Proxy :: Proxy Int)
         textSchema <- declareSchemaRef (Proxy :: Proxy Text)
+        courseSchema <- declareSchemaRef (Proxy :: Proxy Course)
 
         return $
             NamedSchema (Just "Question") $
@@ -50,5 +63,6 @@ instance ToSchema Question where
                            , ("title", textSchema)
                            , ("grade", intSchema)
                            , ("question", textSchema)
+                           , ("course", courseSchema)
                            ]
-                    & required .~ ["id", "grade", "question"]
+                    & required .~ ["id", "grade", "question", "course"]

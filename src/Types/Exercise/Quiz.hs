@@ -12,6 +12,7 @@ import Data.Swagger hiding (options, title)
 import Data.Text (Text)
 import Database.PostgreSQL.Simple.FromRow
 import GHC.Generics (Generic)
+import Types.Course (Course)
 import Types.Exercise.Choice
 import Prelude hiding (id)
 
@@ -22,6 +23,7 @@ data Quiz = Quiz
     , question :: !Text
     , options :: Choice -> Text
     , correct :: Choice
+    , course :: !Course
     }
     deriving (Generic)
 
@@ -36,6 +38,7 @@ instance ToJSON Quiz where
             , "grade" .= grade q
             , "question" .= question q
             , "options" .= options q
+            , "course" .= course q
             ]
 
 instance ToSchema Quiz where
@@ -43,6 +46,7 @@ instance ToSchema Quiz where
         intSchema <- declareSchemaRef (Proxy :: Proxy Int)
         textSchema <- declareSchemaRef (Proxy :: Proxy Text)
         optionsSchema <- declareSchemaRef (Proxy :: Proxy (Choice -> Text))
+        courseSchema <- declareSchemaRef (Proxy :: Proxy Course)
 
         return $
             NamedSchema (Just "Quiz") $
@@ -53,8 +57,9 @@ instance ToSchema Quiz where
                            , ("grade", intSchema)
                            , ("question", textSchema)
                            , ("options", optionsSchema)
+                           , ("course", courseSchema)
                            ]
-                    & required .~ ["id", "grade", "question", "options"]
+                    & required .~ ["id", "grade", "question", "options", "course"]
 
 instance FromRow Quiz where
     fromRow :: RowParser Quiz
@@ -66,3 +71,4 @@ instance FromRow Quiz where
             <*> field -- question
             <*> fromRow -- options
             <*> field -- correct
+            <*> fromRow -- course

@@ -74,6 +74,7 @@ instance ToSchema User where
         daySchema <- declareSchemaRef (Proxy :: Proxy Day)
         roleSchema <- declareSchemaRef (Proxy :: Proxy Role)
         educationSchema <- declareSchemaRef (Proxy :: Proxy Education)
+        universitySchema <- declareSchemaRef (Proxy :: Proxy University)
 
         return $
             NamedSchema (Just "User") $
@@ -86,5 +87,6 @@ instance ToSchema User where
                            , ("education", educationSchema)
                            , ("role", roleSchema)
                            , ("email", textSchema)
+                           , ("university", universitySchema)
                            ]
                     & required .~ ["id", "joined", "name", "role", "email"]
