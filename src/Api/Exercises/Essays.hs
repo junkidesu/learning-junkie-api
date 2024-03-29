@@ -11,10 +11,10 @@ import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database (ensureExistsReturning)
 import Database.Operations.Courses.Completions (insertCompletion)
-import Database.Operations.Courses.Enrollments (userIsEnrolled)
+import Database.Operations.Courses.Enrollments (checkEnrollment)
 import Database.Operations.Exercises.Essays (essayById, updateEssay)
 import Database.Operations.Exercises.Solutions (essayModelSolution, insertSolution, userDidSolve)
-import Database.Operations.Users.Progress (userCourseProgress)
+import Database.Operations.Users.Progress (userProgressByCourse)
 import Database.PostgreSQL.Simple (Connection, SqlError)
 import Servant
 import Servant.Auth.Server (AuthResult (Authenticated))
@@ -137,7 +137,7 @@ essaysServer conns =
         courseId = C.id . E.course $ essay
         userId = AU.id authUser
 
-    isEnrolled <- liftIO $ userIsEnrolled conns courseId userId
+    isEnrolled <- liftIO $ checkEnrollment conns courseId userId
 
     unless isEnrolled (throwError err401)
 
@@ -150,7 +150,7 @@ essaysServer conns =
             essayId
             (E.grade essay)
 
-        mbProgress <- liftIO $ userCourseProgress conns userId courseId
+        mbProgress <- liftIO $ userProgressByCourse conns userId courseId
 
         case mbProgress of
           Nothing -> throwError err404

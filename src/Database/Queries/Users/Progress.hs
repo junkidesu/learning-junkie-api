@@ -40,8 +40,8 @@ userProgressQ =
                 , "WHERE st.id = ?"
                 ]
 
-userCourseProgressQ :: Query
-userCourseProgressQ =
+userProgressByCourseQ :: Query
+userProgressByCourseQ =
         toSqlQuery
                 [ "SELECT"
                 , "c.id, c.title, c.description, c.difficulty,"
