@@ -10,7 +10,7 @@ import Control.Monad (unless, when)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database (ensureExistsReturning)
-import Database.Operations.Courses.Completions (courseCompletion, insertCompletion)
+import Database.Operations.Courses.Completions (insertCompletion)
 import Database.Operations.Courses.Enrollments (userIsEnrolled)
 import Database.Operations.Exercises.Quizzes (quizById, updateQuiz)
 import Database.Operations.Exercises.Solutions (insertSolution, quizSolution, userDidSolve)
@@ -130,10 +130,10 @@ quizzesServer conns =
 
   postSolution :: AuthResult AU.AuthUser -> Int -> QS.QuizSolution -> Handler Response
   postSolution (Authenticated authUser) quizId solution = do
-    question <- ensureExistsReturning conns quizById quizId
+    quiz <- ensureExistsReturning conns quizById quizId
 
-    let res = checkSolution question solution
-        courseId = C.id . Q.course $ question
+    let res = checkSolution quiz solution
+        courseId = C.id . Q.course $ quiz
         userId = AU.id authUser
 
     isEnrolled <- liftIO $ userIsEnrolled conns courseId userId
@@ -142,26 +142,19 @@ quizzesServer conns =
 
     case res of
       ExerciseSuccess -> do
-        grade <-
-          liftIO $
-            insertSolution
-              conns
-              (AU.id authUser)
-              quizId
-              (Q.grade question)
+        liftIO $
+          insertSolution
+            conns
+            (AU.id authUser)
+            quizId
+            (Q.grade quiz)
+        mbProgress <- liftIO $ userCourseProgress conns userId courseId
 
-        mbCompletion <- liftIO $ courseCompletion conns courseId userId
+        case mbProgress of
+          Nothing -> throwError err404
+          Just progress -> when (courseFinished progress) (liftIO $ insertCompletion conns courseId userId)
 
-        case mbCompletion of
-          Nothing -> do
-            mbProgress <- liftIO $ userCourseProgress conns userId courseId
-
-            case mbProgress of
-              Nothing -> throwError err404
-              Just progress -> when (courseFinished progress) (liftIO $ insertCompletion conns courseId userId)
-          Just _ -> return ()
-
-        return $ Response ExerciseSuccess (Just grade)
+        return $ Response ExerciseSuccess (Just (Q.grade quiz))
       ExerciseFailure -> return $ Response ExerciseFailure Nothing
       ExercisePending -> return $ Response ExercisePending Nothing
   postSolution _ _ _ = throwError err401

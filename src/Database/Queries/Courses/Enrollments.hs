@@ -26,6 +26,7 @@ enrollUserInCourseQ =
         toSqlQuery
                 [ "INSERT INTO enrollments (userId, courseId)"
                 , "VALUES (?, ?)"
+                , "ON CONFLICT DO NOTHING"
                 ]
 
 userIsEnrolledQ :: Query

@@ -75,7 +75,8 @@ CREATE TABLE IF NOT EXISTS enrollments (
 	courseId INT NOT NULL,
 	enrolled TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
 	FOREIGN KEY (userId) REFERENCES users(id),
-	FOREIGN KEY (courseId) REFERENCES courses(id)
+	FOREIGN KEY (courseId) REFERENCES courses(id),
+	PRIMARY KEY (userId, courseId)
 );
 
 INSERT INTO enrollments (userId, courseId)
@@ -175,7 +176,8 @@ CREATE TABLE IF NOT EXISTS solutions (
 	grade INT, 
 	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
 	FOREIGN KEY(userId) REFERENCES users(id),
-	FOREIGN KEY(exerciseId) REFERENCES exercises(id)
+	FOREIGN KEY(exerciseId) REFERENCES exercises(id),
+	PRIMARY KEY (userId, exerciseId)
 );
 
 CREATE TABLE IF NOT EXISTS completions (
@@ -183,5 +185,6 @@ CREATE TABLE IF NOT EXISTS completions (
 	userId INT NOT NULL,
 	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
 	FOREIGN KEY(courseId) REFERENCES courses(id),
-	FOREIGN KEY(userId) REFERENCES users(id)
+	FOREIGN KEY(userId) REFERENCES users(id),
+	PRIMARY KEY (userId, courseId)
 );

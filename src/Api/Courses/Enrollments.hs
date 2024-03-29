@@ -4,12 +4,13 @@
 
 module Api.Courses.Enrollments (EnrollmentsAPI, enrollmentsServer) where
 
+import Control.Exception (try)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database (ensureExists)
 import Database.Operations.Courses (courseById)
 import Database.Operations.Courses.Enrollments (enrollUserInCourse, usersEnrolledInCourse)
-import Database.PostgreSQL.Simple (Connection)
+import Database.PostgreSQL.Simple (Connection, SqlError)
 import Servant
 import Servant.Auth.Server
 import Types.Auth.JWTAuth
@@ -40,7 +41,8 @@ enrollmentsServer conns courseId = enrollInCourse :<|> enrolledUsers
   enrollInCourse :: AuthResult AU.AuthUser -> Handler NoContent
   enrollInCourse (Authenticated authUser) = do
     ensureCourseExists
-    result <- liftIO $ enrollUserInCourse conns (AU.id authUser) courseId
+
+    result <- liftIO $ try $ enrollUserInCourse conns (AU.id authUser) courseId :: Handler (Either SqlError ())
     case result of
       Left _ -> throwError err400
       Right _ -> return NoContent

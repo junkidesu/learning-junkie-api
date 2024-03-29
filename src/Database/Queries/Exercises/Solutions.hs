@@ -12,7 +12,7 @@ insertSolutionQ =
                 [ "INSERT INTO solutions"
                 , "(userId, exerciseId, grade)"
                 , "VALUES (?, ?, ?)"
-                , "RETURNING grade"
+                , "ON CONFLICT DO NOTHING"
                 ]
 
 userDidSolveQ :: Query

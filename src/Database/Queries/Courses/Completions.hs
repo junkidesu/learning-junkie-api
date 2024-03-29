@@ -44,4 +44,5 @@ insertCompletionQ =
         toSqlQuery
                 [ "INSERT INTO completions (courseId, userId)"
                 , "VALUES (?, ?)"
+                , "ON CONFLICT DO NOTHING"
                 ]

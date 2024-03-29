@@ -10,7 +10,7 @@ import Control.Monad (unless, when)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database (ensureExistsReturning)
-import Database.Operations.Courses.Completions (courseCompletion, insertCompletion)
+import Database.Operations.Courses.Completions (insertCompletion)
 import Database.Operations.Courses.Enrollments (userIsEnrolled)
 import Database.Operations.Exercises.Essays (essayById, updateEssay)
 import Database.Operations.Exercises.Solutions (essayModelSolution, insertSolution, userDidSolve)
@@ -143,26 +143,20 @@ essaysServer conns =
 
     case res of
       ExerciseSuccess -> do
-        grade <-
-          liftIO $
-            insertSolution
-              conns
-              (AU.id authUser)
-              essayId
-              (E.grade essay)
+        liftIO $
+          insertSolution
+            conns
+            (AU.id authUser)
+            essayId
+            (E.grade essay)
 
-        mbCompletion <- liftIO $ courseCompletion conns courseId userId
+        mbProgress <- liftIO $ userCourseProgress conns userId courseId
 
-        case mbCompletion of
-          Nothing -> do
-            mbProgress <- liftIO $ userCourseProgress conns userId courseId
+        case mbProgress of
+          Nothing -> throwError err404
+          Just progress -> when (courseFinished progress) (liftIO $ insertCompletion conns courseId userId)
 
-            case mbProgress of
-              Nothing -> throwError err404
-              Just progress -> when (courseFinished progress) (liftIO $ insertCompletion conns courseId userId)
-          Just _ -> return ()
-
-        return $ Response ExerciseSuccess (Just grade)
+        return $ Response ExerciseSuccess (Just (E.grade essay))
       ExerciseFailure -> return $ Response ExerciseFailure Nothing
       ExercisePending -> return $ Response ExercisePending Nothing
   postSolution _ _ _ = throwError err401

@@ -7,7 +7,7 @@ module Database.Operations.Exercises.Solutions (
 ) where
 
 import Data.Pool (Pool)
-import Database (getOne, insertReturning)
+import Database (getOne, insert)
 import Database.PostgreSQL.Simple (Connection, Only (Only))
 import Database.Queries.Exercises.Solutions (essayModelSolutionQ, insertSolutionQ, questionSolutionQ, quizSolutionQ, userDidSolveQ)
 import Types.Solution.Essay (EssaySolution)
@@ -15,10 +15,8 @@ import Types.Solution.Question (QuestionSolution)
 import Types.Solution.Quiz (QuizSolution)
 import Types.User (User)
 
-insertSolution :: Pool Connection -> Int -> Int -> Int -> IO Int
-insertSolution conns userId exerciseId grade = do
-        (g : _) <- insertReturning conns insertSolutionQ (userId, exerciseId, grade)
-        return g
+insertSolution :: Pool Connection -> Int -> Int -> Int -> IO ()
+insertSolution conns userId exerciseId grade = insert conns insertSolutionQ (userId, exerciseId, grade)
 
 userDidSolve :: Pool Connection -> Int -> Int -> IO Bool
 userDidSolve conns userId exerciseId = do
