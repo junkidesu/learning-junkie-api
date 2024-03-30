@@ -1,9 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Lib (
     startApp,
 ) where
 
 import Api (api, server)
 import Database (initializeConnectionPool)
+import Network.Wai
 import Network.Wai.Handler.Warp (
     defaultSettings,
     runSettings,
@@ -11,11 +14,21 @@ import Network.Wai.Handler.Warp (
     setPort,
  )
 import Network.Wai.Logger (withStdoutLogger)
+import Network.Wai.Middleware.Cors
 import Servant
 import Servant.Auth.Server (defaultCookieSettings, defaultJWTSettings, generateKey)
 
 port :: Int
 port = 3001
+
+myCors :: Middleware
+myCors = cors (const $ Just policy)
+  where
+    policy =
+        simpleCorsResourcePolicy
+            { corsRequestHeaders = ["Content-Type"]
+            , corsMethods = "PUT" : simpleMethods
+            }
 
 startApp :: IO ()
 startApp = do
@@ -26,10 +39,11 @@ startApp = do
     let
         jwts = defaultJWTSettings jwk
         app =
-            serveWithContext
-                api
-                (defaultCookieSettings :. jwts :. EmptyContext)
-                (server conns jwts)
+            myCors $
+                serveWithContext
+                    api
+                    (defaultCookieSettings :. jwts :. EmptyContext)
+                    (server conns jwts)
 
     withStdoutLogger $ \aplogger -> do
         let settings = setPort port $ setLogger aplogger defaultSettings
