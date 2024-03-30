@@ -12,7 +12,7 @@ userCoursesByIdQ =
                 [ "SELECT"
                 , "c.id, c.title, c.description, c.difficulty,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
-                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
                 , "(SELECT CASE WHEN SUM(grade) IS NULL THEN 0 ELSE SUM(grade) END"
                 , "FROM courses"

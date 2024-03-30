@@ -10,7 +10,7 @@ allUsersQ :: Query
 allUsersQ =
         toSqlQuery
                 [ "SELECT"
-                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
                 , "FROM users us"
                 , "LEFT JOIN universities un"
@@ -36,7 +36,7 @@ userByIdQ :: Query
 userByIdQ =
         toSqlQuery
                 [ "SELECT"
-                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
                 , "FROM users us"
                 , "LEFT JOIN universities un"
@@ -48,7 +48,7 @@ userByEmailQ :: Query
 userByEmailQ =
         toSqlQuery
                 [ "SELECT"
-                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
                 , "FROM users us"
                 , "LEFT JOIN universities un"

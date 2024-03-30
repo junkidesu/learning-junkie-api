@@ -5,7 +5,11 @@ module Lib (
 ) where
 
 import Api (api, server)
+import Aws (baseConfiguration)
+import Aws.Core (Protocol (HTTPS))
+import Aws.S3 (S3SignPayloadMode (SignWithEffort), s3v4)
 import Database (initializeConnectionPool)
+import Network.HTTP.Conduit (newManager, tlsManagerSettings)
 import Network.Wai
 import Network.Wai.Handler.Warp (
     defaultSettings,
@@ -36,14 +40,18 @@ startApp = do
 
     jwk <- generateKey
 
+    cfg <- baseConfiguration
+    mgr <- newManager tlsManagerSettings
+
     let
         jwts = defaultJWTSettings jwk
+        s3cfg = s3v4 HTTPS "s3.us-east-1.amazonaws.com" False SignWithEffort
         app =
             myCors $
                 serveWithContext
                     api
                     (defaultCookieSettings :. jwts :. EmptyContext)
-                    (server conns jwts)
+                    (server conns cfg s3cfg mgr jwts)
 
     withStdoutLogger $ \aplogger -> do
         let settings = setPort port $ setLogger aplogger defaultSettings

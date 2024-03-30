@@ -9,7 +9,7 @@ import Database.PostgreSQL.Simple (Query)
 usersEnrolledInCourseQ :: Query
 usersEnrolledInCourseQ =
         toSqlQuery
-                [ "SELECT u.id, u.joined, u.name, u.birthday, u.education, u.role, u.email, u.passwordHash,"
+                [ "SELECT u.id, u.joined, u.name, u.birthday, u.education, u.role, u.email, u.avatar, u.passwordHash,"
                 , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
                 , "FROM users u"
                 , "LEFT JOIN universities un"
@@ -32,7 +32,7 @@ enrollUserInCourseQ =
 checkEnrollmentQ :: Query
 checkEnrollmentQ =
         toSqlQuery
-                [ "SELECT u.id, u.joined, u.name, u.birthday, u.education, u.role, u.email, u.passwordHash,"
+                [ "SELECT u.id, u.joined, u.name, u.birthday, u.education, u.role, u.email, u.avatar, u.passwordHash,"
                 , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
                 , "FROM users u"
                 , "LEFT JOIN universities un"

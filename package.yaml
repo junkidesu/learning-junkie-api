@@ -27,6 +27,7 @@ dependencies:
 - servant-auth
 - servant-auth-server
 - servant-auth-swagger
+- servant-multipart
 - postgresql-simple
 - wai
 - time
@@ -48,6 +49,11 @@ dependencies:
 - diagrams-core
 - diagrams-rasterific
 - transformers
+- wai-cors
+- aws
+- conduit
+- conduit-extra
+- http-conduit
 
 ghc-options:
 - -Wall

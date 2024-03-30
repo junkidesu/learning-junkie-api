@@ -41,6 +41,7 @@ library
       Api.Universities.Courses
       Api.Universities.Instructors
       Api.Users
+      Api.Users.Avatar
       Api.Users.Courses
       Api.Users.Progress
       Api.Users.Solutions
@@ -58,6 +59,7 @@ library
       Database.Operations.Universities
       Database.Operations.Universities.Instructors
       Database.Operations.Users
+      Database.Operations.Users.Avatar
       Database.Operations.Users.Courses
       Database.Operations.Users.Progress
       Database.Operations.Users.Solutions
@@ -73,6 +75,7 @@ library
       Database.Queries.Universities
       Database.Queries.Universities.Instructors
       Database.Queries.Users
+      Database.Queries.Users.Avatar
       Database.Queries.Users.Courses
       Database.Queries.Users.Progress
       Database.Queries.Users.Solutions
@@ -114,6 +117,8 @@ library
       Types.User.NewUser
       Types.User.Progress
       Types.User.Role
+      Upload
+      Upload.Swagger
   other-modules:
       Paths_learning_junkie_api
   autogen-modules:
@@ -123,11 +128,15 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       aeson
+    , aws
     , base >=4.7 && <5
     , bytestring
+    , conduit
+    , conduit-extra
     , diagrams-core
     , diagrams-lib
     , diagrams-rasterific
+    , http-conduit
     , http-types
     , lens
     , password
@@ -137,6 +146,7 @@ library
     , servant-auth
     , servant-auth-server
     , servant-auth-swagger
+    , servant-multipart
     , servant-server
     , servant-swagger
     , servant-swagger-ui
@@ -147,6 +157,7 @@ library
     , transformers
     , utf8-string
     , wai
+    , wai-cors
     , wai-logger
     , warp
   default-language: Haskell2010
@@ -162,11 +173,15 @@ executable learning-junkie-api-exe
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
+    , aws
     , base >=4.7 && <5
     , bytestring
+    , conduit
+    , conduit-extra
     , diagrams-core
     , diagrams-lib
     , diagrams-rasterific
+    , http-conduit
     , http-types
     , learning-junkie-api
     , lens
@@ -177,6 +192,7 @@ executable learning-junkie-api-exe
     , servant-auth
     , servant-auth-server
     , servant-auth-swagger
+    , servant-multipart
     , servant-server
     , servant-swagger
     , servant-swagger-ui
@@ -187,6 +203,7 @@ executable learning-junkie-api-exe
     , transformers
     , utf8-string
     , wai
+    , wai-cors
     , wai-logger
     , warp
   default-language: Haskell2010
@@ -203,11 +220,15 @@ test-suite learning-junkie-api-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
+    , aws
     , base >=4.7 && <5
     , bytestring
+    , conduit
+    , conduit-extra
     , diagrams-core
     , diagrams-lib
     , diagrams-rasterific
+    , http-conduit
     , http-types
     , learning-junkie-api
     , lens
@@ -218,6 +239,7 @@ test-suite learning-junkie-api-test
     , servant-auth
     , servant-auth-server
     , servant-auth-swagger
+    , servant-multipart
     , servant-server
     , servant-swagger
     , servant-swagger-ui
@@ -228,6 +250,7 @@ test-suite learning-junkie-api-test
     , transformers
     , utf8-string
     , wai
+    , wai-cors
     , wai-logger
     , warp
   default-language: Haskell2010

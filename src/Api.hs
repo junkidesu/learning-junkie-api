@@ -9,15 +9,19 @@ import Api.Courses (CoursesAPI, coursesServer)
 import Api.Exercises (ExercisesAPI, exercisesServer)
 import Api.Universities (UniversitiesAPI, universitiesServer)
 import Api.Users (UsersAPI, usersServer)
+import Aws (Configuration, NormalQuery)
+import Aws.S3 (S3Configuration)
 import Control.Lens
 import Data.Pool (Pool)
 import Data.Swagger
 import Database.PostgreSQL.Simple (Connection)
+import Network.HTTP.Conduit (Manager)
 import Servant
 import Servant.Auth.Server (JWTSettings)
 import Servant.Auth.Swagger ()
 import Servant.Swagger
 import Servant.Swagger.UI
+import Upload.Swagger ()
 
 type API' =
     AuthAPI
@@ -59,13 +63,13 @@ swaggerDoc =
 api :: Proxy API
 api = Proxy
 
-server' :: Pool Connection -> JWTSettings -> Server API'
-server' conns jwts =
+server' :: Pool Connection -> Configuration -> S3Configuration NormalQuery -> Manager -> JWTSettings -> Server API'
+server' conns cfg s3cfg mgr jwts =
     authServer conns jwts
-        :<|> usersServer conns
+        :<|> usersServer conns cfg s3cfg mgr
         :<|> universitiesServer conns
         :<|> coursesServer conns
         :<|> exercisesServer conns
 
-server :: Pool Connection -> JWTSettings -> Server API
-server conns jwts = server' conns jwts :<|> swaggerSchemaUIServer swaggerDoc
+server :: Pool Connection -> Configuration -> S3Configuration NormalQuery -> Manager -> JWTSettings -> Server API
+server conns cfg s3cfg mgr jwts = server' conns cfg s3cfg mgr jwts :<|> swaggerSchemaUIServer swaggerDoc

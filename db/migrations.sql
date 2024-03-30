@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS users (
 	role TEXT NOT NULL,
 	email TEXT NOT NULL UNIQUE,
 	passwordHash TEXT NOT NULL,
+	avatar TEXT,
 	university INT
 );
 

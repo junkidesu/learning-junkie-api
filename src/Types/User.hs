@@ -33,6 +33,7 @@ data User = User
     , education :: !(Maybe Education)
     , role :: Role
     , email :: !Text
+    , avatar :: !(Maybe Text)
     , passwordHash :: !Text
     , university :: !(Maybe University)
     }
@@ -50,6 +51,7 @@ instance ToJSON User where
             , "education" .= education user
             , "role" .= role user
             , "email" .= email user
+            , "avatar" .= avatar user
             , "university" .= university user
             ]
 
@@ -63,6 +65,7 @@ instance FromRow User where
             <*> field -- education
             <*> field -- role
             <*> field -- email
+            <*> field -- avatar
             <*> field -- passwordHash
             <*> fromRow -- university
 
@@ -87,6 +90,7 @@ instance ToSchema User where
                            , ("education", educationSchema)
                            , ("role", roleSchema)
                            , ("email", textSchema)
+                           , ("avatar", textSchema)
                            , ("university", universitySchema)
                            ]
                     & required .~ ["id", "joined", "name", "role", "email"]

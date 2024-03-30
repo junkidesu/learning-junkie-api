@@ -10,7 +10,7 @@ allInstructorsQ :: Query
 allInstructorsQ =
         toSqlQuery
                 [ "SELECT"
-                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined"
                 , "FROM users us"
                 , "JOIN universities u"
@@ -27,7 +27,7 @@ insertInstructorQ =
                 , "VALUES (?, ?, ?, 'instructor', ?, ?, ?)"
                 , "RETURNING *)"
                 , "SELECT"
-                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined"
                 , "FROM inserted_user us"
                 , "JOIN universities u"

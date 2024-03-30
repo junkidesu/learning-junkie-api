@@ -12,7 +12,7 @@ userSolutionsQ =
                 [ "SELECT e.id, e.title, e.grade,"
                 , "c.id, c.title, c.description, c.difficulty,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
-                , "ins.id, ins.joined, ins.name, ins.birthday, ins.education, ins.role, ins.email, ins.passwordHash,"
+                , "ins.id, ins.joined, ins.name, ins.birthday, ins.education, ins.role, ins.email, us.avatar, ins.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.joined,"
                 , "(SELECT CASE WHEN SUM(grade) IS NULL THEN 0 ELSE SUM(grade) END"
                 , "FROM courses"
