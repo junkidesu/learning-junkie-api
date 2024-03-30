@@ -49,8 +49,8 @@ VALUES
 -- instructors
 INSERT INTO users (name, birthday, education, role, email, passwordHash, university)
 VALUES
-('Jake', '1990-08-24', 'master', 'instructor', 'jake@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', 1),
-('John', '1985-08-24', 'phd', 'instructor', 'john@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', 2);
+('Jake Chen', '1990-08-24', 'master', 'instructor', 'jake@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', 1),
+('John Doe', '1985-08-24', 'phd', 'instructor', 'john@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', 2);
 
 CREATE TABLE IF NOT EXISTS courses (
 	id SERIAL PRIMARY KEY,
@@ -65,7 +65,14 @@ CREATE TABLE IF NOT EXISTS courses (
 
 INSERT INTO courses (title, description, difficulty, university, instructor)
 VALUES
-('Basic Python', 'Learn the basics of the Python programming language', 'beginner', 1, 4),
+('Basic Python',
+'Python is one of the most popular programming languages today. It is used in a multitude of areas, from 
+web development to artificial intelligence. This course intends to teach you the key things you need to know 
+to start writing real Python programs. By the end of this course, you will be able to write simple programs 
+with text user interfaces.',
+'beginner',
+1,
+4),
 ('OOP in Python', 'Learn object-oriented programming in Python', 'intermediate', 1, 4),
 ('Calculus 1', 'Learn fundamental single-variable differential and integral calculus', 'intermediate', 2, 5),
 ('Linear Algebra', 'Learn vectors, matrices, vector spaces, and linear equations', 'advanced', 2, 5);
