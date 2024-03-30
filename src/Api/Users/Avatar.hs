@@ -4,15 +4,12 @@
 
 module Api.Users.Avatar (AvatarAPI, avatarServer) where
 
-import Aws (Configuration, NormalQuery)
-import Aws.S3 (S3Configuration)
-import Conduit
 import Control.Monad (unless)
+import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import qualified Data.Text as T
-import Database.Operations.Users.Avatar (setAvatar)
+import Database.Operations.Users.Avatar (deleteUserAvatar, setAvatar)
 import Database.PostgreSQL.Simple (Connection)
-import Network.HTTP.Conduit (Manager)
 import Servant
 import Servant.Auth.Server (AuthResult (Authenticated))
 import Servant.Multipart
@@ -20,6 +17,7 @@ import Types.Auth.JWTAuth (JWTAuth)
 import qualified Types.Auth.User as AU
 import Types.User (User)
 import Upload (uploadFileToS3)
+import Upload.Environment (S3Environment)
 
 type UploadAvatar =
   Summary "Upload user avatar"
@@ -34,14 +32,14 @@ type DeleteAvatar =
     :> JWTAuth
     :> Capture' '[Required, Description "ID of the user"] "id" Int
     :> "avatar"
-    :> Verb 'DELETE 204 '[JSON] NoContent
+    :> Verb 'DELETE 200 '[JSON] User
 
 type AvatarAPI =
   UploadAvatar
     :<|> DeleteAvatar
 
-avatarServer :: Pool Connection -> Configuration -> S3Configuration NormalQuery -> Manager -> Server AvatarAPI
-avatarServer conns cfg s3cfg mgr = uploadAvatar :<|> deleteAvatar
+avatarServer :: Pool Connection -> S3Environment -> Server AvatarAPI
+avatarServer conns s3env = uploadAvatar :<|> deleteAvatar
  where
   uploadAvatar :: AuthResult AU.AuthUser -> Int -> MultipartData Mem -> Handler User
   uploadAvatar (Authenticated authUser) userId multipartData = do
@@ -55,9 +53,7 @@ avatarServer conns cfg s3cfg mgr = uploadAvatar :<|> deleteAvatar
         eitherAvatarUrl <-
           liftIO $
             uploadFileToS3
-              cfg
-              s3cfg
-              mgr
+              s3env
               (fdPayload fileData)
               ("avatars/user" <> (T.pack . show $ userId))
 
@@ -71,5 +67,13 @@ avatarServer conns cfg s3cfg mgr = uploadAvatar :<|> deleteAvatar
               Just user -> return user
   uploadAvatar _ _ _ = throwError err401
 
-  deleteAvatar :: AuthResult AU.AuthUser -> Int -> Handler NoContent
-  deleteAvatar _ _ = undefined
+  deleteAvatar :: AuthResult AU.AuthUser -> Int -> Handler User
+  deleteAvatar (Authenticated authUser) userId = do
+    unless (AU.id authUser == userId) $ throwError err401
+
+    mbUser <- liftIO $ deleteUserAvatar conns userId
+
+    case mbUser of
+      Nothing -> throwError err404
+      Just user -> return user
+  deleteAvatar _ _ = throwError err401

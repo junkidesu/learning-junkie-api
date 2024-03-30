@@ -2,23 +2,20 @@
 
 module Upload (uploadFileToS3) where
 
-import Aws (Configuration, NormalQuery)
-import Aws.S3 (S3Configuration, multipartUploadSink)
+import Aws.S3 (multipartUploadSink)
 import Conduit
 import Control.Exception (SomeException, try)
 import qualified Data.ByteString.Lazy as LBS
 import Data.Conduit.Binary (sourceLbs)
 import qualified Data.Text as T
-import Network.HTTP.Client.Conduit (Manager)
+import Upload.Environment (S3Environment (S3Environment))
 
 uploadFileToS3 ::
-    Configuration ->
-    S3Configuration NormalQuery ->
-    Manager ->
+    S3Environment ->
     LBS.ByteString ->
     T.Text ->
     IO (Either String T.Text)
-uploadFileToS3 cfg s3cfg mgr fileBS filename = do
+uploadFileToS3 (S3Environment cfg s3cfg mgr) fileBS filename = do
     res <-
         try $
             runResourceT $

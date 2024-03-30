@@ -118,6 +118,7 @@ library
       Types.User.Progress
       Types.User.Role
       Upload
+      Upload.Environment
       Upload.Swagger
   other-modules:
       Paths_learning_junkie_api

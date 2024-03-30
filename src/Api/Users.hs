@@ -8,14 +8,11 @@ import Api.Users.Avatar (AvatarAPI, avatarServer)
 import Api.Users.Courses (CoursesAPI, coursesServer)
 import Api.Users.Progress (ProgressAPI, progressServer)
 import Api.Users.Solutions (SolutionsAPI, solutionsServer)
-import Aws (Configuration, NormalQuery)
-import Aws.S3 (S3Configuration)
 import Control.Exception (try)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import Database.Operations.Users
 import Database.PostgreSQL.Simple (Connection, SqlError)
-import Network.HTTP.Conduit (Manager)
 import Servant
 import Servant.Auth.Server
 import Types.Auth.JWTAuth
@@ -23,6 +20,7 @@ import qualified Types.Auth.User as AU
 import Types.User
 import qualified Types.User.NewUser as NU
 import Types.User.Role (Role (Admin))
+import Upload.Environment (S3Environment)
 
 type GetAllUsers =
     Summary "Get all users"
@@ -57,8 +55,8 @@ type UsersAPI =
                 :<|> AvatarAPI
            )
 
-usersServer :: Pool Connection -> Configuration -> S3Configuration NormalQuery -> Manager -> Server UsersAPI
-usersServer conns cfg s3cfg mgr =
+usersServer :: Pool Connection -> S3Environment -> Server UsersAPI
+usersServer conns s3env =
     getAllUsers
         :<|> createUser
         :<|> getUserById
@@ -66,7 +64,7 @@ usersServer conns cfg s3cfg mgr =
         :<|> coursesServer conns
         :<|> solutionsServer conns
         :<|> progressServer conns
-        :<|> avatarServer conns cfg s3cfg mgr
+        :<|> avatarServer conns s3env
   where
     getAllUsers :: Handler [User]
     getAllUsers = liftIO $ allUsers conns

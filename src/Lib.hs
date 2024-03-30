@@ -21,6 +21,7 @@ import Network.Wai.Logger (withStdoutLogger)
 import Network.Wai.Middleware.Cors
 import Servant
 import Servant.Auth.Server (defaultCookieSettings, defaultJWTSettings, generateKey)
+import Upload.Environment (S3Environment(S3Environment))
 
 port :: Int
 port = 3001
@@ -51,7 +52,7 @@ startApp = do
                 serveWithContext
                     api
                     (defaultCookieSettings :. jwts :. EmptyContext)
-                    (server conns cfg s3cfg mgr jwts)
+                    (server conns (S3Environment cfg s3cfg mgr) jwts)
 
     withStdoutLogger $ \aplogger -> do
         let settings = setPort port $ setLogger aplogger defaultSettings
