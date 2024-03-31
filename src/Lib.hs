@@ -21,10 +21,8 @@ import Network.Wai.Logger (withStdoutLogger)
 import Network.Wai.Middleware.Cors
 import Servant
 import Servant.Auth.Server (defaultCookieSettings, defaultJWTSettings, generateKey)
+import System.Environment (lookupEnv)
 import Upload.Environment (S3Environment (S3Environment))
-
-port :: Int
-port = 3001
 
 myCors :: Middleware
 myCors = cors (const $ Just policy)
@@ -37,6 +35,11 @@ myCors = cors (const $ Just policy)
 
 startApp :: IO ()
 startApp = do
+    mbPort <- lookupEnv "PORT"
+
+    let port :: Int
+        port = maybe 3001 read mbPort
+
     conns <- initializeConnectionPool
 
     jwk <- generateKey
