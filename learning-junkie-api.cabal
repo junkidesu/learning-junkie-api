@@ -28,6 +28,7 @@ library
       Api
       Api.Auth
       Api.Courses
+      Api.Courses.Banner
       Api.Courses.Enrollments
       Api.Courses.Exercises.Essays
       Api.Courses.Exercises.Questions
@@ -49,6 +50,7 @@ library
       Certificate
       Database
       Database.Operations.Courses
+      Database.Operations.Courses.Banner
       Database.Operations.Courses.Completions
       Database.Operations.Courses.Enrollments
       Database.Operations.Exercises
@@ -66,6 +68,7 @@ library
       Database.Operations.Users.Progress
       Database.Operations.Users.Solutions
       Database.Queries.Courses
+      Database.Queries.Courses.Banner
       Database.Queries.Courses.Completions
       Database.Queries.Courses.Enrollments
       Database.Queries.Exercises

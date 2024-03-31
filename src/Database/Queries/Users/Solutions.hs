@@ -10,7 +10,7 @@ userSolutionsQ :: Query
 userSolutionsQ =
         toSqlQuery
                 [ "SELECT e.id, e.title, e.grade,"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "ins.id, ins.joined, ins.name, ins.birthday, ins.education, ins.role, ins.email, us.avatar, ins.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"

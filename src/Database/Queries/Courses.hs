@@ -10,7 +10,7 @@ allCoursesQ :: Query
 allCoursesQ =
         toSqlQuery
                 [ "SELECT"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
@@ -33,7 +33,7 @@ courseByIdQ :: Query
 courseByIdQ =
         toSqlQuery
                 [ "SELECT"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
@@ -60,7 +60,7 @@ insertCourseQ =
                 , "INSERT INTO courses (title, description, difficulty, university, instructor)"
                 , "VALUES (?, ?, ?, ?, ?)"
                 , "RETURNING *)"
-                , "SELECT ic.id, ic.title, ic.description, ic.difficulty,"
+                , "SELECT ic.id, ic.title, ic.description, ic.difficulty, ic.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
@@ -90,7 +90,7 @@ universityCoursesByIdQ :: Query
 universityCoursesByIdQ =
         toSqlQuery
                 [ "SELECT"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"

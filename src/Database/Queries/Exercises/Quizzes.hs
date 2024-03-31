@@ -10,7 +10,7 @@ allQuizzesQ :: Query
 allQuizzesQ =
         toSqlQuery
                 [ "SELECT ex.id, ex.title, ex.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct,"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
@@ -38,7 +38,7 @@ quizByIdQ :: Query
 quizByIdQ =
         toSqlQuery
                 [ "SELECT ex.id, ex.title, ex.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct,"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
@@ -76,7 +76,7 @@ insertQuizQ =
                 , "?, ?, ?, ?, ?, ?)"
                 , "RETURNING *)"
                 , "SELECT ex.id, ex.title, ex.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct,"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
@@ -108,7 +108,7 @@ updateQuizQ =
                 , "WHERE id = ?"
                 , "RETURNING *)"
                 , "SELECT ex.id, ex.title, ex.grade, q.question, q.optionA, q.optionB, q.optionC, q.optionD, q.correct,"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"

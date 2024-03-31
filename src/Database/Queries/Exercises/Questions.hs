@@ -10,7 +10,7 @@ allQuestionsQ :: Query
 allQuestionsQ =
         toSqlQuery
                 [ "SELECT e.id, e.title, e.grade, q.question, q.answer,"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
@@ -38,7 +38,7 @@ questionByIdQ :: Query
 questionByIdQ =
         toSqlQuery
                 [ "SELECT e.id, e.title, e.grade, q.question, q.answer,"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
@@ -76,7 +76,7 @@ insertQuestionQ =
                 , "?, ?)"
                 , "RETURNING *)"
                 , "SELECT e.id, e.title, e.grade, q.question, q.answer,"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
@@ -108,7 +108,7 @@ updateQuestionQ =
                 , "WHERE id = ?"
                 , "RETURNING *)"
                 , "SELECT e.id, e.title, e.grade, q.question, q.answer,"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, u.logo, u.joined,"

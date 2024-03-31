@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS courses (
 	title TEXT NOT NULL,
 	description TEXT NOT NULL,
 	difficulty TEXT NOT NULL,
+	banner TEXT,
 	university INT NOT NULL,
 	instructor INT NOT NULL,
 	FOREIGN KEY (university) REFERENCES universities(id),

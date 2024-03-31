@@ -17,6 +17,7 @@ data Course = Course
     , title :: !Text
     , description :: !Text
     , difficulty :: !Difficulty
+    , banner :: !(Maybe Text)
     , university :: !University
     , instructor :: !User
     , totalPoints :: !Int
@@ -34,6 +35,7 @@ instance FromRow Course where
             <*> field -- title
             <*> field -- description
             <*> field -- difficulty
+            <*> field -- banner
             <*> fromRow -- university
             <*> fromRow -- instructor
             <*> field -- totalPoints

@@ -66,7 +66,7 @@ server' conns s3env jwts =
     authServer conns jwts
         :<|> usersServer conns s3env
         :<|> universitiesServer conns s3env
-        :<|> coursesServer conns
+        :<|> coursesServer conns s3env
         :<|> exercisesServer conns
 
 server :: Pool Connection -> S3Environment -> JWTSettings -> Server API

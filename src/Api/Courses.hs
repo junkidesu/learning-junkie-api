@@ -4,6 +4,7 @@
 
 module Api.Courses (CoursesAPI, coursesServer) where
 
+import Api.Courses.Banner (BannerAPI, bannerServer)
 import Api.Courses.Enrollments (EnrollmentsAPI, enrollmentsServer)
 import Api.Courses.Lessons (LessonsAPI, lessonsServer)
 import Control.Monad.IO.Class (MonadIO (liftIO))
@@ -15,6 +16,7 @@ import Servant.Auth.Server
 import Types.Auth.JWTAuth
 import qualified Types.Auth.User as AU
 import Types.Course (Course)
+import Upload.Environment (S3Environment)
 
 type GetAllCourses =
   Summary "Get all courses"
@@ -38,15 +40,17 @@ type CoursesAPI =
           :<|> DeleteCourseById
           :<|> EnrollmentsAPI
           :<|> LessonsAPI
+          :<|> BannerAPI
        )
 
-coursesServer :: Pool Connection -> Server CoursesAPI
-coursesServer conns =
+coursesServer :: Pool Connection -> S3Environment -> Server CoursesAPI
+coursesServer conns s3env =
   getAllCourses
     :<|> getCourseById
     :<|> deleteCourseById
     :<|> enrollmentsServer conns
     :<|> lessonsServer conns
+    :<|> bannerServer conns s3env
  where
   getAllCourses :: Handler [Course]
   getAllCourses = liftIO $ allCourses conns

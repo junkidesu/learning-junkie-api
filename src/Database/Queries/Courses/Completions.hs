@@ -10,7 +10,7 @@ courseCompletionQ :: Query
 courseCompletionQ =
         toSqlQuery
                 [ "SELECT"
-                , "c.id, c.title, c.description, c.difficulty,"
+                , "c.id, c.title, c.description, c.difficulty, c.banner,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, un.logo, u.joined,"
                 , "ins.id, ins.joined, ins.name, ins.birthday, ins.education, ins.role, ins.email, ins.avatar, ins.passwordHash,"
                 , "u.id, u.name, u.abbreviation, u.year, u.url, un.logo, u.joined,"
