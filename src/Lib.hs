@@ -46,7 +46,7 @@ startApp = do
 
     let
         jwts = defaultJWTSettings jwk
-        s3cfg = s3v4 HTTPS "s3.us-east-1.amazonaws.com" False SignWithEffort
+        s3cfg = s3v4 HTTPS "s3.eu-north-1.amazonaws.com" False SignWithEffort
         app =
             myCors $
                 serveWithContext
