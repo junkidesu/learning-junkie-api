@@ -4,7 +4,8 @@
 
 module Api.Universities.Logo (LogoAPI, logoServer) where
 
-import Control.Exception (SomeException, try)
+import Aws.S3 (S3Error)
+import Control.Exception (try)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
 import qualified Data.Text as T
@@ -58,7 +59,7 @@ logoServer conns s3env = uploadLogo :<|> deleteLogo
                     s3env
                     (fdPayload fileData)
                     ("universities/logos/university" <> (T.pack . show $ universityId)) ::
-                Handler (Either SomeException T.Text)
+                Handler (Either S3Error T.Text)
 
             case eitherLogoUrl of
               Left _ -> throwError err400

@@ -5,7 +5,7 @@ module Lib (
 ) where
 
 import Api (api, server)
-import Aws (dbgConfiguration)
+import Aws (baseConfiguration)
 import Aws.Core (Protocol (HTTPS))
 import Aws.S3 (S3SignPayloadMode (SignWithEffort), s3v4)
 import Database (initializeConnectionPool)
@@ -44,7 +44,7 @@ startApp = do
 
     jwk <- generateKey
 
-    cfg <- dbgConfiguration
+    cfg <- baseConfiguration
     mgr <- newManager tlsManagerSettings
 
     let

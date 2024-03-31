@@ -4,7 +4,8 @@
 
 module Api.Users.Avatar (AvatarAPI, avatarServer) where
 
-import Control.Exception (SomeException, try)
+import Aws.S3 (S3Error)
+import Control.Exception (try)
 import Control.Monad (unless)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
@@ -58,7 +59,7 @@ avatarServer conns s3env = uploadAvatar :<|> deleteAvatar
                 s3env
                 (fdPayload fileData)
                 ("avatars/user" <> (T.pack . show $ userId)) ::
-            Handler (Either SomeException T.Text)
+            Handler (Either S3Error T.Text)
 
         case eitherAvatarUrl of
           Left _ -> throwError err400

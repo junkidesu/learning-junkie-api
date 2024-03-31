@@ -4,7 +4,8 @@
 
 module Api.Courses.Banner (BannerAPI, bannerServer) where
 
-import Control.Exception (SomeException, try)
+import Aws.S3 (S3Error)
+import Control.Exception (try)
 import Control.Monad (unless)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
@@ -62,7 +63,7 @@ bannerServer conns s3env = uploadBanner :<|> deleteBanner
                     s3env
                     (fdPayload fileData)
                     ("courses/banners/course" <> (T.pack . show $ courseId)) ::
-                Handler (Either SomeException T.Text)
+                Handler (Either S3Error T.Text)
 
             case eitherBannerUrl of
               Left _ -> throwError err400
@@ -89,7 +90,7 @@ bannerServer conns s3env = uploadBanner :<|> deleteBanner
                     s3env
                     (fdPayload fileData)
                     ("courses/banners/course" <> (T.pack . show $ courseId)) ::
-                Handler (Either SomeException T.Text)
+                Handler (Either S3Error T.Text)
 
             case eitherBannerUrl of
               Left _ -> throwError err400
