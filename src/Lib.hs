@@ -5,7 +5,7 @@ module Lib (
 ) where
 
 import Api (api, server)
-import Aws (baseConfiguration)
+import Aws (dbgConfiguration)
 import Aws.Core (Protocol (HTTPS))
 import Aws.S3 (S3SignPayloadMode (SignWithEffort), s3v4)
 import Database (initializeConnectionPool)
@@ -21,7 +21,7 @@ import Network.Wai.Logger (withStdoutLogger)
 import Network.Wai.Middleware.Cors
 import Servant
 import Servant.Auth.Server (defaultCookieSettings, defaultJWTSettings, generateKey)
-import Upload.Environment (S3Environment(S3Environment))
+import Upload.Environment (S3Environment (S3Environment))
 
 port :: Int
 port = 3001
@@ -41,7 +41,7 @@ startApp = do
 
     jwk <- generateKey
 
-    cfg <- baseConfiguration
+    cfg <- dbgConfiguration
     mgr <- newManager tlsManagerSettings
 
     let
