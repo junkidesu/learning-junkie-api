@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS universities (
 	abbreviation TEXT,
 	year INT NOT NULL,
 	url TEXT NOT NULL UNIQUE,
+	logo TEXT,
 	joined TIMESTAMPTZ DEFAULT (now() at time zone('utc'))
 );
 

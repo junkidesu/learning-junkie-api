@@ -11,7 +11,7 @@ allUsersQ =
         toSqlQuery
                 [ "SELECT"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
-                , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
+                , "un.id, un.name, un.abbreviation, un.year, un.url, un.logo, un.joined"
                 , "FROM users us"
                 , "LEFT JOIN universities un"
                 , "ON us.university = un.id"
@@ -26,7 +26,7 @@ insertUserQ =
                 , "RETURNING *)"
                 , "SELECT"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
-                , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
+                , "un.id, un.name, un.abbreviation, un.year, un.url, un.logo, un.joined"
                 , "FROM inserted_user us"
                 , "LEFT JOIN universities un"
                 , "ON us.university = un.id"
@@ -37,7 +37,7 @@ userByIdQ =
         toSqlQuery
                 [ "SELECT"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
-                , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
+                , "un.id, un.name, un.abbreviation, un.year, un.url, un.logo, un.joined"
                 , "FROM users us"
                 , "LEFT JOIN universities un"
                 , "ON us.university = un.id"
@@ -49,7 +49,7 @@ userByEmailQ =
         toSqlQuery
                 [ "SELECT"
                 , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
-                , "un.id, un.name, un.abbreviation, un.year, un.url, un.joined"
+                , "un.id, un.name, un.abbreviation, un.year, un.url, un.logo, un.joined"
                 , "FROM users us"
                 , "LEFT JOIN universities un"
                 , "ON us.university = un.id"

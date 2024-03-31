@@ -6,6 +6,7 @@ module Api.Universities (UniversitiesAPI, universitiesServer) where
 
 import Api.Universities.Courses (CoursesAPI, coursesServer)
 import Api.Universities.Instructors (InstructorsAPI, instructorsServer)
+import Api.Universities.Logo (LogoAPI, logoServer)
 import Control.Exception (try)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
@@ -17,6 +18,7 @@ import Types.Auth.JWTAuth
 import qualified Types.Auth.User as AU
 import Types.University
 import qualified Types.University.NewUniversity as NU
+import Upload.Environment (S3Environment)
 
 type GetAllUniversities =
   Summary "Get all universities"
@@ -40,15 +42,17 @@ type UniversitiesAPI =
           :<|> GetUniversityById
           :<|> CoursesAPI
           :<|> InstructorsAPI
+          :<|> LogoAPI
        )
 
-universitiesServer :: Pool Connection -> Server UniversitiesAPI
-universitiesServer conns =
+universitiesServer :: Pool Connection -> S3Environment -> Server UniversitiesAPI
+universitiesServer conns s3env =
   getAllUniversities
     :<|> registerUniversity
     :<|> getUniversityById
     :<|> coursesServer conns
     :<|> instructorsServer conns
+    :<|> logoServer conns s3env
  where
   getAllUniversities :: Handler [University]
   getAllUniversities = liftIO $ allUniversities conns

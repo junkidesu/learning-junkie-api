@@ -19,6 +19,7 @@ data University = University
     , abbreviation :: !(Maybe Text)
     , year :: !Int
     , url :: !Text
+    , logo :: !(Maybe Text)
     , joined :: !UTCTime
     }
     deriving (Eq, Show, Read, Generic)
@@ -35,6 +36,7 @@ instance FromRow (Maybe University) where
         mbAbbr <- field :: RowParser (Maybe Text)
         mbYear <- field :: RowParser (Maybe Int)
         mbUrl <- field :: RowParser (Maybe Text)
+        mbLogo <- field :: RowParser (Maybe Text)
         mbJoined <- field :: RowParser (Maybe UTCTime)
 
         runMaybeT $
@@ -44,6 +46,7 @@ instance FromRow (Maybe University) where
                 <*> pure mbAbbr
                 <*> hoistMaybe mbYear
                 <*> hoistMaybe mbUrl
+                <*> pure mbLogo
                 <*> hoistMaybe mbJoined
 
 instance ToRow University

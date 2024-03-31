@@ -40,6 +40,7 @@ library
       Api.Universities
       Api.Universities.Courses
       Api.Universities.Instructors
+      Api.Universities.Logo
       Api.Users
       Api.Users.Avatar
       Api.Users.Courses
@@ -58,6 +59,7 @@ library
       Database.Operations.Lessons
       Database.Operations.Universities
       Database.Operations.Universities.Instructors
+      Database.Operations.Universities.Logo
       Database.Operations.Users
       Database.Operations.Users.Avatar
       Database.Operations.Users.Courses
@@ -74,6 +76,7 @@ library
       Database.Queries.Lessons
       Database.Queries.Universities
       Database.Queries.Universities.Instructors
+      Database.Queries.Universities.Logo
       Database.Queries.Users
       Database.Queries.Users.Avatar
       Database.Queries.Users.Courses
