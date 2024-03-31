@@ -8,9 +8,10 @@ RUN stack install --local-bin-path .
 
 FROM --platform=linux/amd64 ubuntu:20.04 as deployment
 
-RUN apt-get update -y --assume-yes
-RUN apt-get upgrade -y --assume-yes
-RUN apt-get install -y --assume-yes libpq-dev
+RUN apt-get update -y
+RUN apt-get upgrade -y
+RUN apt-get install -y libpq-dev
+RUN apt-get install -y curl
 
 COPY --from=build-stage /usr/app/learning-junkie-api-exe /bin/
 
