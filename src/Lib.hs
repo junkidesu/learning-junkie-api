@@ -29,8 +29,8 @@ myCors = cors (const $ Just policy)
   where
     policy =
         simpleCorsResourcePolicy
-            { corsRequestHeaders = ["Content-Type"]
-            , corsMethods = "PUT" : simpleMethods
+            { corsRequestHeaders = ["Content-Type", "Authorization"]
+            , corsMethods = ["OPTIONS", "GET", "PUT", "POST", "DELETE"]
             }
 
 startApp :: IO ()
