@@ -25,7 +25,7 @@ insertUserQ =
                 , "VALUES (?, ?, ?, 'student', ?, ?)"
                 , "RETURNING *)"
                 , "SELECT"
-                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.passwordHash,"
+                , "us.id, us.joined, us.name, us.birthday, us.education, us.role, us.email, us.avatar, us.passwordHash,"
                 , "un.id, un.name, un.abbreviation, un.year, un.url, un.logo, un.joined"
                 , "FROM inserted_user us"
                 , "LEFT JOIN universities un"
