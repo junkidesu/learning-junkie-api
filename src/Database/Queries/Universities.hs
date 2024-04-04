@@ -19,3 +19,10 @@ insertUniversityQ =
                 , "VALUES (?, ?, ?, ?)"
                 , "RETURNING *"
                 ]
+
+removeUniversityQ :: Query
+removeUniversityQ =
+        toSqlQuery
+                [ "DELETE FROM universities"
+                , "WHERE id = ?"
+                ]

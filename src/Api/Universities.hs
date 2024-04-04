@@ -10,7 +10,7 @@ import Api.Universities.Logo (LogoAPI, logoServer)
 import Control.Exception (try)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Pool (Pool)
-import Database.Operations.Universities (allUniversities, insertUniversity, universityById)
+import Database.Operations.Universities (allUniversities, insertUniversity, removeUniversity, universityById)
 import Database.PostgreSQL.Simple (Connection, SqlError)
 import Servant
 import Servant.Auth.Server
@@ -29,6 +29,12 @@ type GetUniversityById =
     :> Capture' '[Required, Description "ID of the university"] "id" Int
     :> Get '[JSON] University
 
+type DeleteUniversity =
+  Summary "Delete university by ID"
+    :> JWTAuth
+    :> Capture' '[Required, Description "ID of the unviersity"] "id" Int
+    :> Verb 'DELETE 204 '[JSON] NoContent
+
 type RegisterUniversity =
   JWTAuth
     :> Summary "Register a university"
@@ -39,6 +45,7 @@ type UniversitiesAPI =
   "universities"
     :> ( GetAllUniversities
           :<|> RegisterUniversity
+          :<|> DeleteUniversity
           :<|> GetUniversityById
           :<|> CoursesAPI
           :<|> InstructorsAPI
@@ -49,6 +56,7 @@ universitiesServer :: Pool Connection -> S3Environment -> Server UniversitiesAPI
 universitiesServer conns s3env =
   getAllUniversities
     :<|> registerUniversity
+    :<|> deleteUniversity
     :<|> getUniversityById
     :<|> coursesServer conns
     :<|> instructorsServer conns
@@ -78,3 +86,12 @@ universitiesServer conns s3env =
       Left _ -> throwError err400
       Right university -> return university
   registerUniversity _ _ = throwError err401
+
+  deleteUniversity :: AuthResult AU.AuthUser -> Int -> Handler NoContent
+  deleteUniversity (Authenticated authUser) universityId = do
+    requireAdmin authUser
+
+    liftIO $ removeUniversity conns universityId
+
+    return NoContent
+  deleteUniversity _ _ = throwError err401

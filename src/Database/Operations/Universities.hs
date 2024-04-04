@@ -2,12 +2,13 @@ module Database.Operations.Universities (
         allUniversities,
         universityById,
         insertUniversity,
+        removeUniversity,
 ) where
 
 import Data.Pool (Pool)
-import Database (getMany_, getOne, insertReturning)
+import Database (delete, getMany_, getOne, insertReturning)
 import Database.PostgreSQL.Simple (Connection, Only (Only))
-import Database.Queries.Universities (allUniversitiesQ, insertUniversityQ, universityByIdQ)
+import Database.Queries.Universities (allUniversitiesQ, insertUniversityQ, removeUniversityQ, universityByIdQ)
 import Types.University (University)
 import qualified Types.University.NewUniversity as NU
 
@@ -19,3 +20,6 @@ universityById conns universityId = getOne conns universityByIdQ (Only universit
 
 insertUniversity :: Pool Connection -> NU.NewUniversity -> IO University
 insertUniversity conns = insertReturning conns insertUniversityQ
+
+removeUniversity :: Pool Connection -> Int -> IO ()
+removeUniversity conns universityId = delete conns removeUniversityQ (Only universityId)
