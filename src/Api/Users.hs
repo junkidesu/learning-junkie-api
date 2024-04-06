@@ -6,6 +6,7 @@ module Api.Users (UsersAPI, usersServer) where
 
 import Api.Users.Avatar (AvatarAPI, avatarServer)
 import Api.Users.Courses (CoursesAPI, coursesServer)
+import Api.Users.Enrollments (EnrollmentsAPI, enrollmentsServer)
 import Api.Users.Progress (ProgressAPI, progressServer)
 import Api.Users.Solutions (SolutionsAPI, solutionsServer)
 import Control.Exception (try)
@@ -49,6 +50,7 @@ type UsersAPI =
                 :<|> CreateUser
                 :<|> GetUserById
                 :<|> DeleteUserById
+                :<|> EnrollmentsAPI
                 :<|> CoursesAPI
                 :<|> SolutionsAPI
                 :<|> ProgressAPI
@@ -61,6 +63,7 @@ usersServer conns s3env =
         :<|> createUser
         :<|> getUserById
         :<|> deleteUserById
+        :<|> enrollmentsServer conns
         :<|> coursesServer conns
         :<|> solutionsServer conns
         :<|> progressServer conns

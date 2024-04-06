@@ -45,6 +45,7 @@ library
       Api.Users
       Api.Users.Avatar
       Api.Users.Courses
+      Api.Users.Enrollments
       Api.Users.Progress
       Api.Users.Solutions
       Certificate
