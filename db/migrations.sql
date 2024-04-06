@@ -7,7 +7,6 @@ DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS lessons;
 DROP TABLE IF EXISTS enrollments;
 DROP TABLE IF EXISTS courses;
-DROP TABLE IF EXISTS instructors;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS universities;
 
@@ -35,7 +34,8 @@ CREATE TABLE IF NOT EXISTS users (
 	email TEXT NOT NULL UNIQUE,
 	passwordHash TEXT NOT NULL,
 	avatar TEXT,
-	university INT
+	university INT,
+	FOREIGN KEY (university) REFERENCES universities(id)
 );
 
 -- admins
@@ -61,9 +61,9 @@ CREATE TABLE IF NOT EXISTS courses (
 	difficulty TEXT NOT NULL,
 	banner TEXT,
 	university INT NOT NULL,
-	instructor INT NOT NULL,
-	FOREIGN KEY (university) REFERENCES universities(id),
-	FOREIGN KEY (instructor) REFERENCES users(id)
+	instructor INT NOT NULL, 
+	FOREIGN KEY (university) REFERENCES universities(id) ON DELETE CASCADE,
+	FOREIGN KEY (instructor) REFERENCES users(id) ON DELETE CASCADE
 );
 
 INSERT INTO courses (title, description, difficulty, university, instructor)
@@ -84,8 +84,8 @@ CREATE TABLE IF NOT EXISTS enrollments (
 	userId INT NOT NULL,
 	courseId INT NOT NULL,
 	enrolled TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
-	FOREIGN KEY (userId) REFERENCES users(id),
-	FOREIGN KEY (courseId) REFERENCES courses(id),
+	FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE,
 	PRIMARY KEY (userId, courseId)
 );
 
@@ -106,7 +106,8 @@ CREATE TABLE IF NOT EXISTS lessons (
 	description TEXT NOT NULL,
 	content TEXT NOT NULL,
 	course INT NOT NULL,
-	PRIMARY KEY(number, course)
+	PRIMARY KEY(number, course),
+	FOREIGN KEY (course) REFERENCES courses(id) ON DELETE CASCADE
 );
 
 INSERT INTO lessons (number, title, description, content, course)
@@ -131,32 +132,32 @@ CREATE TABLE IF NOT EXISTS exercises (
 	required BOOLEAN NOT NULL DEFAULT TRUE,
 	lesson INT NOT NULL,
 	course INT NOT NULL,
-	FOREIGN KEY (lesson, course) REFERENCES lessons(number, course)
+	FOREIGN KEY (lesson, course) REFERENCES lessons(number, course) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS questions (
-	id INT NOT NULL PRIMARY KEY REFERENCES exercises ON DELETE CASCADE,
+	id INT NOT NULL PRIMARY KEY,
 	question TEXT NOT NULL,
 	answer TEXT NOT NULL,
-	FOREIGN KEY (id) REFERENCES exercises(id)
+	FOREIGN KEY (id) REFERENCES exercises(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS essays (
-	id INT NOT NULL PRIMARY KEY REFERENCES exercises ON DELETE CASCADE,
+	id INT NOT NULL PRIMARY KEY,
 	task TEXT NOT NULL,
 	model TEXT NOT NULL,
-	FOREIGN KEY (id) REFERENCES exercises(id)
+	FOREIGN KEY (id) REFERENCES exercises(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS quizzes (
-	id INT NOT NULL PRIMARY KEY REFERENCES exercises ON DELETE CASCADE,
+	id INT NOT NULL PRIMARY KEY,
 	question TEXT NOT NULL,
 	optionA TEXT NOT NULL,
 	optionB TEXT NOT NULL,
 	optionC TEXT NOT NULL,
 	optionD TEXT NOT NULL,
 	correct TEXT NOT NULL,
-	FOREIGN KEY (id) REFERENCES exercises(id)
+	FOREIGN KEY (id) REFERENCES exercises(id) ON DELETE CASCADE
 );
 
 -- question
@@ -185,8 +186,8 @@ CREATE TABLE IF NOT EXISTS solutions (
 	exerciseId INT NOT NULL,
 	grade INT, 
 	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
-	FOREIGN KEY(userId) REFERENCES users(id),
-	FOREIGN KEY(exerciseId) REFERENCES exercises(id),
+	FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY(exerciseId) REFERENCES exercises(id) ON DELETE CASCADE,
 	PRIMARY KEY (userId, exerciseId)
 );
 
@@ -194,7 +195,7 @@ CREATE TABLE IF NOT EXISTS completions (
 	courseId INT NOT NULL,
 	userId INT NOT NULL,
 	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
-	FOREIGN KEY(courseId) REFERENCES courses(id),
-	FOREIGN KEY(userId) REFERENCES users(id),
+	FOREIGN KEY(courseId) REFERENCES courses(id) ON DELETE CASCADE,
+	FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE,
 	PRIMARY KEY (userId, courseId)
 );
