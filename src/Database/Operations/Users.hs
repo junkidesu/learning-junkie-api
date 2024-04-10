@@ -9,6 +9,7 @@ module Database.Operations.Users (
 import Data.Password.Bcrypt
 import Data.Pool
 import Data.Text (Text)
+import qualified Data.Text as T
 import Database
 import Database.PostgreSQL.Simple
 import Database.Queries.Users
@@ -20,14 +21,14 @@ allUsers conns = getMany_ conns allUsersQ
 
 insertUser :: Pool Connection -> NU.NewUser -> IO User
 insertUser conns newUser = do
-        hashedPassword <- hashPassword . mkPassword . NU.password $ newUser
+        hashedPassword <- hashPassword . mkPassword . T.strip . NU.password $ newUser
         insertReturning
                 conns
                 insertUserQ
-                ( NU.name newUser
+                ( T.strip . NU.name $ newUser
                 , NU.birthday newUser
                 , NU.education newUser
-                , NU.email newUser
+                , T.strip . NU.email $ newUser
                 , unPasswordHash hashedPassword
                 )
 

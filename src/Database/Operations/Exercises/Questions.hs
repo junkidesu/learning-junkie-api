@@ -1,6 +1,7 @@
 module Database.Operations.Exercises.Questions (allQuestions, questionById, insertQuestion, updateQuestion) where
 
 import Data.Pool (Pool)
+import qualified Data.Text as T
 import Database (getMany, getOne, insertReturning, updateReturning)
 import Database.PostgreSQL.Simple (Connection, Only (Only))
 import Database.Queries.Exercises.Questions (allQuestionsQ, insertQuestionQ, questionByIdQ, updateQuestionQ)
@@ -20,11 +21,11 @@ insertQuestion conns courseId lessonNumber newQuestion =
                 conns
                 insertQuestionQ
                 ( NQ.grade newQuestion
-                , NQ.title newQuestion
+                , T.strip <$> NQ.title newQuestion
                 , courseId
                 , lessonNumber
                 , NQ.question newQuestion
-                , NQ.answer newQuestion
+                , T.strip . NQ.answer $ newQuestion
                 )
 
 updateQuestion :: Pool Connection -> Int -> EQ.EditQuestion -> IO (Maybe Question)
@@ -33,6 +34,6 @@ updateQuestion conns exerciseId editQuestion =
                 conns
                 updateQuestionQ
                 ( EQ.question editQuestion
-                , EQ.answer editQuestion
+                , T.strip . EQ.answer $ editQuestion
                 , exerciseId
                 )

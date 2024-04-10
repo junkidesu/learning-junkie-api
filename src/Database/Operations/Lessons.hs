@@ -7,6 +7,7 @@ module Database.Operations.Lessons (
 ) where
 
 import Data.Pool (Pool)
+import qualified Data.Text as T
 import Database
 import Database.PostgreSQL.Simple (Connection, Only (Only))
 import Database.Queries.Lessons (allLessonsQ, deleteLessonQ, insertLessonQ, lessonByNumberQ, updateLessonQ)
@@ -30,8 +31,8 @@ insertLesson conns courseId newLesson =
                 conns
                 insertLessonQ
                 ( NL.number newLesson
-                , NL.title newLesson
-                , NL.description newLesson
+                , T.strip . NL.title $ newLesson
+                , T.strip . NL.description $ newLesson
                 , NL.content newLesson
                 , courseId
                 )

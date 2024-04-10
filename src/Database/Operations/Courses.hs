@@ -7,6 +7,7 @@ module Database.Operations.Courses (
 ) where
 
 import Data.Pool (Pool)
+import qualified Data.Text as T
 import Database
 import Database.PostgreSQL.Simple
 import Database.Queries.Courses (
@@ -34,8 +35,8 @@ insertCourse conns universityId newCourse =
         insertReturning
                 conns
                 insertCourseQ
-                ( NC.title newCourse
-                , NC.description newCourse
+                ( T.strip . NC.title $ newCourse
+                , T.strip . NC.description $ newCourse
                 , NC.difficulty newCourse
                 , universityId
                 , NC.instructorId newCourse

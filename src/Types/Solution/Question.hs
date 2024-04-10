@@ -7,6 +7,7 @@ module Types.Solution.Question (QuestionSolution (..)) where
 import Data.Aeson
 import Data.Swagger (ToSchema)
 import Data.Text (Text)
+import qualified Data.Text as T
 import Database.PostgreSQL.Simple (FromRow)
 import GHC.Generics (Generic)
 import qualified Types.Exercise.Question as Q
@@ -26,7 +27,7 @@ instance ToSchema QuestionSolution
 instance Solvable Q.Question QuestionSolution where
     checkSolution :: Q.Question -> QuestionSolution -> ExerciseCheck
     checkSolution question solution =
-        if Q.answer question == answer solution
+        if (T.toLower . T.strip . Q.answer $ question) == (T.toLower . T.strip . answer $ solution)
             then ExerciseSuccess
             else ExerciseFailure
 

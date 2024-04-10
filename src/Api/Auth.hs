@@ -31,14 +31,14 @@ authServer conns jwts = login
  where
   login :: C.Credentials -> Handler AR.AuthResponse
   login credentials = do
-    foundUser <- liftIO $ userByEmail conns (C.email credentials)
+    foundUser <- liftIO $ userByEmail conns (T.strip . C.email $ credentials)
 
     case foundUser of
       Nothing -> throwError err401
       Just user ->
         let passwordCheck =
               checkPassword
-                (mkPassword . C.password $ credentials)
+                (mkPassword . T.strip . C.password $ credentials)
                 (PasswordHash . U.passwordHash $ user)
          in case passwordCheck of
               PasswordCheckFail -> throwError err401

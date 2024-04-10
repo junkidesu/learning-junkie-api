@@ -1,6 +1,7 @@
 module Database.Operations.Exercises.Essays (allEssays, essayById, insertEssay, updateEssay) where
 
 import Data.Pool (Pool)
+import qualified Data.Text as T
 import Database (getMany, getOne, insertReturning, updateReturning)
 import Database.PostgreSQL.Simple (Connection, Only (Only))
 import Database.Queries.Exercises.Essays (allEssaysQ, essaysByIdQ, insertEssayQ, updateEssayQ)
@@ -20,7 +21,7 @@ insertEssay conns courseId lessonNumber newEssay =
                 conns
                 insertEssayQ
                 ( NE.grade newEssay
-                , NE.title newEssay
+                , T.strip <$> NE.title newEssay
                 , courseId
                 , lessonNumber
                 , NE.task newEssay
