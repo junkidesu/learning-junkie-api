@@ -12,6 +12,7 @@ import Api.Users (UsersAPI, usersServer)
 import Control.Lens
 import Data.Pool (Pool)
 import Data.Swagger
+import qualified Data.Text as T
 import Database.PostgreSQL.Simple (Connection)
 import Servant
 import Servant.Auth.Server (JWTSettings)
@@ -21,8 +22,11 @@ import Servant.Swagger.UI
 import Upload.Environment (S3Environment)
 import Upload.Swagger ()
 
+type Ping = Summary "Utility endpoint for health check" :> "ping" :> Get '[PlainText] T.Text
+
 type API' =
-    AuthAPI
+    Ping
+        :<|> AuthAPI
         :<|> UsersAPI
         :<|> UniversitiesAPI
         :<|> CoursesAPI
@@ -43,6 +47,9 @@ coursesOpts = subOperations (Proxy :: Proxy CoursesAPI) (Proxy :: Proxy API')
 exercisesOpts :: Traversal' Swagger Operation
 exercisesOpts = subOperations (Proxy :: Proxy ExercisesAPI) (Proxy :: Proxy API')
 
+utilitiesOpts :: Traversal' Swagger Operation
+utilitiesOpts = subOperations (Proxy :: Proxy Ping) (Proxy :: Proxy API')
+
 type API = API' :<|> SwaggerSchemaUI "swagger-ui" "swagger.json"
 
 swaggerDoc :: Swagger
@@ -57,17 +64,22 @@ swaggerDoc =
         & applyTagsFor universitiesOpts ["universities" & description ?~ "Operations on universities"]
         & applyTagsFor coursesOpts ["courses" & description ?~ "Operations on courses"]
         & applyTagsFor exercisesOpts ["exercises" & description ?~ "Operations on exercises"]
+        & applyTagsFor utilitiesOpts ["utilities" & description ?~ "Utility operations"]
 
 api :: Proxy API
 api = Proxy
 
 server' :: Pool Connection -> S3Environment -> JWTSettings -> Server API'
 server' conns s3env jwts =
-    authServer conns jwts
+    ping
+        :<|> authServer conns jwts
         :<|> usersServer conns s3env
         :<|> universitiesServer conns s3env
         :<|> coursesServer conns s3env
         :<|> exercisesServer conns
+  where
+    ping :: Handler T.Text
+    ping = return "pong"
 
 server :: Pool Connection -> S3Environment -> JWTSettings -> Server API
 server conns s3env jwts = server' conns s3env jwts :<|> swaggerSchemaUIServer swaggerDoc
