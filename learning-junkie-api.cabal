@@ -49,6 +49,7 @@ library
       Api.Users.Progress
       Api.Users.Solutions
       Certificate
+      Cors
       Database
       Database.Operations.Courses
       Database.Operations.Courses.Banner

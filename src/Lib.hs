@@ -9,9 +9,9 @@ import Aws (baseConfiguration)
 import Aws.Core (Protocol (HTTPS))
 import Aws.S3 (S3SignPayloadMode (SignWithEffort), s3v4)
 import Configuration.Dotenv (defaultConfig, loadFile, onMissingFile)
+import Cors (myCors)
 import Database (initializeConnectionPool)
 import Network.HTTP.Conduit (newManager, tlsManagerSettings)
-import Network.Wai
 import Network.Wai.Handler.Warp (
     defaultSettings,
     runSettings,
@@ -19,20 +19,10 @@ import Network.Wai.Handler.Warp (
     setPort,
  )
 import Network.Wai.Logger (withStdoutLogger)
-import Network.Wai.Middleware.Cors
 import Servant
 import Servant.Auth.Server (defaultCookieSettings, defaultJWTSettings, generateKey)
 import System.Environment (lookupEnv)
 import Upload.Environment (S3Environment (S3Environment))
-
-myCors :: Middleware
-myCors = cors (const $ Just policy)
-  where
-    policy =
-        simpleCorsResourcePolicy
-            { corsRequestHeaders = ["Content-Type", "Authorization"]
-            , corsMethods = ["OPTIONS", "GET", "PUT", "POST", "DELETE"]
-            }
 
 startApp :: IO ()
 startApp = do
