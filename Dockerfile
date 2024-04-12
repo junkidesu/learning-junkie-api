@@ -2,6 +2,11 @@ FROM --platform=linux/amd64 haskell:9.6.4 as build-stage
 
 WORKDIR /usr/app
 
+
+COPY ./package.yaml /stack.yaml ./stack.yaml.lock .
+
+RUN stack build --only-dependencies
+
 COPY . . 
 
 RUN stack install --local-bin-path .

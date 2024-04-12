@@ -12,7 +12,8 @@ services:
       - ./postgres_data/:/var/lib/postgresql/data/
 
   app:
-    image: ghcr.io/junkidesu/learning-junkie-api:main
+    image: learning-junkie-api
+    build: .
     ports:
       - 3001:3001
     depends_on:
