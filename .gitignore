@@ -23,3 +23,4 @@ cabal.project.local~
 .ghc.environment.*
 postgres_data/
 minio_data
+.env

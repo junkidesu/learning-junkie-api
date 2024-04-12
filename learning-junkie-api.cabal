@@ -144,6 +144,7 @@ library
     , diagrams-core
     , diagrams-lib
     , diagrams-rasterific
+    , dotenv
     , http-conduit
     , http-types
     , lens
@@ -189,6 +190,7 @@ executable learning-junkie-api-exe
     , diagrams-core
     , diagrams-lib
     , diagrams-rasterific
+    , dotenv
     , http-conduit
     , http-types
     , learning-junkie-api
@@ -236,6 +238,7 @@ test-suite learning-junkie-api-test
     , diagrams-core
     , diagrams-lib
     , diagrams-rasterific
+    , dotenv
     , http-conduit
     , http-types
     , learning-junkie-api

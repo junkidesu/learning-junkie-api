@@ -8,6 +8,7 @@ import Api (api, server)
 import Aws (baseConfiguration)
 import Aws.Core (Protocol (HTTPS))
 import Aws.S3 (S3SignPayloadMode (SignWithEffort), s3v4)
+import Configuration.Dotenv (defaultConfig, loadFile)
 import Database (initializeConnectionPool)
 import Network.HTTP.Conduit (newManager, tlsManagerSettings)
 import Network.Wai
@@ -35,6 +36,8 @@ myCors = cors (const $ Just policy)
 
 startApp :: IO ()
 startApp = do
+    loadFile defaultConfig
+
     mbPort <- lookupEnv "PORT"
 
     let port :: Int

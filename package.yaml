@@ -54,6 +54,7 @@ dependencies:
 - conduit
 - conduit-extra
 - http-conduit
+- dotenv
 
 ghc-options:
 - -Wall
