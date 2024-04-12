@@ -6,9 +6,9 @@ cabal-version: 2.2
 
 name:           learning-junkie-api
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/luminous-or-me/learning-junkie-api#readme>
-homepage:       https://github.com/luminous-or-me/learning-junkie-api#readme
-bug-reports:    https://github.com/luminous-or-me/learning-junkie-api/issues
+description:    Please see the README on GitHub at <https://github.com/junkidesu/learning-junkie-api#readme>
+homepage:       https://github.com/junkidesu/learning-junkie-api#readme
+bug-reports:    https://github.com/junkidesu/learning-junkie-api/issues
 author:         Anvar Sheryatullayev
 maintainer:     alvaro.sh03@gmail.com
 copyright:      2024 Anvar Sheryatullayev
@@ -21,7 +21,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/luminous-or-me/learning-junkie-api
+  location: https://github.com/junkidesu/learning-junkie-api
 
 library
   exposed-modules:
