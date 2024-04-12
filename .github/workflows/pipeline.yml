@@ -1,4 +1,4 @@
-name: Publish Docker image
+name: Simple deployment pipeline
 
 on:
   push:
@@ -11,7 +11,7 @@ env:
 
 jobs:
   build-and-push-image:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     permissions:
       contents: read
@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ${{ env.REGISTRY }}
@@ -36,3 +36,17 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+  deployment:
+    runs-on: ubuntu-22.04
+
+    needs: [build-and-push-image]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy API to Render
+        uses: JorgeLNJunior/render-deploy@v1.4.3
+        with:
+          service_id: ${{ secrets.SERVICE_ID }}
+          api_key: ${{ secrets.RENDER_API_KEY }}
+          wait_deploy: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
