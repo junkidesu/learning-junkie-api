@@ -52,7 +52,7 @@ $ learning-junkie-api-exe
 You may start the application along with a local PostgreSQL server using Docker Compose.
 
 ```sh
-$ docker compose -f docker-compose.dev.yml
+$ docker compose -f docker-compose.dev.yml up
 ```
 
 You still need to provide the necessary environment variables, though.
