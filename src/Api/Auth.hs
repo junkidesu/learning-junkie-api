@@ -9,6 +9,7 @@ import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Password.Bcrypt (PasswordCheck (PasswordCheckFail, PasswordCheckSuccess), PasswordHash (PasswordHash), checkPassword, mkPassword)
 import Data.Pool (Pool)
 import qualified Data.Text as T
+import Data.Time
 import Database.Operations.Users (userByEmail)
 import Database.PostgreSQL.Simple (Connection)
 import Servant
@@ -46,7 +47,14 @@ authServer conns jwts = login
                 let
                   authUser = AU.AuthUser (U.id user) (U.email user) (U.role user)
 
-                eitherToken <- liftIO $ makeJWT authUser jwts Nothing
+                tokenExpireTime <- addUTCTime (3600 :: NominalDiffTime) <$> liftIO getCurrentTime
+
+                eitherToken <-
+                  liftIO $
+                    makeJWT
+                      authUser
+                      jwts
+                      (Just tokenExpireTime)
 
                 case eitherToken of
                   Left _ -> throwError err401
