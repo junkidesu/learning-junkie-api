@@ -9,6 +9,8 @@ This repository contains the source code for the Learning Junkie REST API.
 - [PostgreSQL](https://www.postgresql.org/) (DB)
 - [Diagrams](https://diagrams.github.io/) (Certificate Generation)
 - [Amazon S3](https://aws.amazon.com/s3/) (Storage)
+- [Docker](https://www.docker.com/) 
+- [GitHub Actions](https://docs.github.com/en/actions) (CI/CD)
 
 ## Getting Started
 
