@@ -40,7 +40,15 @@ packages:
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-
+extra-deps:
+- github: minio/minio-hs
+  commit: fd202f7
+- github: haskell-beam/beam
+  commit: b2e83c4bcbf818b4cc901d355f4f50e1e1a284a3
+  subdir: beam-postgres
+- github: haskell-beam/beam
+  commit: b2e83c4bcbf818b4cc901d355f4f50e1e1a284a3
+  subdir: beam-migrate
 # Override default flag values for local packages and extra-deps
 # flags: {}
 

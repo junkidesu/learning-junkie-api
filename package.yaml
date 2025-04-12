@@ -51,6 +51,12 @@ dependencies:
 - transformers
 - wai-cors
 - aws
+- minio-hs
+- unliftio
+- beam-core
+- beam-postgres
+- openapi3
+- servant-openapi3
 - conduit
 - conduit-extra
 - http-conduit

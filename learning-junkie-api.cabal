@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.37.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -87,7 +87,30 @@ library
       Database.Queries.Users.Courses
       Database.Queries.Users.Progress
       Database.Queries.Users.Solutions
+      LearningJunkie.Attribute
+      LearningJunkie.Database
+      LearningJunkie.Universities.Database
+      LearningJunkie.Universities.Database.Table
+      LearningJunkie.Universities.University
+      LearningJunkie.Universities.University.Attributes
+      LearningJunkie.Universities.Web
+      LearningJunkie.Universities.Web.All
+      LearningJunkie.Universities.Web.Create
+      LearningJunkie.Universities.Web.Specific
+      LearningJunkie.Users.Database
+      LearningJunkie.Users.Database.Table
+      LearningJunkie.Users.User
+      LearningJunkie.Users.User.Education
+      LearningJunkie.Users.User.Role
+      LearningJunkie.Users.Web
+      LearningJunkie.Users.Web.All
+      LearningJunkie.Web
+      LearningJunkie.Web.API
+      LearningJunkie.Web.AppM
+      LearningJunkie.Web.Environment
+      LearningJunkie.Web.OpenApi
       Lib
+      MinioUpload
       Types.Auth.Credentials
       Types.Auth.JWTAuth
       Types.Auth.Response
@@ -139,6 +162,8 @@ library
       aeson
     , aws
     , base >=4.7 && <5
+    , beam-core
+    , beam-postgres
     , bytestring
     , conduit
     , conduit-extra
@@ -149,6 +174,8 @@ library
     , http-conduit
     , http-types
     , lens
+    , minio-hs
+    , openapi3
     , password
     , postgresql-simple
     , resource-pool
@@ -157,6 +184,7 @@ library
     , servant-auth-server
     , servant-auth-swagger
     , servant-multipart
+    , servant-openapi3
     , servant-server
     , servant-swagger
     , servant-swagger-ui
@@ -165,6 +193,7 @@ library
     , text
     , time
     , transformers
+    , unliftio
     , utf8-string
     , wai
     , wai-cors
@@ -185,6 +214,8 @@ executable learning-junkie-api-exe
       aeson
     , aws
     , base >=4.7 && <5
+    , beam-core
+    , beam-postgres
     , bytestring
     , conduit
     , conduit-extra
@@ -196,6 +227,8 @@ executable learning-junkie-api-exe
     , http-types
     , learning-junkie-api
     , lens
+    , minio-hs
+    , openapi3
     , password
     , postgresql-simple
     , resource-pool
@@ -204,6 +237,7 @@ executable learning-junkie-api-exe
     , servant-auth-server
     , servant-auth-swagger
     , servant-multipart
+    , servant-openapi3
     , servant-server
     , servant-swagger
     , servant-swagger-ui
@@ -212,6 +246,7 @@ executable learning-junkie-api-exe
     , text
     , time
     , transformers
+    , unliftio
     , utf8-string
     , wai
     , wai-cors
@@ -233,6 +268,8 @@ test-suite learning-junkie-api-test
       aeson
     , aws
     , base >=4.7 && <5
+    , beam-core
+    , beam-postgres
     , bytestring
     , conduit
     , conduit-extra
@@ -244,6 +281,8 @@ test-suite learning-junkie-api-test
     , http-types
     , learning-junkie-api
     , lens
+    , minio-hs
+    , openapi3
     , password
     , postgresql-simple
     , resource-pool
@@ -252,6 +291,7 @@ test-suite learning-junkie-api-test
     , servant-auth-server
     , servant-auth-swagger
     , servant-multipart
+    , servant-openapi3
     , servant-server
     , servant-swagger
     , servant-swagger-ui
@@ -260,6 +300,7 @@ test-suite learning-junkie-api-test
     , text
     , time
     , transformers
+    , unliftio
     , utf8-string
     , wai
     , wai-cors
