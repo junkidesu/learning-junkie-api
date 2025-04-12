@@ -4,7 +4,7 @@ module LearningJunkie.Universities.University where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Int (Int32)
-import Data.Swagger (ToSchema)
+import Data.OpenApi (ToSchema)
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import GHC.Generics (Generic)

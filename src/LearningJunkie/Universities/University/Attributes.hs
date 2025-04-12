@@ -11,7 +11,7 @@ module LearningJunkie.Universities.University.Attributes (
 
 import Data.Aeson (FromJSON)
 import Data.Int (Int32)
-import Data.Swagger (ToSchema)
+import Data.OpenApi (ToSchema)
 import Data.Text
 import Database.Beam (Identity)
 import GHC.Generics (Generic)
