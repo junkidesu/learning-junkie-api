@@ -95,15 +95,19 @@ library
       LearningJunkie.Universities.University.Attributes
       LearningJunkie.Universities.Web
       LearningJunkie.Universities.Web.All
+      LearningJunkie.Universities.Web.ById
       LearningJunkie.Universities.Web.Create
-      LearningJunkie.Universities.Web.Specific
+      LearningJunkie.Universities.Web.Delete
       LearningJunkie.Users.Database
       LearningJunkie.Users.Database.Table
       LearningJunkie.Users.User
+      LearningJunkie.Users.User.Attributes
       LearningJunkie.Users.User.Education
       LearningJunkie.Users.User.Role
       LearningJunkie.Users.Web
       LearningJunkie.Users.Web.All
+      LearningJunkie.Users.Web.ById
+      LearningJunkie.Users.Web.Create
       LearningJunkie.Web
       LearningJunkie.Web.API
       LearningJunkie.Web.AppM

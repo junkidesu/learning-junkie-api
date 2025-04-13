@@ -3,9 +3,8 @@
 
 module LearningJunkie.Universities.Database where
 
-import Control.Monad.Trans.Reader (asks)
 import Data.Int (Int32)
-import Data.Pool (Pool, withResource)
+import Data.Text (Text)
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
 import Database.Beam.Postgres
@@ -27,6 +26,12 @@ universityByIdQuery id =
         (\r -> _universityId r ==. val_ id)
         allUniversitiesQuery
 
+universitiesByNameQuery :: Text -> UniversityQuery s
+universitiesByNameQuery universityName =
+    filter_
+        (\r -> _universityName r `like_` val_ (universityName <> "%"))
+        allUniversitiesQuery
+
 insertUniversityQuery :: Attributes.New -> SqlInsert Postgres UniversityT
 insertUniversityQuery newUniversity =
     insert (dbUniversities db) $
@@ -46,29 +51,34 @@ deleteUniversityQuery id = delete (dbUniversities db) (\r -> _universityId r ==.
 
 selectAllUniversities :: AppM [University]
 selectAllUniversities =
-    withConnection $ \conn ->
-        runBeamPostgresDebug putStrLn conn $
-            runSelectReturningList $
-                select allUniversitiesQuery
+    executeBeamDebug $
+        runSelectReturningList $
+            select allUniversitiesQuery
 
 selectUniversityById :: Int32 -> AppM (Maybe University)
-selectUniversityById id = withConnection $ \conn -> do
-    runBeamPostgresDebug putStrLn conn $
+selectUniversityById id =
+    executeBeamDebug $
         runSelectReturningFirst $
             select $
                 universityByIdQuery id
 
+selectUniversitiesByName :: Text -> AppM [University]
+selectUniversitiesByName universityName =
+    executeBeamDebug $
+        runSelectReturningList $
+            select $
+                universitiesByNameQuery universityName
+
 insertUniversity :: Attributes.New -> AppM University
-insertUniversity newUniversity = withConnection $ \conn ->
-    runBeamPostgresDebug putStrLn conn $ do
-        [university] <-
-            runInsertReturningList $
-                insertUniversityQuery newUniversity
-        return university
+insertUniversity newUniversity = executeBeamDebug $ do
+    [university] <-
+        runInsertReturningList $
+            insertUniversityQuery newUniversity
+    return university
 
 deleteUniversity :: Int32 -> AppM ()
-deleteUniversity id = withConnection $ \conn ->
-    runBeamPostgresDebug putStrLn conn $
+deleteUniversity id =
+    executeBeamDebug $
         runDelete $
             deleteUniversityQuery id
 

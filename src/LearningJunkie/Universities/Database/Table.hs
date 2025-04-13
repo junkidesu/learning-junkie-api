@@ -4,7 +4,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module LearningJunkie.Universities.Database.Table where
+module LearningJunkie.Universities.Database.Table (UniversityT (..), PrimaryKey (..), University, UniversityId) where
 
 import Data.Int (Int32)
 import Data.Text (Text)

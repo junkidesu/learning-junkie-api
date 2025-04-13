@@ -3,26 +3,32 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
-module LearningJunkie.Universities.University.Attributes where
+module LearningJunkie.Users.User.Attributes where
 
 import Data.Aeson (FromJSON)
 import Data.Functor.Identity (Identity)
 import Data.Int (Int32)
 import Data.OpenApi (ToSchema)
 import Data.Text (Text)
+import Data.Time (Day)
 import GHC.Generics (Generic)
 import LearningJunkie.Attribute (Attribute)
+import LearningJunkie.Users.User.Education (Education)
+import LearningJunkie.Users.User.Role (Role)
 
-data UniversityAttributes f = UniversityAttributes
-    { name :: Attribute f Text
-    , abbreviation :: Attribute f (Maybe Text)
-    , year :: Attribute f Int32
-    , url :: Attribute f Text
-    , logo :: Attribute f (Maybe Text)
-    }
+data UserAttributes f = UserAttributes
+        { name :: Attribute f Text
+        , birthday :: Attribute f (Maybe Day)
+        , education :: Attribute f (Maybe Education)
+        , role :: Attribute f Role
+        , email :: Attribute f Text
+        , avatar :: Attribute f (Maybe Text)
+        , password :: Attribute f Text
+        , university :: Attribute f (Maybe Int32)
+        }
 
-type New = UniversityAttributes Identity
-type Edit = UniversityAttributes Maybe
+type New = UserAttributes Identity
+type Edit = UserAttributes Maybe
 
 deriving instance Show New
 deriving instance Eq New

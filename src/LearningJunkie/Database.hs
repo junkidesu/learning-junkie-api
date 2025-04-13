@@ -8,8 +8,8 @@ import Configuration.Dotenv (defaultConfig, loadFile)
 import Control.Monad.Trans.Reader (asks)
 import qualified Data.ByteString.UTF8 as BSU
 import Data.Pool (Pool, defaultPoolConfig, newPool, setNumStripes, withResource)
-import Database.Beam (Database, DatabaseSettings, Generic, MonadIO (liftIO), TableEntity, dbModification, defaultDbSettings, fieldNamed, modifyTableFields, setEntityName, tableModification, withDbModification)
-import Database.Beam.Postgres (Connection, close, connectPostgreSQL)
+import Database.Beam (Database, DatabaseSettings, Generic, MonadBeam, MonadIO (liftIO), TableEntity, dbModification, defaultDbSettings, fieldNamed, modifyTableFields, setEntityName, tableModification, withDbModification)
+import Database.Beam.Postgres (Connection, Pg, close, connectPostgreSQL, runBeamPostgres, runBeamPostgresDebug)
 import LearningJunkie.Universities.Database.Table (UniversityT)
 import LearningJunkie.Users.Database.Table (UserT (_userPasswordHash, _userUniversity))
 import LearningJunkie.Web.AppM (AppM)
@@ -53,3 +53,9 @@ withConnection op = do
 
     liftIO $ withResource conns $ \conn ->
         op conn
+
+executeBeam :: Pg a -> AppM a
+executeBeam op = withConnection $ \conn -> runBeamPostgres conn op
+
+executeBeamDebug :: Pg a -> AppM a
+executeBeamDebug op = withConnection $ \conn -> runBeamPostgresDebug putStrLn conn op

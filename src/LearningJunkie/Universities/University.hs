@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module LearningJunkie.Universities.University where
+module LearningJunkie.Universities.University (University (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Int (Int32)

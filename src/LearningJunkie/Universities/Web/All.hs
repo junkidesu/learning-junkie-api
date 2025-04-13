@@ -12,6 +12,5 @@ type API = Summary "Get all universities" :> Get '[JSON] [University]
 
 handler :: AppM [University]
 handler =
-    do
-        map toUniversityType
-            <$> selectAllUniversities
+    map toUniversityType
+        <$> selectAllUniversities

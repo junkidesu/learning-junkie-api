@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module LearningJunkie.Universities.Web.Specific (API, handler) where
+module LearningJunkie.Universities.Web.ById (API, handler) where
 
 import Data.Int (Int32)
 import LearningJunkie.Universities.Database (selectUniversityById, toUniversityType)
@@ -10,7 +10,8 @@ import LearningJunkie.Web.AppM (AppM)
 import Servant
 
 type API =
-    Capture' '[Required, Description "ID of the university"] "id" Int32
+    Summary "Get university by ID"
+        :> Capture' '[Required, Description "ID of the university"] "id" Int32
         :> Get '[JSON] University
 
 handler :: Int32 -> AppM University

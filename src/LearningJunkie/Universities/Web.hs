@@ -4,8 +4,9 @@
 module LearningJunkie.Universities.Web (API, server) where
 
 import qualified LearningJunkie.Universities.Web.All as All
+import qualified LearningJunkie.Universities.Web.ById as ById
 import qualified LearningJunkie.Universities.Web.Create as Create
-import qualified LearningJunkie.Universities.Web.Specific as Specific
+import qualified LearningJunkie.Universities.Web.Delete as Delete
 import LearningJunkie.Web.AppM (AppM)
 import Servant
 
@@ -13,8 +14,13 @@ type API =
     "universities"
         :> ( All.API
                 :<|> Create.API
-                :<|> Specific.API
+                :<|> ById.API
+                :<|> Delete.API
            )
 
 server :: ServerT API AppM
-server = All.handler :<|> Create.handler :<|> Specific.handler
+server =
+    All.handler
+        :<|> Create.handler
+        :<|> ById.handler
+        :<|> Delete.handler

@@ -1,6 +1,6 @@
 {-# LANGUAGE TypeFamilies #-}
 
-module LearningJunkie.Attribute where
+module LearningJunkie.Attribute (Attribute) where
 
 import Database.Beam (Identity)
 
