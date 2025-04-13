@@ -26,13 +26,13 @@ openApiDoc =
     toOpenApi (Proxy :: Proxy Web.API)
         & info
             . title
-            .~ "Phonebook API"
+            .~ "Learning Junkie API"
         & info
             . version
-            .~ "1.0"
+            .~ "0.1.0.0"
         & info
             . description
-            ?~ "Simple REST API written in Haskell with Servant"
+            ?~ "Free Online Education Platform"
         & info
             . license
             ?~ "BSD"
