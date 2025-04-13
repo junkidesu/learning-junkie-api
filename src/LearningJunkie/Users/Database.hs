@@ -7,7 +7,8 @@ import qualified Data.Text as T
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
 import Database.Beam.Postgres (Postgres)
-import LearningJunkie.Database (LearningJunkieDb (dbUsers), db, executeBeamDebug)
+import LearningJunkie.Database (LearningJunkieDb (dbUsers), db)
+import LearningJunkie.Database.Util (executeBeamDebug)
 import LearningJunkie.Universities.Database (allUniversitiesQuery, toUniversityType, universityByIdQuery)
 import LearningJunkie.Universities.Database.Table
 import LearningJunkie.Users.Database.Table

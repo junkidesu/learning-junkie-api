@@ -89,6 +89,7 @@ library
       Database.Queries.Users.Solutions
       LearningJunkie.Attribute
       LearningJunkie.Database
+      LearningJunkie.Database.Util
       LearningJunkie.Universities.Database
       LearningJunkie.Universities.Database.Table
       LearningJunkie.Universities.University
@@ -98,6 +99,7 @@ library
       LearningJunkie.Universities.Web.ById
       LearningJunkie.Universities.Web.Create
       LearningJunkie.Universities.Web.Delete
+      LearningJunkie.Universities.Web.Update
       LearningJunkie.Users.Database
       LearningJunkie.Users.Database.Table
       LearningJunkie.Users.User

@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -6,9 +7,10 @@ module LearningJunkie.Universities.Database where
 import Data.Int (Int32)
 import Data.Text (Text)
 import Database.Beam
-import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
+import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
 import Database.Beam.Postgres
 import LearningJunkie.Database
+import LearningJunkie.Database.Util
 import LearningJunkie.Universities.Database.Table
 import qualified LearningJunkie.Universities.University as University
 import qualified LearningJunkie.Universities.University.Attributes as Attributes
@@ -49,6 +51,19 @@ insertUniversityQuery newUniversity =
 deleteUniversityQuery :: Int32 -> SqlDelete Postgres UniversityT
 deleteUniversityQuery id = delete (dbUniversities db) (\r -> _universityId r ==. val_ id)
 
+updateUniversityQuery :: Int32 -> Attributes.Edit -> SqlUpdate Postgres UniversityT
+updateUniversityQuery id editUniversity =
+    update
+        (dbUniversities db)
+        ( \r ->
+            updateIfChanged _universityName r (Attributes.name editUniversity)
+                <> updateIfChanged _universityAbbreviation r (Attributes.abbreviation editUniversity)
+                <> updateIfChanged _universityYear r (Attributes.year editUniversity)
+                <> updateIfChanged _universityLogo r (Attributes.logo editUniversity)
+                <> updateIfChanged _universityUrl r (Attributes.url editUniversity)
+        )
+        (\r -> _universityId r ==. val_ id)
+
 selectAllUniversities :: AppM [University]
 selectAllUniversities =
     executeBeamDebug $
@@ -75,6 +90,14 @@ insertUniversity newUniversity = executeBeamDebug $ do
         runInsertReturningList $
             insertUniversityQuery newUniversity
     return university
+
+updateUniversity :: Int32 -> Attributes.Edit -> AppM University
+updateUniversity universityId editUniversity =
+    executeBeamDebug $ do
+        [university] <-
+            runUpdateReturningList $
+                updateUniversityQuery universityId editUniversity
+        return university
 
 deleteUniversity :: Int32 -> AppM ()
 deleteUniversity id =

@@ -1,19 +1,17 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module LearningJunkie.Database where
 
 import Configuration.Dotenv (defaultConfig, loadFile)
-import Control.Monad.Trans.Reader (asks)
 import qualified Data.ByteString.UTF8 as BSU
 import Data.Pool (Pool, defaultPoolConfig, newPool, setNumStripes, withResource)
-import Database.Beam (Database, DatabaseSettings, Generic, MonadBeam, MonadIO (liftIO), TableEntity, dbModification, defaultDbSettings, fieldNamed, modifyTableFields, setEntityName, tableModification, withDbModification)
-import Database.Beam.Postgres (Connection, Pg, close, connectPostgreSQL, runBeamPostgres, runBeamPostgresDebug)
+import Database.Beam
+import Database.Beam.Postgres
 import LearningJunkie.Universities.Database.Table (UniversityT)
-import LearningJunkie.Users.Database.Table (UserT (_userPasswordHash, _userUniversity))
-import LearningJunkie.Web.AppM (AppM)
-import LearningJunkie.Web.Environment (Environment (dbConnection))
+import LearningJunkie.Users.Database.Table (UserT (_userPasswordHash))
 import System.Environment (getEnv)
 
 data LearningJunkieDb f = LearningJunkieDb
@@ -46,16 +44,3 @@ connectToDb = do
             close
             60
             10
-
-withConnection :: (Connection -> IO a) -> AppM a
-withConnection op = do
-    conns <- asks dbConnection
-
-    liftIO $ withResource conns $ \conn ->
-        op conn
-
-executeBeam :: Pg a -> AppM a
-executeBeam op = withConnection $ \conn -> runBeamPostgres conn op
-
-executeBeamDebug :: Pg a -> AppM a
-executeBeamDebug op = withConnection $ \conn -> runBeamPostgresDebug putStrLn conn op
