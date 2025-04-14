@@ -13,6 +13,7 @@ import qualified LearningJunkie.Web.OpenApi as OpenApi
 import Network.Wai.Handler.Warp (defaultSettings, runSettings, setLogger, setPort)
 import Network.Wai.Logger (withStdoutLogger)
 import Servant
+import Servant.Auth.Server (defaultCookieSettings, defaultJWTSettings, generateKey)
 
 type LearningJunkieAPI = OpenApi.API :<|> Web.API
 
@@ -28,8 +29,12 @@ makeApp = do
 
     conns <- connectToDb
 
-    let environment = Environment conns
-        cfg = EmptyContext
+    myKey <- generateKey
+
+    let
+        jwtCfg = defaultJWTSettings myKey
+        cfg = defaultCookieSettings :. jwtCfg :. EmptyContext
+        environment = Environment conns jwtCfg
     return
         . serveWithContext
             api

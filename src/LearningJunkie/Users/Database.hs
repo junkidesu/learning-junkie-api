@@ -33,6 +33,12 @@ userByIdQuery userId =
     (\user -> (_userId . fst $ user) ==. val_ userId)
     allUsersQuery
 
+userByEmailQuery :: Text -> UserQuery s
+userByEmailQuery email =
+  filter_
+    (\user -> (_userEmail . fst $ user) ==. val_ email)
+    allUsersQuery
+
 insertUserQuery :: Attributes.New -> Text -> SqlInsert Postgres UserT
 insertUserQuery newUser passwordHash =
   insert (dbUsers db) $
@@ -57,11 +63,18 @@ selectAllUsers =
       select allUsersQuery
 
 selectUserById :: Int32 -> AppM (Maybe (User, Maybe University))
-selectUserById userId =
-  executeBeamDebug $
-    runSelectReturningFirst $
-      select $
-        userByIdQuery userId
+selectUserById =
+  executeBeamDebug
+    . runSelectReturningFirst
+    . select
+    . userByIdQuery
+
+selectUserByEmail :: Text -> AppM (Maybe (User, Maybe University))
+selectUserByEmail =
+  executeBeamDebug
+    . runSelectReturningFirst
+    . select
+    . userByEmailQuery
 
 insertUser :: Attributes.New -> AppM (User, Maybe University)
 insertUser newUser = executeBeamDebug $ do

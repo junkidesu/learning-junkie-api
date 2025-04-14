@@ -105,11 +105,16 @@ library
       LearningJunkie.Users.User
       LearningJunkie.Users.User.Attributes
       LearningJunkie.Users.User.Education
+      LearningJunkie.Users.User.Login.AuthUser
+      LearningJunkie.Users.User.Login.Credentials
+      LearningJunkie.Users.User.Login.Response
       LearningJunkie.Users.User.Role
       LearningJunkie.Users.Web
       LearningJunkie.Users.Web.All
       LearningJunkie.Users.Web.ById
       LearningJunkie.Users.Web.Create
+      LearningJunkie.Users.Web.Login
+      LearningJunkie.Users.Web.Register
       LearningJunkie.Web
       LearningJunkie.Web.API
       LearningJunkie.Web.AppM
