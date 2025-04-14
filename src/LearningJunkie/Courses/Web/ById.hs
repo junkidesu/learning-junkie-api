@@ -5,7 +5,7 @@ module LearningJunkie.Courses.Web.ById where
 
 import Data.Int (Int32)
 import LearningJunkie.Courses.Course (Course)
-import LearningJunkie.Courses.Database (courseById, toCourseType)
+import LearningJunkie.Courses.Database (selectCourseById, toCourseType)
 import LearningJunkie.Web.AppM (AppM)
 import Servant
 
@@ -16,7 +16,7 @@ type API =
 
 handler :: Int32 -> AppM Course
 handler courseId = do
-    mbCourse <- courseById courseId
+    mbCourse <- selectCourseById courseId
 
     case mbCourse of
         Nothing -> throwError err404

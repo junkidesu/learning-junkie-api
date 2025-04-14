@@ -2,15 +2,17 @@ module LearningJunkie.Courses.Database where
 
 import Data.Int (Int32)
 import Database.Beam
+import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
 import Database.Beam.Postgres
 import qualified LearningJunkie.Courses.Course as Course
+import qualified LearningJunkie.Courses.Course.Attributes as Attributes
 import LearningJunkie.Courses.Database.Table
 import LearningJunkie.Database
 import LearningJunkie.Database.Util (executeBeamDebug)
 import LearningJunkie.Universities.Database
-import LearningJunkie.Universities.Database.Table (University)
-import LearningJunkie.Users.Database (UserDBType, allUsersQuery, toUserType)
-import LearningJunkie.Users.Database.Table (User)
+import LearningJunkie.Universities.Database.Table (PrimaryKey (UniversityId), University)
+import LearningJunkie.Users.Database (UserDBType, allUsersQuery, toUserType, userByIdQuery)
+import LearningJunkie.Users.Database.Table (PrimaryKey (UserId), User)
 import LearningJunkie.Web.AppM (AppM)
 
 type CourseDBType s = CourseT (QExpr Postgres s)
@@ -46,19 +48,43 @@ courseByIdQuery courseId =
         )
         allCoursesQuery
 
-allCourses :: AppM [(Course, University, (User, Maybe University))]
-allCourses =
+insertCourseQuery :: Attributes.New -> SqlInsert Postgres CourseT
+insertCourseQuery newCourse = do
+    insert (dbCourses db) $
+        insertExpressions
+            [ Course
+                default_
+                (val_ $ Attributes.title newCourse)
+                (val_ $ Attributes.description newCourse)
+                (val_ $ Attributes.difficulty newCourse)
+                (val_ $ Attributes.banner newCourse)
+                (val_ $ UniversityId $ Attributes.university newCourse)
+                (val_ $ UserId $ Attributes.instructor newCourse)
+            ]
+
+selectAllCourses :: AppM [(Course, University, (User, Maybe University))]
+selectAllCourses =
     executeBeamDebug $
         runSelectReturningList $
             select $
                 allCoursesQuery
 
-courseById :: Int32 -> AppM (Maybe (Course, University, (User, Maybe University)))
-courseById =
+selectCourseById :: Int32 -> AppM (Maybe (Course, University, (User, Maybe University)))
+selectCourseById =
     executeBeamDebug
         . runSelectReturningFirst
         . select
         . courseByIdQuery
+
+insertCourse :: Attributes.New -> AppM (Course, University, (User, Maybe University))
+insertCourse newCourse = executeBeamDebug $ do
+    [course] <- runInsertReturningList $ insertCourseQuery newCourse
+
+    [university] <- runSelectReturningList $ select $ universityByIdQuery (Attributes.university newCourse)
+
+    [instructor] <- runSelectReturningList $ select $ userByIdQuery (Attributes.instructor newCourse)
+
+    return (course, university, instructor)
 
 toCourseType :: (Course, University, (User, Maybe University)) -> Course.Course
 toCourseType =

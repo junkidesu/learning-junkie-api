@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS users (
 	email TEXT NOT NULL UNIQUE,
 	passwordHash TEXT NOT NULL,
 	avatar TEXT,
-	university INT,
+	university__id INT,
 	FOREIGN KEY (university) REFERENCES universities(id) ON DELETE SET NULL
 );
 
@@ -60,10 +60,10 @@ CREATE TABLE IF NOT EXISTS courses (
 	description TEXT NOT NULL,
 	difficulty TEXT NOT NULL,
 	banner TEXT,
-	university INT NOT NULL,
-	instructor INT NOT NULL, 
-	FOREIGN KEY (university) REFERENCES universities(id) ON DELETE CASCADE,
-	FOREIGN KEY (instructor) REFERENCES users(id) ON DELETE CASCADE
+	university__id INT NOT NULL,
+	instructor__id INT NOT NULL, 
+	FOREIGN KEY (university__id) REFERENCES universities(id) ON DELETE CASCADE,
+	FOREIGN KEY (instructor__id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 INSERT INTO courses (title, description, difficulty, university, instructor)
