@@ -10,6 +10,7 @@ import qualified Data.ByteString.UTF8 as BSU
 import Data.Pool (Pool, defaultPoolConfig, newPool, setNumStripes, withResource)
 import Database.Beam
 import Database.Beam.Postgres
+import LearningJunkie.Courses.Database.Table (CourseT)
 import LearningJunkie.Universities.Database.Table (UniversityT)
 import LearningJunkie.Users.Database.Table (UserT (_userPasswordHash))
 import System.Environment (getEnv)
@@ -17,6 +18,7 @@ import System.Environment (getEnv)
 data LearningJunkieDb f = LearningJunkieDb
     { dbUniversities :: f (TableEntity UniversityT)
     , dbUsers :: f (TableEntity UserT)
+    , dbCourses :: f (TableEntity CourseT)
     }
     deriving (Generic, Database be)
 
@@ -31,6 +33,7 @@ db =
                         tableModification
                             { _userPasswordHash = fieldNamed "passwordhash"
                             }
+            , dbCourses = setEntityName "courses"
             }
 
 connectToDb :: IO (Pool Connection)

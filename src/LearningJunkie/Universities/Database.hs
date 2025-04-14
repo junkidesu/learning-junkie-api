@@ -17,7 +17,8 @@ import qualified LearningJunkie.Universities.University.Attributes as Attributes
 import LearningJunkie.Web.AppM (AppM)
 import Prelude hiding (id)
 
-type UniversityQuery s = Q Postgres LearningJunkieDb s (UniversityT (QExpr Postgres s))
+type UniversityDBType s = UniversityT (QExpr Postgres s)
+type UniversityQuery s = Q Postgres LearningJunkieDb s (UniversityDBType s)
 
 allUniversitiesQuery :: UniversityQuery s
 allUniversitiesQuery = all_ $ dbUniversities db

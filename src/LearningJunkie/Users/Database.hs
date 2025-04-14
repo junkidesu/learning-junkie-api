@@ -7,8 +7,6 @@ import qualified Data.Text as T
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
 import Database.Beam.Postgres (Postgres)
-import Database.Beam.Postgres.Conduit (runUpdateReturning)
-import Database.Operations.Universities (universityById)
 import LearningJunkie.Database (LearningJunkieDb (dbUsers), db)
 import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
 import LearningJunkie.Universities.Database (allUniversitiesQuery, toUniversityType, universityByIdQuery)
@@ -18,7 +16,8 @@ import qualified LearningJunkie.Users.User as User
 import qualified LearningJunkie.Users.User.Attributes as Attributes
 import LearningJunkie.Web.AppM (AppM)
 
-type UserQuery s = Q Postgres LearningJunkieDb s (UserT (QExpr Postgres s), UniversityT (Nullable (QExpr Postgres s)))
+type UserDBType s = (UserT (QExpr Postgres s), UniversityT (Nullable (QExpr Postgres s)))
+type UserQuery s = Q Postgres LearningJunkieDb s (UserDBType s)
 
 allUsersQuery :: UserQuery s
 allUsersQuery = do

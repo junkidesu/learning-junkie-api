@@ -88,6 +88,12 @@ library
       Database.Queries.Users.Progress
       Database.Queries.Users.Solutions
       LearningJunkie.Attribute
+      LearningJunkie.Courses.Course
+      LearningJunkie.Courses.Course.Difficulty
+      LearningJunkie.Courses.Database
+      LearningJunkie.Courses.Database.Table
+      LearningJunkie.Courses.Web
+      LearningJunkie.Courses.Web.All
       LearningJunkie.Database
       LearningJunkie.Database.Util
       LearningJunkie.Universities.Database
