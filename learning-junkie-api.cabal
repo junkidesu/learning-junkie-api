@@ -115,6 +115,7 @@ library
       LearningJunkie.Users.Web.Create
       LearningJunkie.Users.Web.Login
       LearningJunkie.Users.Web.Register
+      LearningJunkie.Users.Web.Update
       LearningJunkie.Web
       LearningJunkie.Web.API
       LearningJunkie.Web.AppM

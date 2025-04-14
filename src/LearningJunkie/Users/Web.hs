@@ -8,6 +8,7 @@ import qualified LearningJunkie.Users.Web.ById as ById
 import qualified LearningJunkie.Users.Web.Create as Create
 import qualified LearningJunkie.Users.Web.Login as Login
 import qualified LearningJunkie.Users.Web.Register as Register
+import qualified LearningJunkie.Users.Web.Update as Update
 import LearningJunkie.Web.AppM (AppM)
 import Servant
 
@@ -16,6 +17,7 @@ type API =
     :> ( All.API
           :<|> ById.API
           :<|> Create.API
+          :<|> Update.API
           :<|> Register.API
           :<|> Login.API
        )
@@ -25,5 +27,6 @@ server =
   All.handler
     :<|> ById.handler
     :<|> Create.handler
+    :<|> Update.handler
     :<|> Register.handler
     :<|> Login.handler

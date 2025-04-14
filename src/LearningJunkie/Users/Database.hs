@@ -5,10 +5,12 @@ import Data.Password.Bcrypt (PasswordHash (unPasswordHash), hashPassword, mkPass
 import Data.Text (Text)
 import qualified Data.Text as T
 import Database.Beam
-import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
+import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
 import Database.Beam.Postgres (Postgres)
+import Database.Beam.Postgres.Conduit (runUpdateReturning)
+import Database.Operations.Universities (universityById)
 import LearningJunkie.Database (LearningJunkieDb (dbUsers), db)
-import LearningJunkie.Database.Util (executeBeamDebug)
+import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
 import LearningJunkie.Universities.Database (allUniversitiesQuery, toUniversityType, universityByIdQuery)
 import LearningJunkie.Universities.Database.Table
 import LearningJunkie.Users.Database.Table
@@ -56,6 +58,18 @@ insertUserQuery newUser passwordHash =
           (val_ $ UniversityId $ Attributes.university newUser)
       ]
 
+updateUserQuery :: Int32 -> Attributes.Edit -> SqlUpdate Postgres UserT
+updateUserQuery userId editUser =
+  update
+    (dbUsers db)
+    ( \r ->
+        updateIfChanged _userName r (Attributes.name editUser)
+          <> updateIfChanged _userAvatar r (Attributes.avatar editUser)
+          <> updateIfChanged _userRole r (Attributes.role editUser)
+          <> maybe mempty (\attr -> _userUniversity r <-. val_ (UniversityId attr)) (Attributes.university editUser)
+    )
+    (\r -> _userId r ==. val_ userId)
+
 selectAllUsers :: AppM [(User, Maybe University)]
 selectAllUsers =
   executeBeamDebug $
@@ -90,6 +104,20 @@ insertUser newUser = executeBeamDebug $ do
       university <- runSelectReturningFirst $ select $ universityByIdQuery universityId
 
       return (user, university)
+
+updateUser :: Int32 -> Attributes.Edit -> AppM (User, Maybe University)
+updateUser userId editUser =
+  executeBeamDebug $ do
+    [user] <-
+      runUpdateReturningList $
+        updateUserQuery userId editUser
+
+    case Attributes.university editUser of
+      Just (Just universityId) -> do
+        university <- runSelectReturningFirst $ select $ universityByIdQuery universityId
+
+        return (user, university)
+      _ -> return (user, Nothing)
 
 toUserType :: (User, Maybe University) -> User.User
 toUserType =
