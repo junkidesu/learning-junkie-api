@@ -94,6 +94,7 @@ library
       LearningJunkie.Courses.Database.Table
       LearningJunkie.Courses.Web
       LearningJunkie.Courses.Web.All
+      LearningJunkie.Courses.Web.ById
       LearningJunkie.Database
       LearningJunkie.Database.Util
       LearningJunkie.Universities.Database

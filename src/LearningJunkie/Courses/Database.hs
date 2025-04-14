@@ -1,5 +1,6 @@
 module LearningJunkie.Courses.Database where
 
+import Data.Int (Int32)
 import Database.Beam
 import Database.Beam.Postgres
 import qualified LearningJunkie.Courses.Course as Course
@@ -37,12 +38,27 @@ allCoursesQuery = do
 
     return (course, university, instructor)
 
+courseByIdQuery :: Int32 -> CourseQuery s
+courseByIdQuery courseId =
+    filter_
+        ( \(course, _, _) ->
+            _courseId course ==. val_ courseId
+        )
+        allCoursesQuery
+
 allCourses :: AppM [(Course, University, (User, Maybe University))]
 allCourses =
     executeBeamDebug $
         runSelectReturningList $
             select $
                 allCoursesQuery
+
+courseById :: Int32 -> AppM (Maybe (Course, University, (User, Maybe University)))
+courseById =
+    executeBeamDebug
+        . runSelectReturningFirst
+        . select
+        . courseByIdQuery
 
 toCourseType :: (Course, University, (User, Maybe University)) -> Course.Course
 toCourseType =
