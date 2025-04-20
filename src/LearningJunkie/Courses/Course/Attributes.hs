@@ -19,7 +19,6 @@ data CourseAttributes f = CourseAttributes
         , description :: Attribute f Text
         , difficulty :: Attribute f Difficulty
         , banner :: Attribute f (Maybe Text)
-        , university :: Attribute f Int32
         , instructor :: Attribute f Int32
         }
 

@@ -2,13 +2,13 @@ module LearningJunkie.Courses.Database where
 
 import Data.Int (Int32)
 import Database.Beam
-import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
+import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
 import Database.Beam.Postgres
 import qualified LearningJunkie.Courses.Course as Course
 import qualified LearningJunkie.Courses.Course.Attributes as Attributes
 import LearningJunkie.Courses.Database.Table
 import LearningJunkie.Database
-import LearningJunkie.Database.Util (executeBeamDebug)
+import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
 import LearningJunkie.Universities.Database
 import LearningJunkie.Universities.Database.Table (PrimaryKey (UniversityId), University)
 import LearningJunkie.Users.Database (UserDBType, allUsersQuery, toUserType, userByIdQuery)
@@ -48,8 +48,8 @@ courseByIdQuery courseId =
         )
         allCoursesQuery
 
-insertCourseQuery :: Attributes.New -> SqlInsert Postgres CourseT
-insertCourseQuery newCourse = do
+insertCourseQuery :: Attributes.New -> Int32 -> SqlInsert Postgres CourseT
+insertCourseQuery newCourse universityId = do
     insert (dbCourses db) $
         insertExpressions
             [ Course
@@ -58,9 +58,24 @@ insertCourseQuery newCourse = do
                 (val_ $ Attributes.description newCourse)
                 (val_ $ Attributes.difficulty newCourse)
                 (val_ $ Attributes.banner newCourse)
-                (val_ $ UniversityId $ Attributes.university newCourse)
+                (val_ $ UniversityId universityId)
                 (val_ $ UserId $ Attributes.instructor newCourse)
             ]
+
+updateCourseQuery :: Int32 -> Attributes.Edit -> SqlUpdate Postgres CourseT
+updateCourseQuery courseId editCourse = do
+    update
+        (dbCourses db)
+        ( \r ->
+            updateIfChanged _courseTitle r (Attributes.title editCourse)
+                <> updateIfChanged _courseBanner r (Attributes.banner editCourse)
+                <> updateIfChanged _courseDescription r (Attributes.description editCourse)
+                <> updateIfChanged _courseDifficulty r (Attributes.difficulty editCourse)
+        )
+        (\r -> _courseId r ==. val_ courseId)
+
+deleteCourseQuery :: Int32 -> SqlDelete Postgres CourseT
+deleteCourseQuery courseId = delete (dbCourses db) (\r -> _courseId r ==. val_ courseId)
 
 selectAllCourses :: AppM [(Course, University, (User, Maybe University))]
 selectAllCourses =
@@ -76,15 +91,45 @@ selectCourseById =
         . select
         . courseByIdQuery
 
-insertCourse :: Attributes.New -> AppM (Course, University, (User, Maybe University))
-insertCourse newCourse = executeBeamDebug $ do
-    [course] <- runInsertReturningList $ insertCourseQuery newCourse
+insertCourse :: Attributes.New -> Int32 -> AppM (Course, University, (User, Maybe University))
+insertCourse newCourse universityId = executeBeamDebug $ do
+    [course] <- runInsertReturningList $ insertCourseQuery newCourse universityId
 
-    [university] <- runSelectReturningList $ select $ universityByIdQuery (Attributes.university newCourse)
+    let
+        courseUniversityId :: Int32
+        UniversityId courseUniversityId = _courseUniversity course
 
-    [instructor] <- runSelectReturningList $ select $ userByIdQuery (Attributes.instructor newCourse)
+        instructorId :: Int32
+        UserId instructorId = _courseInstructor course
+
+    [university] <- runSelectReturningList $ select $ universityByIdQuery courseUniversityId
+
+    [instructor] <- runSelectReturningList $ select $ userByIdQuery instructorId
 
     return (course, university, instructor)
+
+updateCourse :: Int32 -> Attributes.Edit -> AppM (Course, University, (User, Maybe University))
+updateCourse courseId editCourse = executeBeamDebug $ do
+    [course] <- runUpdateReturningList $ updateCourseQuery courseId editCourse
+
+    let
+        universityId :: Int32
+        UniversityId universityId = _courseUniversity course
+
+        instructorId :: Int32
+        UserId instructorId = _courseInstructor course
+
+    [university] <- runSelectReturningList $ select $ universityByIdQuery universityId
+
+    [instructor] <- runSelectReturningList $ select $ userByIdQuery instructorId
+
+    return (course, university, instructor)
+
+deleteCourse :: Int32 -> AppM ()
+deleteCourse =
+    executeBeamDebug
+        . runDelete
+        . deleteCourseQuery
 
 toCourseType :: (Course, University, (User, Maybe University)) -> Course.Course
 toCourseType =

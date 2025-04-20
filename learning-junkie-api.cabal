@@ -96,7 +96,8 @@ library
       LearningJunkie.Courses.Web
       LearningJunkie.Courses.Web.All
       LearningJunkie.Courses.Web.ById
-      LearningJunkie.Courses.Web.Create
+      LearningJunkie.Courses.Web.Delete
+      LearningJunkie.Courses.Web.Update
       LearningJunkie.Database
       LearningJunkie.Database.Util
       LearningJunkie.Universities.Database
@@ -106,6 +107,8 @@ library
       LearningJunkie.Universities.Web
       LearningJunkie.Universities.Web.All
       LearningJunkie.Universities.Web.ById
+      LearningJunkie.Universities.Web.Courses
+      LearningJunkie.Universities.Web.Courses.Add
       LearningJunkie.Universities.Web.Create
       LearningJunkie.Universities.Web.Delete
       LearningJunkie.Universities.Web.Instructors

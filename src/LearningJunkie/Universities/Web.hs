@@ -10,6 +10,7 @@ import qualified LearningJunkie.Universities.Web.Create as Create
 import qualified LearningJunkie.Universities.Web.Delete as Delete
 import qualified LearningJunkie.Universities.Web.Instructors as Instructors
 
+import qualified LearningJunkie.Universities.Web.Courses as Courses
 import qualified LearningJunkie.Universities.Web.Representatives as Representatives
 import qualified LearningJunkie.Universities.Web.Update as Update
 import LearningJunkie.Web.AppM (AppM)
@@ -23,12 +24,13 @@ type API =
                 :<|> Delete.API
                 :<|> Update.API
                 :<|> ( Capture' '[Required, Description "ID of the university"] "id" Int32
-                        :> "instructors"
-                        :> Instructors.API
-                     )
-                :<|> ( Capture' '[Required, Description "ID of the university"] "id" Int32
-                        :> "representatives"
-                        :> Representatives.API
+                        :> ( "instructors"
+                                :> Instructors.API
+                                :<|> "representatives"
+                                    :> Representatives.API
+                                :<|> "courses"
+                                    :> Courses.API
+                           )
                      )
            )
 
@@ -39,5 +41,8 @@ server =
         :<|> ById.handler
         :<|> Delete.handler
         :<|> Update.handler
-        :<|> Instructors.server
-        :<|> Representatives.server
+        :<|> ( \universityId ->
+                Instructors.server universityId
+                    :<|> Representatives.server universityId
+                    :<|> Courses.server universityId
+             )
