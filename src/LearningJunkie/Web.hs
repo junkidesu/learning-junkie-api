@@ -13,7 +13,7 @@ import qualified LearningJunkie.Web.OpenApi as OpenApi
 import Network.Wai.Handler.Warp (defaultSettings, runSettings, setLogger, setPort)
 import Network.Wai.Logger (withStdoutLogger)
 import Servant
-import Servant.Auth.Server (defaultCookieSettings, defaultJWTSettings, generateKey)
+import Servant.Auth.Server
 
 type LearningJunkieAPI = OpenApi.API :<|> Web.API
 
@@ -41,7 +41,7 @@ makeApp = do
             cfg
         $ hoistServerWithContext
             api
-            (Proxy :: Proxy '[])
+            (Proxy :: Proxy '[CookieSettings, JWTSettings])
             (`runReaderT` environment)
             server
 
