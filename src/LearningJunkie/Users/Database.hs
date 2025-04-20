@@ -11,7 +11,7 @@ import LearningJunkie.Database (LearningJunkieDb (dbUsers), db)
 import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
 import LearningJunkie.Universities.Database (allUniversitiesQuery, toUniversityType, universityByIdQuery)
 import LearningJunkie.Universities.Database.Table
-import LearningJunkie.Users.Database.Role (Role)
+import LearningJunkie.Users.Database.Role (Role (Instructor, UniversityRep))
 import LearningJunkie.Users.Database.Table
 import qualified LearningJunkie.Users.User as User
 import qualified LearningJunkie.Users.User.Attributes as Attributes
@@ -39,6 +39,32 @@ userByEmailQuery :: Text -> UserQuery s
 userByEmailQuery email =
   filter_
     (\user -> (_userEmail . fst $ user) ==. val_ email)
+    allUsersQuery
+
+universityRepresentativesQuery :: Int32 -> UserQuery s
+universityRepresentativesQuery universityId =
+  filter_'
+    ( \user ->
+        ( _userUniversity (fst user)
+            ==?. val_ (UniversityId $ Just universityId)
+        )
+          &&?. ( _userRole (fst user)
+                  ==?. val_ UniversityRep
+               )
+    )
+    allUsersQuery
+
+universityInstructorsQuery :: Int32 -> UserQuery s
+universityInstructorsQuery universityId =
+  filter_'
+    ( \user ->
+        ( _userUniversity (fst user)
+            ==?. val_ (UniversityId $ Just universityId)
+        )
+          &&?. ( _userRole (fst user)
+                  ==?. val_ Instructor
+               )
+    )
     allUsersQuery
 
 insertUserQuery :: Attributes.New -> Role -> Maybe Int32 -> Text -> SqlInsert Postgres UserT
@@ -93,6 +119,20 @@ selectUserByEmail =
     . select
     . userByEmailQuery
 
+selectUniversityRepresentatives :: Int32 -> AppM [(User, Maybe University)]
+selectUniversityRepresentatives universityId =
+  executeBeamDebug $
+    runSelectReturningList $
+      select $
+        universityRepresentativesQuery universityId
+
+selectUniversityInstructors :: Int32 -> AppM [(User, Maybe University)]
+selectUniversityInstructors universityId =
+  executeBeamDebug $
+    runSelectReturningList $
+      select $
+        universityInstructorsQuery universityId
+
 insertUser :: Attributes.New -> Role -> Maybe Int32 -> AppM (User, Maybe University)
 insertUser newUser newUserRole newUserUniversity = executeBeamDebug $ do
   hashedPassword <- hashPassword . mkPassword . T.strip . Attributes.password $ newUser
@@ -115,8 +155,12 @@ updateUser userId editUser editUserRole editUserUniversity =
       runUpdateReturningList $
         updateUserQuery userId editUser editUserRole editUserUniversity
 
-    case editUserUniversity of
-      Just (Just universityId) -> do
+    let
+      mbUniversity :: Maybe Int32
+      UniversityId mbUniversity = _userUniversity user
+
+    case mbUniversity of
+      Just universityId -> do
         university <- runSelectReturningFirst $ select $ universityByIdQuery universityId
 
         return (user, university)

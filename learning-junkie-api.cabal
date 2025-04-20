@@ -113,8 +113,10 @@ library
       LearningJunkie.Universities.Web.Delete
       LearningJunkie.Universities.Web.Instructors
       LearningJunkie.Universities.Web.Instructors.Add
+      LearningJunkie.Universities.Web.Instructors.All
       LearningJunkie.Universities.Web.Representatives
       LearningJunkie.Universities.Web.Representatives.Add
+      LearningJunkie.Universities.Web.Representatives.All
       LearningJunkie.Universities.Web.Update
       LearningJunkie.Users.Database
       LearningJunkie.Users.Database.Education
