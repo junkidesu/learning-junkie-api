@@ -8,6 +8,7 @@ import Control.Monad.Trans.Reader (ReaderT (runReaderT))
 import LearningJunkie.Database (connectToDb)
 import qualified LearningJunkie.Web.API as Web
 import LearningJunkie.Web.AppM (AppM)
+import LearningJunkie.Web.Cors (myCors)
 import LearningJunkie.Web.Environment (Environment (Environment))
 import qualified LearningJunkie.Web.OpenApi as OpenApi
 import Network.Wai.Handler.Warp (defaultSettings, runSettings, setLogger, setPort)
@@ -36,7 +37,8 @@ makeApp = do
         cfg = defaultCookieSettings :. jwtCfg :. EmptyContext
         environment = Environment conns jwtCfg
     return
-        . serveWithContext
+        . myCors
+        $ serveWithContext
             api
             cfg
         $ hoistServerWithContext
