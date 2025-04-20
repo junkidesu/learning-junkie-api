@@ -20,8 +20,8 @@ import Data.Text (Text)
 import Data.Time (Day, UTCTime)
 import GHC.Generics (Generic)
 import LearningJunkie.Universities.University (University)
-import LearningJunkie.Users.User.Education (Education)
-import LearningJunkie.Users.User.Role (Role)
+import LearningJunkie.Users.Database.Education (Education)
+import LearningJunkie.Users.Database.Role (Role)
 import Prelude hiding (id)
 
 data User = User

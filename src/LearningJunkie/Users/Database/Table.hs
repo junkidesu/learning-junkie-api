@@ -11,8 +11,8 @@ import Data.Text (Text)
 import Data.Time (Day, UTCTime)
 import Database.Beam
 import LearningJunkie.Universities.Database.Table (UniversityT)
-import LearningJunkie.Users.User.Education (Education)
-import LearningJunkie.Users.User.Role (Role)
+import LearningJunkie.Users.Database.Education (Education)
+import LearningJunkie.Users.Database.Role (Role)
 
 data UserT f = User
         { _userId :: C f Int32

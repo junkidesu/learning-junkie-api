@@ -4,7 +4,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module LearningJunkie.Users.User.Role (Role (..)) where
+module LearningJunkie.Users.Database.Role (Role (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.OpenApi (ToSchema)
@@ -13,7 +13,7 @@ import Database.Beam.Backend
 import Database.Beam.Postgres (Postgres)
 import GHC.Generics (Generic)
 
-data Role = Admin | Student | Instructor
+data Role = Student | Instructor | UniversityRep | Admin
         deriving (Read, Show, Eq, Generic)
 
 instance FromJSON Role

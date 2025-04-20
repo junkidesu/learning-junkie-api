@@ -108,30 +108,35 @@ library
       LearningJunkie.Universities.Web.ById
       LearningJunkie.Universities.Web.Create
       LearningJunkie.Universities.Web.Delete
+      LearningJunkie.Universities.Web.Instructors
+      LearningJunkie.Universities.Web.Instructors.Add
+      LearningJunkie.Universities.Web.Representatives
+      LearningJunkie.Universities.Web.Representatives.Add
       LearningJunkie.Universities.Web.Update
       LearningJunkie.Users.Database
+      LearningJunkie.Users.Database.Education
+      LearningJunkie.Users.Database.Role
       LearningJunkie.Users.Database.Table
       LearningJunkie.Users.User
       LearningJunkie.Users.User.Attributes
-      LearningJunkie.Users.User.Education
-      LearningJunkie.Users.User.Login.AuthUser
-      LearningJunkie.Users.User.Login.Credentials
-      LearningJunkie.Users.User.Login.Response
-      LearningJunkie.Users.User.Role
       LearningJunkie.Users.Web
       LearningJunkie.Users.Web.All
       LearningJunkie.Users.Web.ById
-      LearningJunkie.Users.Web.Create
       LearningJunkie.Users.Web.Login
       LearningJunkie.Users.Web.Register
-      LearningJunkie.Users.Web.Update
       LearningJunkie.Web
       LearningJunkie.Web.API
       LearningJunkie.Web.AppM
+      LearningJunkie.Web.Auth.Credentials
+      LearningJunkie.Web.Auth.Permissions
+      LearningJunkie.Web.Auth.Response
+      LearningJunkie.Web.Auth.User
       LearningJunkie.Web.Environment
+      LearningJunkie.Web.JWTAuth
       LearningJunkie.Web.OpenApi
       Lib
       MinioUpload
+      Servant.Auth.OpenApi
       Types.Auth.Credentials
       Types.Auth.JWTAuth
       Types.Auth.Response
@@ -194,6 +199,7 @@ library
     , dotenv
     , http-conduit
     , http-types
+    , insert-ordered-containers
     , lens
     , minio-hs
     , openapi3
@@ -246,6 +252,7 @@ executable learning-junkie-api-exe
     , dotenv
     , http-conduit
     , http-types
+    , insert-ordered-containers
     , learning-junkie-api
     , lens
     , minio-hs
@@ -300,6 +307,7 @@ test-suite learning-junkie-api-test
     , dotenv
     , http-conduit
     , http-types
+    , insert-ordered-containers
     , learning-junkie-api
     , lens
     , minio-hs

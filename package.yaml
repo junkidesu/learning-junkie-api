@@ -61,6 +61,7 @@ dependencies:
 - conduit-extra
 - http-conduit
 - dotenv
+- insert-ordered-containers
 
 ghc-options:
 - -Wall

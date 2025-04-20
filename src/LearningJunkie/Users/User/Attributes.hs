@@ -7,25 +7,32 @@ module LearningJunkie.Users.User.Attributes where
 
 import Data.Aeson (FromJSON)
 import Data.Functor.Identity (Identity)
-import Data.Int (Int32)
 import Data.OpenApi (ToSchema)
 import Data.Text (Text)
 import Data.Time (Day)
 import GHC.Generics (Generic)
 import LearningJunkie.Attribute (Attribute)
-import LearningJunkie.Users.User.Education (Education)
-import LearningJunkie.Users.User.Role (Role)
+import LearningJunkie.Users.Database.Education (Education)
 
 data UserAttributes f = UserAttributes
         { name :: Attribute f Text
         , birthday :: Attribute f (Maybe Day)
         , education :: Attribute f (Maybe Education)
-        , role :: Attribute f Role
         , email :: Attribute f Text
         , avatar :: Attribute f (Maybe Text)
         , password :: Attribute f Text
-        , university :: Attribute f (Maybe Int32)
         }
+
+emptyEditUser :: UserAttributes Maybe
+emptyEditUser =
+        UserAttributes
+                { name = Nothing
+                , birthday = Nothing
+                , education = Nothing
+                , email = Nothing
+                , avatar = Nothing
+                , password = Nothing
+                }
 
 type New = UserAttributes Identity
 type Edit = UserAttributes Maybe

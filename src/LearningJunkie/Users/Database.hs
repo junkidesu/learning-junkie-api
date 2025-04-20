@@ -11,6 +11,7 @@ import LearningJunkie.Database (LearningJunkieDb (dbUsers), db)
 import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
 import LearningJunkie.Universities.Database (allUniversitiesQuery, toUniversityType, universityByIdQuery)
 import LearningJunkie.Universities.Database.Table
+import LearningJunkie.Users.Database.Role (Role)
 import LearningJunkie.Users.Database.Table
 import qualified LearningJunkie.Users.User as User
 import qualified LearningJunkie.Users.User.Attributes as Attributes
@@ -40,8 +41,8 @@ userByEmailQuery email =
     (\user -> (_userEmail . fst $ user) ==. val_ email)
     allUsersQuery
 
-insertUserQuery :: Attributes.New -> Text -> SqlInsert Postgres UserT
-insertUserQuery newUser passwordHash =
+insertUserQuery :: Attributes.New -> Role -> Maybe Int32 -> Text -> SqlInsert Postgres UserT
+insertUserQuery newUser newUserRole university passwordHash =
   insert (dbUsers db) $
     insertExpressions
       [ User
@@ -50,22 +51,25 @@ insertUserQuery newUser passwordHash =
           (val_ $ Attributes.name newUser)
           (val_ $ Attributes.birthday newUser)
           (val_ $ Attributes.education newUser)
-          (val_ $ Attributes.role newUser)
+          (val_ $ newUserRole)
           (val_ $ Attributes.email newUser)
           (val_ $ Attributes.avatar newUser)
           (val_ passwordHash)
-          (val_ $ UniversityId $ Attributes.university newUser)
+          (val_ $ UniversityId $ university)
       ]
 
-updateUserQuery :: Int32 -> Attributes.Edit -> SqlUpdate Postgres UserT
-updateUserQuery userId editUser =
+updateUserQuery :: Int32 -> Attributes.Edit -> Maybe Role -> Maybe (Maybe Int32) -> SqlUpdate Postgres UserT
+updateUserQuery userId editUser editUserRole editUserUniversity =
   update
     (dbUsers db)
     ( \r ->
         updateIfChanged _userName r (Attributes.name editUser)
           <> updateIfChanged _userAvatar r (Attributes.avatar editUser)
-          <> updateIfChanged _userRole r (Attributes.role editUser)
-          <> maybe mempty (\attr -> _userUniversity r <-. val_ (UniversityId attr)) (Attributes.university editUser)
+          <> updateIfChanged _userRole r editUserRole
+          <> maybe
+            mempty
+            (\attr -> _userUniversity r <-. val_ (UniversityId attr))
+            editUserUniversity
     )
     (\r -> _userId r ==. val_ userId)
 
@@ -89,29 +93,29 @@ selectUserByEmail =
     . select
     . userByEmailQuery
 
-insertUser :: Attributes.New -> AppM (User, Maybe University)
-insertUser newUser = executeBeamDebug $ do
+insertUser :: Attributes.New -> Role -> Maybe Int32 -> AppM (User, Maybe University)
+insertUser newUser newUserRole newUserUniversity = executeBeamDebug $ do
   hashedPassword <- hashPassword . mkPassword . T.strip . Attributes.password $ newUser
 
   [user] <-
     runInsertReturningList $
-      insertUserQuery newUser (unPasswordHash hashedPassword)
+      insertUserQuery newUser newUserRole newUserUniversity (unPasswordHash hashedPassword)
 
-  case Attributes.university newUser of
+  case newUserUniversity of
     Nothing -> return (user, Nothing)
     Just universityId -> do
       university <- runSelectReturningFirst $ select $ universityByIdQuery universityId
 
       return (user, university)
 
-updateUser :: Int32 -> Attributes.Edit -> AppM (User, Maybe University)
-updateUser userId editUser =
+updateUser :: Int32 -> Attributes.Edit -> Maybe Role -> Maybe (Maybe Int32) -> AppM (User, Maybe University)
+updateUser userId editUser editUserRole editUserUniversity =
   executeBeamDebug $ do
     [user] <-
       runUpdateReturningList $
-        updateUserQuery userId editUser
+        updateUserQuery userId editUser editUserRole editUserUniversity
 
-    case Attributes.university editUser of
+    case editUserUniversity of
       Just (Just universityId) -> do
         university <- runSelectReturningFirst $ select $ universityByIdQuery universityId
 

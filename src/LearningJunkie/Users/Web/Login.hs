@@ -9,12 +9,13 @@ import qualified Data.ByteString.Lazy.UTF8 as BS
 import Data.Password.Bcrypt
 import qualified Data.Text as T
 import Data.Time
+import qualified LearningJunkie.Universities.Database.Table as University
 import LearningJunkie.Users.Database (selectUserByEmail)
 import qualified LearningJunkie.Users.Database.Table as User
-import LearningJunkie.Users.User.Login.AuthUser (AuthUser (AuthUser))
-import qualified LearningJunkie.Users.User.Login.Credentials as Credentials
-import LearningJunkie.Users.User.Login.Response (AuthResponse (AuthResponse))
 import LearningJunkie.Web.AppM (AppM)
+import qualified LearningJunkie.Web.Auth.Credentials as Credentials
+import LearningJunkie.Web.Auth.Response (AuthResponse (AuthResponse))
+import LearningJunkie.Web.Auth.User (AuthUser (AuthUser))
 import LearningJunkie.Web.Environment (Environment (jwtSettings))
 import Servant
 import Servant.Auth.Server (makeJWT)
@@ -33,7 +34,7 @@ handler credentials = do
 
     case foundUser of
         Nothing -> throwError err401
-        Just (user, _) ->
+        Just (user, mbUniversity) ->
             let passwordCheck =
                     checkPassword
                         (mkPassword . T.strip . Credentials.password $ credentials)
@@ -42,7 +43,12 @@ handler credentials = do
                     PasswordCheckFail -> throwError err401
                     PasswordCheckSuccess -> do
                         let
-                            authUser = AuthUser (User._userId user) (User._userEmail user) (User._userRole user)
+                            authUser =
+                                AuthUser
+                                    (User._userId user)
+                                    (User._userEmail user)
+                                    (User._userRole user)
+                                    (University._universityId <$> mbUniversity)
 
                         tokenExpireTime <- addUTCTime (3600 :: NominalDiffTime) <$> liftIO getCurrentTime
 

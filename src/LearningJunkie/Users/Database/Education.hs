@@ -4,7 +4,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module LearningJunkie.Users.User.Education (Education (..)) where
+module LearningJunkie.Users.Database.Education (Education (..)) where
 
 import Data.Aeson (FromJSON, ToJSON)
 import Data.OpenApi (ToSchema)
