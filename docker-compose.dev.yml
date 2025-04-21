@@ -22,8 +22,8 @@ services:
       - db
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_ACCESS_KEY_SECRET=${AWS_ACCESS_KEY_SECRET}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
 
   adminer:
     image: adminer

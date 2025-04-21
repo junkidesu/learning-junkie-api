@@ -1,12 +1,13 @@
 module LearningJunkie.Users.Database where
 
+import Control.Exception (throw)
 import Data.Int (Int32)
 import Data.Password.Bcrypt (PasswordHash (unPasswordHash), hashPassword, mkPassword)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
-import Database.Beam.Postgres (Postgres)
+import Database.Beam.Postgres (Postgres, SqlError (SqlError))
 import LearningJunkie.Database (LearningJunkieDb (dbUsers), db)
 import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
 import LearningJunkie.Universities.Database (allUniversitiesQuery, toUniversityType, universityByIdQuery)
@@ -16,6 +17,7 @@ import LearningJunkie.Users.Database.Table
 import qualified LearningJunkie.Users.User as User
 import qualified LearningJunkie.Users.User.Attributes as Attributes
 import LearningJunkie.Web.AppM (AppM)
+import Servant (err404, throwError)
 
 type UserDBType s = (UserT (QExpr Postgres s), UniversityT (Nullable (QExpr Postgres s)))
 type UserQuery s = Q Postgres LearningJunkieDb s (UserDBType s)
@@ -97,7 +99,7 @@ updateUserQuery userId editUser editUserRole editUserUniversity =
             (\attr -> _userUniversity r <-. val_ (UniversityId attr))
             editUserUniversity
     )
-    (\r -> _userId r ==. val_ userId)
+    (\r -> val_ userId ==. _userId r)
 
 selectAllUsers :: AppM [(User, Maybe University)]
 selectAllUsers =
@@ -153,7 +155,11 @@ updateUser userId editUser editUserRole editUserUniversity =
   executeBeamDebug $ do
     [user] <-
       runUpdateReturningList $
-        updateUserQuery userId editUser editUserRole editUserUniversity
+        updateUserQuery
+          userId
+          editUser
+          editUserRole
+          editUserUniversity
 
     let
       mbUniversity :: Maybe Int32

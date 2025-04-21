@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
 module LearningJunkie.Web (startApp) where
@@ -10,6 +11,7 @@ import qualified LearningJunkie.Web.API as Web
 import LearningJunkie.Web.AppM (AppM)
 import LearningJunkie.Web.Cors (myCors)
 import LearningJunkie.Web.Environment (Environment (Environment))
+import LearningJunkie.Web.Minio (connectMinio)
 import qualified LearningJunkie.Web.OpenApi as OpenApi
 import Network.Wai.Handler.Warp (defaultSettings, runSettings, setLogger, setPort)
 import Network.Wai.Logger (withStdoutLogger)
@@ -30,12 +32,19 @@ makeApp = do
 
     conns <- connectToDb
 
+    minioConnection <- connectMinio
+
     myKey <- generateKey
 
     let
         jwtCfg = defaultJWTSettings myKey
         cfg = defaultCookieSettings :. jwtCfg :. EmptyContext
-        environment = Environment conns jwtCfg
+        environment =
+            Environment
+                conns
+                "http://localhost:9000/learning-junkie-aws-bucket"
+                minioConnection
+                jwtCfg
     return
         . myCors
         $ serveWithContext

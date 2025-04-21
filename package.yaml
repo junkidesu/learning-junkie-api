@@ -60,8 +60,11 @@ dependencies:
 - conduit
 - conduit-extra
 - http-conduit
+- http-client
+- http-media
 - dotenv
 - insert-ordered-containers
+- uuid
 
 ghc-options:
 - -Wall
