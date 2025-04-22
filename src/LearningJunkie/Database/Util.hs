@@ -31,3 +31,12 @@ updateIfChanged ::
     Maybe a ->
     QAssignment Postgres s
 updateIfChanged c r = maybe mempty (\attr -> c r <-. val_ attr)
+
+tripleFst :: (a, b, c) -> a
+tripleFst (x, _, _) = x
+
+tripleSnd :: (a, b, c) -> b
+tripleSnd (_, x, _) = x
+
+tripleThrd :: (a, b, c) -> c
+tripleThrd (_, _, x) = x

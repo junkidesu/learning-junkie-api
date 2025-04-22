@@ -20,7 +20,7 @@ data Course = Course
     , university :: University
     , instructor :: User
     }
-    deriving (Generic)
+    deriving (Generic, Show)
 
 instance FromJSON Course
 instance ToJSON Course

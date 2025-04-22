@@ -97,9 +97,15 @@ library
       LearningJunkie.Courses.Web.All
       LearningJunkie.Courses.Web.ById
       LearningJunkie.Courses.Web.Delete
+      LearningJunkie.Courses.Web.Enrollments
+      LearningJunkie.Courses.Web.Enrollments.All
+      LearningJunkie.Courses.Web.Enrollments.Enroll
       LearningJunkie.Courses.Web.Update
       LearningJunkie.Database
       LearningJunkie.Database.Util
+      LearningJunkie.Enrollments.Database
+      LearningJunkie.Enrollments.Database.Table
+      LearningJunkie.Enrollments.Enrollment
       LearningJunkie.Universities.Database
       LearningJunkie.Universities.Database.Table
       LearningJunkie.Universities.University

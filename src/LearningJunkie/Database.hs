@@ -11,6 +11,7 @@ import Data.Pool (Pool, defaultPoolConfig, newPool, setNumStripes, withResource)
 import Database.Beam
 import Database.Beam.Postgres
 import LearningJunkie.Courses.Database.Table (CourseT)
+import LearningJunkie.Enrollments.Database.Table (EnrollmentT)
 import LearningJunkie.Universities.Database.Table (UniversityT)
 import LearningJunkie.Users.Database.Table (UserT (_userPasswordHash))
 import System.Environment (getEnv)
@@ -19,6 +20,7 @@ data LearningJunkieDb f = LearningJunkieDb
     { dbUniversities :: f (TableEntity UniversityT)
     , dbUsers :: f (TableEntity UserT)
     , dbCourses :: f (TableEntity CourseT)
+    , dbEnrollments :: f (TableEntity EnrollmentT)
     }
     deriving (Generic, Database be)
 
@@ -34,6 +36,7 @@ db =
                             { _userPasswordHash = fieldNamed "passwordhash"
                             }
             , dbCourses = setEntityName "courses"
+            , dbEnrollments = setEntityName "enrollments"
             }
 
 connectToDb :: IO (Pool Connection)

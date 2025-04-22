@@ -8,7 +8,7 @@ import qualified LearningJunkie.Courses.Course as Course
 import qualified LearningJunkie.Courses.Course.Attributes as Attributes
 import LearningJunkie.Courses.Database.Table
 import LearningJunkie.Database
-import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
+import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd, updateIfChanged)
 import LearningJunkie.Universities.Database
 import LearningJunkie.Universities.Database.Table (PrimaryKey (UniversityId), University)
 import LearningJunkie.Users.Database (UserDBType, allUsersQuery, toUserType, userByIdQuery)
@@ -141,7 +141,3 @@ toCourseType =
         <*> (_courseBanner . tripleFst)
         <*> (toUniversityType . tripleSnd)
         <*> (toUserType . tripleThrd)
-  where
-    tripleFst (x, _, _) = x
-    tripleSnd (_, x, _) = x
-    tripleThrd (_, _, x) = x

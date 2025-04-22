@@ -50,7 +50,6 @@ handler (Authenticated authUser) multipartData = do
 
             let avatarFilePath = "avatars/" <> avatarFileNameId <> "." <> extension
 
-            liftIO $ print avatarFilePath
             avatarUploadResult <- uploadFileMinio avatarFilePath avatarContentType payload
 
             case avatarUploadResult of

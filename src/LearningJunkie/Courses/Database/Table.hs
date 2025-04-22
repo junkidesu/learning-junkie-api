@@ -1,5 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module LearningJunkie.Courses.Database.Table where
@@ -24,6 +26,9 @@ data CourseT f = Course
 
 type Course = CourseT Identity
 type CourseId = PrimaryKey CourseT Identity
+
+deriving instance Show Course
+deriving instance Show CourseId
 
 instance Table CourseT where
         data PrimaryKey CourseT f = CourseId (C f Int32) deriving (Generic, Beamable)
