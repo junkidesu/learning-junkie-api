@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
-module LearningJunkie.Users.Web.Self.Avatar.Upload where
+module LearningJunkie.Users.Web.Self.Avatar.Upload (API, handler) where
 
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.Trans.Reader (asks)
@@ -59,10 +59,15 @@ handler (Authenticated authUser) multipartData = do
                     throwError err400{errBody = "File not uploaded"}
                 Right _ -> do
                     bucketUrl <- asks minioBucket
-                    toUserType
-                        <$> updateUser
+
+                    mbUser <-
+                        updateUser
                             (Auth.id authUser)
                             Attributes.emptyEditUser{Attributes.avatar = Just (Just (bucketUrl <> "/" <> avatarFilePath))}
                             Nothing
                             Nothing
+
+                    case mbUser of
+                        Nothing -> throwError err404
+                        Just user -> return . toUserType $ user
 handler _ _ = throwError err401

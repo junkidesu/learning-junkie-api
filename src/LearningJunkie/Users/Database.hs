@@ -7,7 +7,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
-import Database.Beam.Postgres (Postgres, SqlError (SqlError))
+import Database.Beam.Postgres (Postgres)
 import LearningJunkie.Database (LearningJunkieDb (dbUsers), db)
 import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
 import LearningJunkie.Universities.Database (allUniversitiesQuery, toUniversityType, universityByIdQuery)
@@ -17,7 +17,6 @@ import LearningJunkie.Users.Database.Table
 import qualified LearningJunkie.Users.User as User
 import qualified LearningJunkie.Users.User.Attributes as Attributes
 import LearningJunkie.Web.AppM (AppM)
-import Servant (err404, throwError)
 
 type UserDBType s = (UserT (QExpr Postgres s), UniversityT (Nullable (QExpr Postgres s)))
 type UserQuery s = Q Postgres LearningJunkieDb s (UserDBType s)
@@ -101,6 +100,13 @@ updateUserQuery userId editUser editUserRole editUserUniversity =
     )
     (\r -> val_ userId ==. _userId r)
 
+removeUserAvatarQuery :: Int32 -> SqlUpdate Postgres UserT
+removeUserAvatarQuery userId =
+  update
+    (dbUsers db)
+    (\r -> _userAvatar r <-. val_ Nothing)
+    (\r -> _userId r ==. val_ userId)
+
 selectAllUsers :: AppM [(User, Maybe University)]
 selectAllUsers =
   executeBeamDebug $
@@ -150,10 +156,10 @@ insertUser newUser newUserRole newUserUniversity = executeBeamDebug $ do
 
       return (user, university)
 
-updateUser :: Int32 -> Attributes.Edit -> Maybe Role -> Maybe (Maybe Int32) -> AppM (User, Maybe University)
+updateUser :: Int32 -> Attributes.Edit -> Maybe Role -> Maybe (Maybe Int32) -> AppM (Maybe (User, Maybe University))
 updateUser userId editUser editUserRole editUserUniversity =
   executeBeamDebug $ do
-    [user] <-
+    users <-
       runUpdateReturningList $
         updateUserQuery
           userId
@@ -161,16 +167,41 @@ updateUser userId editUser editUserRole editUserUniversity =
           editUserRole
           editUserUniversity
 
-    let
-      mbUniversity :: Maybe Int32
-      UniversityId mbUniversity = _userUniversity user
+    case users of
+      [] -> return Nothing
+      (user : _) -> do
+        let
+          mbUniversity :: Maybe Int32
+          UniversityId mbUniversity = _userUniversity user
 
-    case mbUniversity of
-      Just universityId -> do
-        university <- runSelectReturningFirst $ select $ universityByIdQuery universityId
+        case mbUniversity of
+          Just universityId -> do
+            university <- runSelectReturningFirst $ select $ universityByIdQuery universityId
 
-        return (user, university)
-      _ -> return (user, Nothing)
+            return $ Just (user, university)
+          _ -> return $ Just (user, Nothing)
+
+removeUserAvatar :: Int32 -> AppM (Maybe (User, Maybe University))
+removeUserAvatar userId =
+  executeBeamDebug $ do
+    users <-
+      runUpdateReturningList $
+        removeUserAvatarQuery
+          userId
+
+    case users of
+      [] -> return Nothing
+      (user : _) -> do
+        let
+          mbUniversity :: Maybe Int32
+          UniversityId mbUniversity = _userUniversity user
+
+        case mbUniversity of
+          Just universityId -> do
+            university <- runSelectReturningFirst $ select $ universityByIdQuery universityId
+
+            return $ Just (user, university)
+          _ -> return $ Just (user, Nothing)
 
 toUserType :: (User, Maybe University) -> User.User
 toUserType =

@@ -131,6 +131,7 @@ library
       LearningJunkie.Users.Web.Register
       LearningJunkie.Users.Web.Self
       LearningJunkie.Users.Web.Self.Avatar
+      LearningJunkie.Users.Web.Self.Avatar.Delete
       LearningJunkie.Users.Web.Self.Avatar.Upload
       LearningJunkie.Users.Web.Self.Update
       LearningJunkie.Web
