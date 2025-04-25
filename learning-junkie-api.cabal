@@ -25,68 +25,6 @@ source-repository head
 
 library
   exposed-modules:
-      Api
-      Api.Auth
-      Api.Courses
-      Api.Courses.Banner
-      Api.Courses.Enrollments
-      Api.Courses.Exercises.Essays
-      Api.Courses.Exercises.Questions
-      Api.Courses.Exercises.Quizzes
-      Api.Courses.Lessons
-      Api.Exercises
-      Api.Exercises.Essays
-      Api.Exercises.Questions
-      Api.Exercises.Quizzes
-      Api.Universities
-      Api.Universities.Courses
-      Api.Universities.Instructors
-      Api.Universities.Logo
-      Api.Users
-      Api.Users.Avatar
-      Api.Users.Courses
-      Api.Users.Enrollments
-      Api.Users.Progress
-      Api.Users.Solutions
-      Certificate
-      Cors
-      Database
-      Database.Operations.Courses
-      Database.Operations.Courses.Banner
-      Database.Operations.Courses.Completions
-      Database.Operations.Courses.Enrollments
-      Database.Operations.Exercises
-      Database.Operations.Exercises.Essays
-      Database.Operations.Exercises.Questions
-      Database.Operations.Exercises.Quizzes
-      Database.Operations.Exercises.Solutions
-      Database.Operations.Lessons
-      Database.Operations.Universities
-      Database.Operations.Universities.Instructors
-      Database.Operations.Universities.Logo
-      Database.Operations.Users
-      Database.Operations.Users.Avatar
-      Database.Operations.Users.Courses
-      Database.Operations.Users.Progress
-      Database.Operations.Users.Solutions
-      Database.Queries.Courses
-      Database.Queries.Courses.Banner
-      Database.Queries.Courses.Completions
-      Database.Queries.Courses.Enrollments
-      Database.Queries.Exercises
-      Database.Queries.Exercises.Essays
-      Database.Queries.Exercises.Questions
-      Database.Queries.Exercises.Quizzes
-      Database.Queries.Exercises.Solutions
-      Database.Queries.Lessons
-      Database.Queries.Universities
-      Database.Queries.Universities.Instructors
-      Database.Queries.Universities.Logo
-      Database.Queries.Users
-      Database.Queries.Users.Avatar
-      Database.Queries.Users.Courses
-      Database.Queries.Users.Progress
-      Database.Queries.Users.Solutions
       LearningJunkie.Attribute
       LearningJunkie.Courses.Course
       LearningJunkie.Courses.Course.Attributes
@@ -106,6 +44,7 @@ library
       LearningJunkie.Enrollments.Database
       LearningJunkie.Enrollments.Database.Table
       LearningJunkie.Enrollments.Enrollment
+      LearningJunkie.Lesson
       LearningJunkie.Universities.Database
       LearningJunkie.Universities.Database.Table
       LearningJunkie.Universities.University
@@ -152,50 +91,8 @@ library
       LearningJunkie.Web.JWTAuth
       LearningJunkie.Web.Minio
       LearningJunkie.Web.OpenApi
-      Lib
-      MinioUpload
       Servant.Auth.OpenApi
       Servant.Multipart.OpenApi
-      Types.Auth.Credentials
-      Types.Auth.JWTAuth
-      Types.Auth.Response
-      Types.Auth.User
-      Types.Course
-      Types.Course.Completion
-      Types.Course.Difficulty
-      Types.Course.NewCourse
-      Types.Exercise
-      Types.Exercise.Choice
-      Types.Exercise.EditEssay
-      Types.Exercise.EditQuestion
-      Types.Exercise.EditQuiz
-      Types.Exercise.Essay
-      Types.Exercise.NewEssay
-      Types.Exercise.NewQuestion
-      Types.Exercise.NewQuiz
-      Types.Exercise.Question
-      Types.Exercise.Quiz
-      Types.HasCourse
-      Types.Lesson
-      Types.Lesson.EditLesson
-      Types.Lesson.NewLesson
-      Types.PDF
-      Types.Solution.Essay
-      Types.Solution.ExerciseCheck
-      Types.Solution.Question
-      Types.Solution.Quiz
-      Types.Solution.Response
-      Types.Solvable
-      Types.University
-      Types.University.NewUniversity
-      Types.User
-      Types.User.Education
-      Types.User.NewUser
-      Types.User.Progress
-      Types.User.Role
-      Upload
-      Upload.Environment
-      Upload.Swagger
   other-modules:
       Paths_learning_junkie_api
   autogen-modules:
