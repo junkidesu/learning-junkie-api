@@ -26,8 +26,8 @@ deriving instance Show EnrollmentId
 
 instance Table EnrollmentT where
         data PrimaryKey EnrollmentT f
-                = TblKey
+                = EnrollmentId
                         (PrimaryKey UserT f)
                         (PrimaryKey CourseT f)
                 deriving (Generic, Beamable)
-        primaryKey = TblKey <$> _enrollmentUser <*> _enrollmentCourse
+        primaryKey = EnrollmentId <$> _enrollmentUser <*> _enrollmentCourse

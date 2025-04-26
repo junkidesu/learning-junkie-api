@@ -26,6 +26,10 @@ source-repository head
 library
   exposed-modules:
       LearningJunkie.Attribute
+      LearningJunkie.Chapters.Chapter
+      LearningJunkie.Chapters.Chapter.Attributes
+      LearningJunkie.Chapters.Database
+      LearningJunkie.Chapters.Database.Table
       LearningJunkie.Courses.Course
       LearningJunkie.Courses.Course.Attributes
       LearningJunkie.Courses.Course.Difficulty
@@ -34,6 +38,9 @@ library
       LearningJunkie.Courses.Web
       LearningJunkie.Courses.Web.All
       LearningJunkie.Courses.Web.ById
+      LearningJunkie.Courses.Web.Chapters
+      LearningJunkie.Courses.Web.Chapters.Add
+      LearningJunkie.Courses.Web.Chapters.All
       LearningJunkie.Courses.Web.Delete
       LearningJunkie.Courses.Web.Enrollments
       LearningJunkie.Courses.Web.Enrollments.All

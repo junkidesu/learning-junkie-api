@@ -10,6 +10,7 @@ import qualified Data.ByteString.UTF8 as BSU
 import Data.Pool (Pool, defaultPoolConfig, newPool, setNumStripes, withResource)
 import Database.Beam
 import Database.Beam.Postgres
+import LearningJunkie.Chapters.Database.Table (ChapterT)
 import LearningJunkie.Courses.Database.Table (CourseT)
 import LearningJunkie.Enrollments.Database.Table (EnrollmentT)
 import LearningJunkie.Universities.Database.Table (UniversityT)
@@ -21,6 +22,7 @@ data LearningJunkieDb f = LearningJunkieDb
     , dbUsers :: f (TableEntity UserT)
     , dbCourses :: f (TableEntity CourseT)
     , dbEnrollments :: f (TableEntity EnrollmentT)
+    , dbChapters :: f (TableEntity ChapterT)
     }
     deriving (Generic, Database be)
 
@@ -37,6 +39,7 @@ db =
                             }
             , dbCourses = setEntityName "courses"
             , dbEnrollments = setEntityName "enrollments"
+            , dbChapters = setEntityName "chapters"
             }
 
 connectToDb :: IO (Pool Connection)
