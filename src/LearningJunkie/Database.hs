@@ -13,6 +13,7 @@ import Database.Beam.Postgres
 import LearningJunkie.Chapters.Database.Table (ChapterT)
 import LearningJunkie.Courses.Database.Table (CourseT)
 import LearningJunkie.Enrollments.Database.Table (EnrollmentT)
+import LearningJunkie.Lessons.Database.Table (LessonT)
 import LearningJunkie.Universities.Database.Table (UniversityT)
 import LearningJunkie.Users.Database.Table (UserT (_userPasswordHash))
 import System.Environment (getEnv)
@@ -23,6 +24,7 @@ data LearningJunkieDb f = LearningJunkieDb
     , dbCourses :: f (TableEntity CourseT)
     , dbEnrollments :: f (TableEntity EnrollmentT)
     , dbChapters :: f (TableEntity ChapterT)
+    , dbLessons :: f (TableEntity LessonT)
     }
     deriving (Generic, Database be)
 
@@ -40,6 +42,7 @@ db =
             , dbCourses = setEntityName "courses"
             , dbEnrollments = setEntityName "enrollments"
             , dbChapters = setEntityName "chapters"
+            , dbLessons = setEntityName "lessons"
             }
 
 connectToDb :: IO (Pool Connection)

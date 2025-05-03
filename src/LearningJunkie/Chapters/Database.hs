@@ -36,7 +36,7 @@ insertChapterQuery courseId newChapter =
     insert (dbChapters db) $
         insertExpressions
             [ Chapter
-                (val_ $ Attributes.chapterNumber newChapter)
+                (val_ $ Attributes.number newChapter)
                 (CourseId $ val_ courseId)
                 (val_ $ Attributes.title newChapter)
                 (val_ $ Attributes.description newChapter)

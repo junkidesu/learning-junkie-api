@@ -39,8 +39,6 @@ dependencies:
 - warp
 - postgresql-simple
 - http-types
-- swagger2
-- servant-swagger
 - servant-swagger-ui
 - text
 - bytestring

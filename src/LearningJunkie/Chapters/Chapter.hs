@@ -9,7 +9,7 @@ import Data.Text (Text)
 import GHC.Generics (Generic)
 
 data Chapter = Chapter
-    { id :: Int32
+    { number :: Int32
     , title :: Text
     , description :: Text
     , banner :: Maybe Text

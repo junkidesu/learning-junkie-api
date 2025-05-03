@@ -41,6 +41,10 @@ library
       LearningJunkie.Courses.Web.Chapters
       LearningJunkie.Courses.Web.Chapters.Add
       LearningJunkie.Courses.Web.Chapters.All
+      LearningJunkie.Courses.Web.Chapters.Lessons
+      LearningJunkie.Courses.Web.Chapters.Lessons.Add
+      LearningJunkie.Courses.Web.Chapters.Lessons.All
+      LearningJunkie.Courses.Web.Chapters.Lessons.Edit
       LearningJunkie.Courses.Web.Delete
       LearningJunkie.Courses.Web.Enrollments
       LearningJunkie.Courses.Web.Enrollments.All
@@ -51,7 +55,11 @@ library
       LearningJunkie.Enrollments.Database
       LearningJunkie.Enrollments.Database.Table
       LearningJunkie.Enrollments.Enrollment
-      LearningJunkie.Lesson
+      LearningJunkie.Lessons.Database
+      LearningJunkie.Lessons.Database.Table
+      LearningJunkie.Lessons.Lesson
+      LearningJunkie.Lessons.Lesson.Attributes
+      LearningJunkie.Lessons.Lesson.Component
       LearningJunkie.Universities.Database
       LearningJunkie.Universities.Database.Table
       LearningJunkie.Universities.University
@@ -138,10 +146,8 @@ library
     , servant-multipart
     , servant-openapi3
     , servant-server
-    , servant-swagger
     , servant-swagger-ui
     , string-conversions
-    , swagger2
     , text
     , time
     , transformers
@@ -195,10 +201,8 @@ executable learning-junkie-api-exe
     , servant-multipart
     , servant-openapi3
     , servant-server
-    , servant-swagger
     , servant-swagger-ui
     , string-conversions
-    , swagger2
     , text
     , time
     , transformers
@@ -253,10 +257,8 @@ test-suite learning-junkie-api-test
     , servant-multipart
     , servant-openapi3
     , servant-server
-    , servant-swagger
     , servant-swagger-ui
     , string-conversions
-    , swagger2
     , text
     , time
     , transformers

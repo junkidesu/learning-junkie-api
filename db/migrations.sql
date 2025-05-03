@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS lessons;
 DROP TABLE IF EXISTS chapters;
 DROP TABLE IF EXISTS enrollments;
 DROP TABLE IF EXISTS courses;
@@ -115,3 +116,15 @@ VALUES
 (1, 1, 'Basics of I/O', 'Learn the very basics of Python: printing and getting input'),
 (1, 2, 'Control Structures', 'Conditionals and iterations, learn how to control your program'),
 (1, 3, 'OOP', 'Learn about classes, objects, and the four pillars of OOP');
+
+CREATE TABLE IF NOT EXISTS lessons (
+	lesson_number INT NOT NULL,
+	chapter__course__id INT NOT NULL,
+	chapter__chapter_number INT NOT NULL,
+	title TEXT NOT NULL,
+	description TEXT NOT NULL,
+	components JSONB NOT NULL,
+	FOREIGN KEY(chapter__course__id, chapter__chapter_number) 
+	REFERENCES chapters(chapter_number, course__id),
+	PRIMARY KEY (lesson_number, chapter__course__id, chapter__chapter_number)
+)

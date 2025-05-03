@@ -1,0 +1,35 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE TypeFamilies #-}
+
+module LearningJunkie.Lessons.Database.Table where
+
+import Data.Int (Int32)
+import Data.Text (Text)
+import Database.Beam
+import Database.Beam.Postgres (PgJSONB)
+import LearningJunkie.Chapters.Database.Table (ChapterT)
+import LearningJunkie.Lessons.Lesson.Component (Component)
+
+data LessonT f = Lesson
+        { _lessonLessonNumber :: C f Int32
+        , _lessonChapter :: PrimaryKey ChapterT f
+        , _lessonTitle :: C f Text
+        , _lessonDescription :: C f Text
+        , _lessonComponents :: C f (PgJSONB [Component])
+        }
+        deriving (Generic, Beamable)
+
+instance Table LessonT where
+        data PrimaryKey LessonT f
+                = LessonId
+                        (C f Int32)
+                        (PrimaryKey ChapterT f)
+                deriving (Generic, Beamable)
+        primaryKey =
+                LessonId
+                        <$> _lessonLessonNumber
+                        <*> _lessonChapter
+
+type Lesson = LessonT Identity
+type LessonId = PrimaryKey LessonT Identity
