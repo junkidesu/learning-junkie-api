@@ -44,7 +44,6 @@ library
       LearningJunkie.Courses.Web.Chapters.Lessons
       LearningJunkie.Courses.Web.Chapters.Lessons.Add
       LearningJunkie.Courses.Web.Chapters.Lessons.All
-      LearningJunkie.Courses.Web.Chapters.Lessons.Edit
       LearningJunkie.Courses.Web.Delete
       LearningJunkie.Courses.Web.Enrollments
       LearningJunkie.Courses.Web.Enrollments.All
@@ -60,6 +59,10 @@ library
       LearningJunkie.Lessons.Lesson
       LearningJunkie.Lessons.Lesson.Attributes
       LearningJunkie.Lessons.Lesson.Component
+      LearningJunkie.Lessons.Web
+      LearningJunkie.Lessons.Web.ById
+      LearningJunkie.Lessons.Web.Delete
+      LearningJunkie.Lessons.Web.Edit
       LearningJunkie.Universities.Database
       LearningJunkie.Universities.Database.Table
       LearningJunkie.Universities.University

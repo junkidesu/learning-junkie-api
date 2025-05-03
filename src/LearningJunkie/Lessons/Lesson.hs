@@ -11,7 +11,8 @@ import Data.Text (Text)
 import LearningJunkie.Lessons.Lesson.Component (Component)
 
 data Lesson = Lesson
-    { number :: Int32
+    { id :: Int32
+    , number :: Int32
     , title :: Text
     , description :: Text
     , components :: [Component]

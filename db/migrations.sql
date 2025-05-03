@@ -118,6 +118,7 @@ VALUES
 (1, 3, 'OOP', 'Learn about classes, objects, and the four pillars of OOP');
 
 CREATE TABLE IF NOT EXISTS lessons (
+	id SERIAL PRIMARY KEY,
 	lesson_number INT NOT NULL,
 	chapter__course__id INT NOT NULL,
 	chapter__chapter_number INT NOT NULL,
@@ -125,6 +126,5 @@ CREATE TABLE IF NOT EXISTS lessons (
 	description TEXT NOT NULL,
 	components JSONB NOT NULL,
 	FOREIGN KEY(chapter__course__id, chapter__chapter_number) 
-	REFERENCES chapters(chapter_number, course__id),
-	PRIMARY KEY (lesson_number, chapter__course__id, chapter__chapter_number)
+	REFERENCES chapters(chapter_number, course__id)
 )

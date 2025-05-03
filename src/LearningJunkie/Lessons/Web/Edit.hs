@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module LearningJunkie.Courses.Web.Chapters.Lessons.Edit where
+module LearningJunkie.Lessons.Web.Edit where
 
 import Data.Int (Int32)
 import LearningJunkie.Lessons.Database (toLessonType, updateLesson)
@@ -16,22 +16,21 @@ import Servant
 import Servant.Auth.Server (AuthResult (Authenticated))
 
 type API =
-    Summary "Update a lesson"
+    Summary "Update a lesson by ID"
         :> JWTAuth
-        :> Capture' '[Required, Description "Lesson number"] "lessonNumber" Int32
         :> ReqBody '[JSON] Attributes.Edit
         :> Put '[JSON] Lesson
 
-handler :: Int32 -> Int32 -> AuthResult Auth.AuthUser -> Int32 -> Attributes.Edit -> AppM Lesson
-handler courseId chapterNumber (Authenticated authUser) lessonNumber editLesson =
+handler :: Int32 -> AuthResult Auth.AuthUser -> Attributes.Edit -> AppM Lesson
+handler lessonId (Authenticated authUser) editLesson =
     requirePermissionWithId
         authUser
         ( Permissions.Permission
             Permissions.SameInstructor
             Permissions.Update
-            Permissions.Course
+            Permissions.Lesson
         )
-        (Just courseId)
+        (Just lessonId)
         $ toLessonType
-            <$> updateLesson courseId chapterNumber lessonNumber editLesson
-handler _ _ _ _ _ = throwError err401
+            <$> updateLesson lessonId editLesson
+handler _ _ _ = throwError err401

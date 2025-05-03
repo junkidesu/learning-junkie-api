@@ -12,7 +12,8 @@ import LearningJunkie.Chapters.Database.Table (ChapterT)
 import LearningJunkie.Lessons.Lesson.Component (Component)
 
 data LessonT f = Lesson
-        { _lessonLessonNumber :: C f Int32
+        { _lessonId :: C f Int32
+        , _lessonLessonNumber :: C f Int32
         , _lessonChapter :: PrimaryKey ChapterT f
         , _lessonTitle :: C f Text
         , _lessonDescription :: C f Text
@@ -24,12 +25,10 @@ instance Table LessonT where
         data PrimaryKey LessonT f
                 = LessonId
                         (C f Int32)
-                        (PrimaryKey ChapterT f)
                 deriving (Generic, Beamable)
         primaryKey =
                 LessonId
-                        <$> _lessonLessonNumber
-                        <*> _lessonChapter
+                        . _lessonId
 
 type Lesson = LessonT Identity
 type LessonId = PrimaryKey LessonT Identity

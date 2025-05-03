@@ -21,36 +21,30 @@ type LessonQuery s =
         s
         (LessonDBType s)
 
-allLessonsQuery :: Int32 -> Int32 -> LessonQuery s
-allLessonsQuery courseId chapterNumber = do
-    lesson <- all_ $ dbLessons db
+allLessonsQuery :: LessonQuery s
+allLessonsQuery = all_ $ dbLessons db
 
-    let LessonId
-            _
-            ( ChapterId
-                    (CourseId lessonCourseId)
-                    lessonChapterNumber
-                ) = primaryKey lesson
+lessonsByChapterQuery :: Int32 -> Int32 -> LessonQuery s
+lessonsByChapterQuery courseId chapterNumber = do
+    lesson <- allLessonsQuery
 
-    guard_
-        ( val_ courseId
-            ==. lessonCourseId
-            &&. val_ chapterNumber
-            ==. lessonChapterNumber
-        )
+    let ChapterId (CourseId lessonCourseId) lessonChapterNumber = _lessonChapter lesson
+
+    guard_ (lessonCourseId ==. val_ courseId &&. lessonChapterNumber ==. val_ chapterNumber)
 
     return lesson
 
-lessonByNumberQuery :: Int32 -> Int32 -> Int32 -> LessonQuery s
-lessonByNumberQuery courseId chapterNumber lessonNumber =
-    filter_ (\r -> _lessonLessonNumber r ==. val_ lessonNumber) $
-        allLessonsQuery courseId chapterNumber
+lessonByIdQuery :: Int32 -> LessonQuery s
+lessonByIdQuery lessonId =
+    filter_ (\r -> _lessonId r ==. val_ lessonId) $
+        allLessonsQuery
 
 insertLessonQuery :: Int32 -> Int32 -> Attributes.New -> SqlInsert Postgres LessonT
 insertLessonQuery courseId chapterNumber newLesson =
     insert (dbLessons db) $
         insertExpressions
             [ Lesson
+                default_
                 (val_ $ Attributes.number newLesson)
                 (ChapterId (CourseId $ val_ courseId) (val_ chapterNumber))
                 (val_ $ Attributes.title newLesson)
@@ -58,8 +52,8 @@ insertLessonQuery courseId chapterNumber newLesson =
                 (val_ $ PgJSONB $ Attributes.components newLesson)
             ]
 
-updateLessonQuery :: Int32 -> Int32 -> Int32 -> Attributes.Edit -> SqlUpdate Postgres LessonT
-updateLessonQuery courseId chapterNumber lessonNumber editLesson =
+updateLessonQuery :: Int32 -> Attributes.Edit -> SqlUpdate Postgres LessonT
+updateLessonQuery lessonId editLesson =
     update
         (dbLessons db)
         ( \r ->
@@ -80,22 +74,31 @@ updateLessonQuery courseId chapterNumber lessonNumber editLesson =
                     r
                     (PgJSONB <$> Attributes.components editLesson)
         )
-        (\r -> primaryKey r ==. LessonId (val_ lessonNumber) (ChapterId (CourseId $ val_ courseId) (val_ chapterNumber)))
+        (\r -> _lessonId r ==. val_ lessonId)
 
-selectAllLessons :: Int32 -> Int32 -> AppM [Lesson]
-selectAllLessons courseId chapterNumber =
+deleteLessonQuery :: Int32 -> SqlDelete Postgres LessonT
+deleteLessonQuery lessonId = delete (dbLessons db) (\r -> _lessonId r ==. val_ lessonId)
+
+selectAllLessons :: AppM [Lesson]
+selectAllLessons =
+    executeBeamDebug $
+        runSelectReturningList $
+            select $
+                allLessonsQuery
+
+selectLessonsByChapter :: Int32 -> Int32 -> AppM [Lesson]
+selectLessonsByChapter courseId chapterNumber =
     executeBeamDebug
         . runSelectReturningList
         . select
-        $ allLessonsQuery courseId chapterNumber
+        $ lessonsByChapterQuery courseId chapterNumber
 
-selectLessonByNumber :: Int32 -> Int32 -> Int32 -> AppM (Maybe Lesson)
-selectLessonByNumber courseId chapterNumber lessonNumber =
+selectLessonById :: Int32 -> AppM (Maybe Lesson)
+selectLessonById =
     executeBeamDebug
         . runSelectReturningFirst
         . select
-        $ lessonByNumberQuery courseId chapterNumber lessonNumber
-
+        . lessonByIdQuery
 insertLesson :: Int32 -> Int32 -> Attributes.New -> AppM Lesson
 insertLesson courseId chapterNumber newLesson = executeBeamDebug $ do
     [lesson] <-
@@ -107,22 +110,27 @@ insertLesson courseId chapterNumber newLesson = executeBeamDebug $ do
 
     return lesson
 
-updateLesson :: Int32 -> Int32 -> Int32 -> Attributes.Edit -> AppM Lesson
-updateLesson courseId chapterNumber lessonNumber editLesson = executeBeamDebug $ do
+updateLesson :: Int32 -> Attributes.Edit -> AppM Lesson
+updateLesson lessonId editLesson = executeBeamDebug $ do
     [lesson] <-
         runUpdateReturningList $
             updateLessonQuery
-                courseId
-                chapterNumber
-                lessonNumber
+                lessonId
                 editLesson
 
     return lesson
+
+deleteLesson :: Int32 -> AppM ()
+deleteLesson =
+    executeBeamDebug
+        . runDelete
+        . deleteLessonQuery
 
 toLessonType :: Lesson -> Lesson.Lesson
 toLessonType lesson =
     let PgJSONB components = _lessonComponents lesson
      in Lesson.Lesson
+            (_lessonId lesson)
             (_lessonLessonNumber lesson)
             (_lessonTitle lesson)
             (_lessonDescription lesson)

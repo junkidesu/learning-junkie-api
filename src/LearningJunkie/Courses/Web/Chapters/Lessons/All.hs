@@ -4,7 +4,7 @@
 module LearningJunkie.Courses.Web.Chapters.Lessons.All where
 
 import Data.Int (Int32)
-import LearningJunkie.Lessons.Database (selectAllLessons, toLessonType)
+import LearningJunkie.Lessons.Database (selectAllLessons, selectLessonsByChapter, toLessonType)
 import LearningJunkie.Lessons.Lesson (Lesson)
 import LearningJunkie.Web.AppM (AppM)
 import Servant
@@ -16,4 +16,4 @@ type API =
 handler :: Int32 -> Int32 -> AppM [Lesson]
 handler courseId chapterNumber =
     map toLessonType
-        <$> selectAllLessons courseId chapterNumber
+        <$> selectLessonsByChapter courseId chapterNumber
