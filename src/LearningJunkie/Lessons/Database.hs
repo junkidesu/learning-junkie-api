@@ -5,39 +5,65 @@ import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
 import Database.Beam.Postgres (PgJSONB (PgJSONB), Postgres)
 import LearningJunkie.Chapters.Database.Table (PrimaryKey (ChapterId))
-import LearningJunkie.Courses.Database.Table (PrimaryKey (CourseId))
+import LearningJunkie.Courses.Database
+import LearningJunkie.Courses.Database.Table (Course, CourseT (_courseId), PrimaryKey (CourseId))
 import LearningJunkie.Database (LearningJunkieDb (dbLessons), db)
-import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
+import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, updateIfChanged)
 import LearningJunkie.Lessons.Database.Table
 import qualified LearningJunkie.Lessons.Lesson as Lesson
 import qualified LearningJunkie.Lessons.Lesson.Attributes as Attributes
+import LearningJunkie.Universities.Database.Table (University)
+import LearningJunkie.Users.Database.Table (User)
 import LearningJunkie.Web.AppM (AppM)
 
-type LessonDBType s = LessonT (QExpr Postgres s)
-type LessonQuery s =
+type LessonExpr s = LessonT (QExpr Postgres s)
+type LessonJoinedType s =
+    ( LessonExpr s
+    , CourseJoinedType s
+    )
+type LessonQ s =
     Q
         Postgres
         LearningJunkieDb
         s
-        (LessonDBType s)
+        (LessonJoinedType s)
+type LessonReturnType = (Lesson, CourseReturnType)
 
-allLessonsQuery :: LessonQuery s
-allLessonsQuery = all_ $ dbLessons db
+allLessonsQuery :: LessonQ s
+allLessonsQuery = do
+    lesson <- all_ $ dbLessons db
 
-lessonsByChapterQuery :: Int32 -> Int32 -> LessonQuery s
+    joinedCourse@(course, _, _) <- allCoursesQuery
+
+    let ChapterId (CourseId courseId) _ = _lessonChapter lesson
+
+    guard_' (courseId ==?. _courseId course)
+
+    return (lesson, joinedCourse)
+
+lessonsByChapterQuery :: Int32 -> Int32 -> LessonQ s
 lessonsByChapterQuery courseId chapterNumber = do
-    lesson <- allLessonsQuery
+    foundLesson@(lesson, _) <- allLessonsQuery
 
     let ChapterId (CourseId lessonCourseId) lessonChapterNumber = _lessonChapter lesson
 
-    guard_ (lessonCourseId ==. val_ courseId &&. lessonChapterNumber ==. val_ chapterNumber)
+    guard_
+        ( lessonCourseId
+            ==. val_ courseId
+            &&. lessonChapterNumber
+            ==. val_ chapterNumber
+        )
 
-    return lesson
+    return foundLesson
 
-lessonByIdQuery :: Int32 -> LessonQuery s
+lessonByIdQuery :: Int32 -> LessonQ s
 lessonByIdQuery lessonId =
-    filter_ (\r -> _lessonId r ==. val_ lessonId) $
-        allLessonsQuery
+    filter_
+        ( \r ->
+            _lessonId (fst r)
+                ==. val_ lessonId
+        )
+        $ allLessonsQuery
 
 insertLessonQuery :: Int32 -> Int32 -> Attributes.New -> SqlInsert Postgres LessonT
 insertLessonQuery courseId chapterNumber newLesson =
@@ -79,27 +105,28 @@ updateLessonQuery lessonId editLesson =
 deleteLessonQuery :: Int32 -> SqlDelete Postgres LessonT
 deleteLessonQuery lessonId = delete (dbLessons db) (\r -> _lessonId r ==. val_ lessonId)
 
-selectAllLessons :: AppM [Lesson]
+selectAllLessons :: AppM [LessonReturnType]
 selectAllLessons =
     executeBeamDebug $
         runSelectReturningList $
             select $
                 allLessonsQuery
 
-selectLessonsByChapter :: Int32 -> Int32 -> AppM [Lesson]
+selectLessonsByChapter :: Int32 -> Int32 -> AppM [LessonReturnType]
 selectLessonsByChapter courseId chapterNumber =
     executeBeamDebug
         . runSelectReturningList
         . select
         $ lessonsByChapterQuery courseId chapterNumber
 
-selectLessonById :: Int32 -> AppM (Maybe Lesson)
+selectLessonById :: Int32 -> AppM (Maybe (Lesson, (Course, University, (User, Maybe University))))
 selectLessonById =
     executeBeamDebug
         . runSelectReturningFirst
         . select
         . lessonByIdQuery
-insertLesson :: Int32 -> Int32 -> Attributes.New -> AppM Lesson
+
+insertLesson :: Int32 -> Int32 -> Attributes.New -> AppM LessonReturnType
 insertLesson courseId chapterNumber newLesson = executeBeamDebug $ do
     [lesson] <-
         runInsertReturningList $
@@ -108,9 +135,11 @@ insertLesson courseId chapterNumber newLesson = executeBeamDebug $ do
                 chapterNumber
                 newLesson
 
-    return lesson
+    Just course <- runSelectReturningFirst $ select $ courseByIdQuery courseId
 
-updateLesson :: Int32 -> Attributes.Edit -> AppM Lesson
+    return (lesson, course)
+
+updateLesson :: Int32 -> Attributes.Edit -> AppM LessonReturnType
 updateLesson lessonId editLesson = executeBeamDebug $ do
     [lesson] <-
         runUpdateReturningList $
@@ -118,7 +147,11 @@ updateLesson lessonId editLesson = executeBeamDebug $ do
                 lessonId
                 editLesson
 
-    return lesson
+    let
+        ChapterId (CourseId courseId) _ = _lessonChapter lesson
+    Just course <- runSelectReturningFirst $ select $ courseByIdQuery courseId
+
+    return (lesson, course)
 
 deleteLesson :: Int32 -> AppM ()
 deleteLesson =
@@ -126,12 +159,14 @@ deleteLesson =
         . runDelete
         . deleteLessonQuery
 
-toLessonType :: Lesson -> Lesson.Lesson
-toLessonType lesson =
-    let PgJSONB components = _lessonComponents lesson
-     in Lesson.Lesson
-            (_lessonId lesson)
-            (_lessonLessonNumber lesson)
-            (_lessonTitle lesson)
-            (_lessonDescription lesson)
-            components
+toLessonType :: LessonReturnType -> Lesson.Lesson
+toLessonType =
+    let fromJSONB (PgJSONB components) = components
+     in ( Lesson.Lesson
+            <$> _lessonId
+            <*> _lessonLessonNumber
+            <*> _lessonTitle
+            <*> _lessonDescription
+            <*> fromJSONB . _lessonComponents
+        )
+            . fst

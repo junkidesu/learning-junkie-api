@@ -10,7 +10,7 @@ import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runIn
 import Database.Beam.Postgres (Postgres)
 import LearningJunkie.Database (LearningJunkieDb (dbUsers), db)
 import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
-import LearningJunkie.Universities.Database (allUniversitiesQuery, toUniversityType, universityByIdQuery)
+import LearningJunkie.Universities.Database (UniversityExpr, UniversityNullableExpr, allUniversitiesQuery, toUniversityType, universityByIdQuery)
 import LearningJunkie.Universities.Database.Table
 import LearningJunkie.Users.Database.Role (Role (Instructor, UniversityRep))
 import LearningJunkie.Users.Database.Table
@@ -18,10 +18,12 @@ import qualified LearningJunkie.Users.User as User
 import qualified LearningJunkie.Users.User.Attributes as Attributes
 import LearningJunkie.Web.AppM (AppM)
 
-type UserDBType s = (UserT (QExpr Postgres s), UniversityT (Nullable (QExpr Postgres s)))
-type UserQuery s = Q Postgres LearningJunkieDb s (UserDBType s)
+type UserExpr s = UserT (QExpr Postgres s)
+type UserJoinedType s = (UserExpr s, UniversityNullableExpr s)
+type UserQ s = Q Postgres LearningJunkieDb s (UserJoinedType s)
+type UserReturnType = (User, Maybe University)
 
-allUsersQuery :: UserQuery s
+allUsersQuery :: UserQ s
 allUsersQuery = do
   user <- all_ $ dbUsers db
   university <-
@@ -30,19 +32,19 @@ allUsersQuery = do
       (\un -> just_ (pk un) ==?. _userUniversity user)
   return (user, university)
 
-userByIdQuery :: Int32 -> UserQuery s
+userByIdQuery :: Int32 -> UserQ s
 userByIdQuery userId =
   filter_
     (\user -> (_userId . fst $ user) ==. val_ userId)
     allUsersQuery
 
-userByEmailQuery :: Text -> UserQuery s
+userByEmailQuery :: Text -> UserQ s
 userByEmailQuery email =
   filter_
     (\user -> (_userEmail . fst $ user) ==. val_ email)
     allUsersQuery
 
-universityRepresentativesQuery :: Int32 -> UserQuery s
+universityRepresentativesQuery :: Int32 -> UserQ s
 universityRepresentativesQuery universityId =
   filter_'
     ( \user ->
@@ -55,7 +57,7 @@ universityRepresentativesQuery universityId =
     )
     allUsersQuery
 
-universityInstructorsQuery :: Int32 -> UserQuery s
+universityInstructorsQuery :: Int32 -> UserQ s
 universityInstructorsQuery universityId =
   filter_'
     ( \user ->
@@ -107,7 +109,7 @@ removeUserAvatarQuery userId =
     (\r -> _userAvatar r <-. val_ Nothing)
     (\r -> _userId r ==. val_ userId)
 
-selectAllUsers :: AppM [(User, Maybe University)]
+selectAllUsers :: AppM [UserReturnType]
 selectAllUsers =
   executeBeamDebug $
     runSelectReturningList $

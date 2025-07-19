@@ -6,11 +6,9 @@ module LearningJunkie.Web.Auth.Permissions where
 import Control.Monad (unless)
 import Data.Int (Int32)
 import Data.List (find)
-import LearningJunkie.Chapters.Database.Table (PrimaryKey (ChapterId))
 import LearningJunkie.Courses.Database (selectCourseById)
-import LearningJunkie.Courses.Database.Table (PrimaryKey (CourseId))
+import LearningJunkie.Exercises.Database (selectExerciseById)
 import LearningJunkie.Lessons.Database (selectLessonById)
-import LearningJunkie.Lessons.Database.Table (LessonT (_lessonChapter))
 import LearningJunkie.Universities.Database.Table (UniversityT (_universityId))
 import LearningJunkie.Users.Database (selectUserById)
 import LearningJunkie.Users.Database.Role
@@ -25,7 +23,7 @@ data Scope = SameInstructor | SameUniversity | All
 data Action = View | Create | Update | Delete
     deriving (Show, Read, Eq, Ord)
 
-data Object = Course | University | User | Lesson
+data Object = Course | University | User | Lesson | Exercise
     deriving (Show, Read, Eq, Ord)
 
 data Permission
@@ -43,15 +41,21 @@ permissionAssignment Instructor =
     , Permission SameInstructor Create Lesson
     , Permission SameInstructor Update Lesson
     , Permission SameInstructor Delete Lesson
+    , Permission SameInstructor Create Exercise
+    , Permission SameInstructor Delete Exercise
+    , Permission SameInstructor Update Exercise
     , Permission SameInstructor View User
     ]
 permissionAssignment UniversityRep =
     [ Permission SameUniversity Create Course
     , Permission SameUniversity Update Course
     , Permission SameUniversity Delete Course
-    , Permission All Create Lesson
-    , Permission All Update Lesson
-    , Permission All Delete Lesson
+    , Permission SameUniversity Create Lesson
+    , Permission SameUniversity Update Lesson
+    , Permission SameUniversity Delete Lesson
+    , Permission SameUniversity Create Exercise
+    , Permission SameUniversity Delete Exercise
+    , Permission SameUniversity Update Exercise
     , Permission SameUniversity View User
     , Permission SameUniversity Create User
     , Permission SameUniversity Delete User
@@ -116,18 +120,17 @@ checkScope (Permission SameInstructor _ Lesson) authUser objectId = do
 
     case mbLesson of
         Nothing -> throwError err404
-        Just lesson -> do
-            let ChapterId
-                    (CourseId courseId)
-                    _ = _lessonChapter lesson
+        Just (_, (_, _, (instructor, _))) -> do
+            let sameInstructor = _userId instructor == Auth.id authUser
+            unless sameInstructor $ throwError err401
+checkScope (Permission SameInstructor _ Exercise) authUser exerciseId = do
+    mbExercise <- selectExerciseById exerciseId
 
-            mbCourse <- selectCourseById courseId
-
-            case mbCourse of
-                Nothing -> throwError err404
-                Just (_, _, (instructor, _)) -> do
-                    let sameInstructor = _userId instructor == Auth.id authUser
-                    unless sameInstructor $ throwError err401
+    case mbExercise of
+        Nothing -> throwError err404
+        Just (_, (_, (_, _, (instructor, _)))) -> do
+            let sameInstructor = _userId instructor == Auth.id authUser
+            unless sameInstructor $ throwError err401{errBody = "Same instructor required"}
 checkScope _ _ _ = throwError err401
 
 requirePermission :: Auth.AuthUser -> Permission -> AppM r -> AppM r

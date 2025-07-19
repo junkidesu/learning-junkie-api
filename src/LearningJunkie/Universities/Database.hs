@@ -17,19 +17,20 @@ import qualified LearningJunkie.Universities.University.Attributes as Attributes
 import LearningJunkie.Web.AppM (AppM)
 import Prelude hiding (id)
 
-type UniversityDBType s = UniversityT (QExpr Postgres s)
-type UniversityQuery s = Q Postgres LearningJunkieDb s (UniversityDBType s)
+type UniversityExpr s = UniversityT (QExpr Postgres s)
+type UniversityNullableExpr s = UniversityT (Nullable (QExpr Postgres s))
+type UniversityQ s = Q Postgres LearningJunkieDb s (UniversityExpr s)
 
-allUniversitiesQuery :: UniversityQuery s
+allUniversitiesQuery :: UniversityQ s
 allUniversitiesQuery = all_ $ dbUniversities db
 
-universityByIdQuery :: Int32 -> UniversityQuery s
+universityByIdQuery :: Int32 -> UniversityQ s
 universityByIdQuery id =
     filter_
         (\r -> _universityId r ==. val_ id)
         allUniversitiesQuery
 
-universitiesByNameQuery :: Text -> UniversityQuery s
+universitiesByNameQuery :: Text -> UniversityQ s
 universitiesByNameQuery universityName =
     filter_
         (\r -> _universityName r `like_` val_ (universityName <> "%"))

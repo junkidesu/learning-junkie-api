@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS lessons;
 DROP TABLE IF EXISTS chapters;
 DROP TABLE IF EXISTS enrollments;
@@ -127,4 +128,13 @@ CREATE TABLE IF NOT EXISTS lessons (
 	components JSONB NOT NULL,
 	FOREIGN KEY(chapter__course__id, chapter__chapter_number) 
 	REFERENCES chapters(chapter_number, course__id)
-)
+);
+
+CREATE TABLE IF NOT EXISTS exercises (
+	id SERIAL PRIMARY KEY, 
+	title TEXT NOT NULL, 
+	max_grade INT NOT NULL,
+	description TEXT NOT NULL,
+	content JSONB NOT NULL,
+	lesson__id INT NOT NULL,
+	FOREIGN KEY (lesson__id) REFERENCES lessons(id));

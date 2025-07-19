@@ -4,30 +4,34 @@ import Data.Int (Int32)
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
 import Database.Beam.Postgres (Postgres)
-import LearningJunkie.Courses.Database (CourseDBType, allCoursesQuery, courseByIdQuery, selectCourseById, toCourseType)
+import LearningJunkie.Courses.Database
 import LearningJunkie.Courses.Database.Table
 import LearningJunkie.Database
 import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd)
 import LearningJunkie.Enrollments.Database.Table
 import qualified LearningJunkie.Enrollments.Enrollment as Enrollment
-import LearningJunkie.Universities.Database (UniversityDBType)
 import LearningJunkie.Universities.Database.Table (University)
 import LearningJunkie.Users.Database
 import LearningJunkie.Users.Database.Table
 import LearningJunkie.Web.AppM (AppM)
 
-type EnrollmentDBType s = EnrollmentT (QExpr Postgres s)
-type EnrollmentQuery s =
+type EnrollmentExpr s = EnrollmentT (QExpr Postgres s)
+type EnrollmentQ s =
     Q
         Postgres
         LearningJunkieDb
         s
-        ( EnrollmentDBType s
-        , UserDBType s
-        , (CourseDBType s, UniversityDBType s, UserDBType s)
+        ( EnrollmentExpr s
+        , UserJoinedType s
+        , CourseJoinedType s
         )
+type EnrollmentReturnType =
+    ( Enrollment
+    , (User, Maybe University)
+    , (Course, University, (User, Maybe University))
+    )
 
-courseEnrollmentsByIdQuery :: Int32 -> EnrollmentQuery s
+courseEnrollmentsByIdQuery :: Int32 -> EnrollmentQ s
 courseEnrollmentsByIdQuery courseId = do
     foundCourse@(course, _, _) <- courseByIdQuery courseId
 
@@ -55,11 +59,7 @@ insertEnrollmentQuery userId courseId =
 selectCourseEnrollmentsById ::
     Int32 ->
     AppM
-        [ ( Enrollment
-          , (User, Maybe University)
-          , (Course, University, (User, Maybe University))
-          )
-        ]
+        [EnrollmentReturnType]
 selectCourseEnrollmentsById =
     executeBeamDebug
         . runSelectReturningList
@@ -70,10 +70,7 @@ insertEnrollment ::
     Int32 ->
     Int32 ->
     AppM
-        ( Enrollment
-        , (User, Maybe University)
-        , (Course, University, (User, Maybe University))
-        )
+        EnrollmentReturnType
 insertEnrollment userId courseId = executeBeamDebug $ do
     [enrollment] <- runInsertReturningList $ insertEnrollmentQuery userId courseId
 
@@ -84,10 +81,7 @@ insertEnrollment userId courseId = executeBeamDebug $ do
     return (enrollment, user, course)
 
 toEnrollmentType ::
-    ( Enrollment
-    , (User, Maybe University)
-    , (Course, University, (User, Maybe University))
-    ) ->
+    EnrollmentReturnType ->
     Enrollment.Enrollment
 toEnrollmentType =
     Enrollment.Enrollment

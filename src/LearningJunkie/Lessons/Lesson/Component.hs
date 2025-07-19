@@ -9,7 +9,11 @@ import GHC.Generics (Generic)
 
 data Component
     = Markdown {content :: Text}
-    | Video {source :: Text}
+    | Video
+        { source :: Text
+        , title :: Text
+        , description :: Text
+        }
     deriving (Show, Generic)
 
 instance FromJSON Component

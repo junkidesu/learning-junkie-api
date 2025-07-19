@@ -11,22 +11,25 @@ import LearningJunkie.Database
 import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd, updateIfChanged)
 import LearningJunkie.Universities.Database
 import LearningJunkie.Universities.Database.Table (PrimaryKey (UniversityId), University)
-import LearningJunkie.Users.Database (UserDBType, allUsersQuery, toUserType, userByIdQuery)
-import LearningJunkie.Users.Database.Table (PrimaryKey (UserId), User)
+import LearningJunkie.Users.Database
+import LearningJunkie.Users.Database.Table (PrimaryKey (UserId))
 import LearningJunkie.Web.AppM (AppM)
 
-type CourseDBType s = CourseT (QExpr Postgres s)
-type CourseQuery s =
+type CourseExpr s = CourseT (QExpr Postgres s)
+type CourseJoinedType s =
+    ( CourseExpr s
+    , UniversityExpr s
+    , UserJoinedType s
+    )
+type CourseQ s =
     Q
         Postgres
         LearningJunkieDb
         s
-        ( CourseDBType s
-        , UniversityDBType s
-        , UserDBType s
-        )
+        (CourseJoinedType s)
+type CourseReturnType = (Course, University, UserReturnType)
 
-allCoursesQuery :: CourseQuery s
+allCoursesQuery :: CourseQ s
 allCoursesQuery = do
     course <- all_ $ dbCourses db
 
@@ -40,7 +43,7 @@ allCoursesQuery = do
 
     return (course, university, instructor)
 
-courseByIdQuery :: Int32 -> CourseQuery s
+courseByIdQuery :: Int32 -> CourseQ s
 courseByIdQuery courseId =
     filter_
         ( \(course, _, _) ->
@@ -77,21 +80,21 @@ updateCourseQuery courseId editCourse = do
 deleteCourseQuery :: Int32 -> SqlDelete Postgres CourseT
 deleteCourseQuery courseId = delete (dbCourses db) (\r -> _courseId r ==. val_ courseId)
 
-selectAllCourses :: AppM [(Course, University, (User, Maybe University))]
+selectAllCourses :: AppM [CourseReturnType]
 selectAllCourses =
     executeBeamDebug $
         runSelectReturningList $
             select $
                 allCoursesQuery
 
-selectCourseById :: Int32 -> AppM (Maybe (Course, University, (User, Maybe University)))
+selectCourseById :: Int32 -> AppM (Maybe CourseReturnType)
 selectCourseById =
     executeBeamDebug
         . runSelectReturningFirst
         . select
         . courseByIdQuery
 
-insertCourse :: Attributes.New -> Int32 -> AppM (Course, University, (User, Maybe University))
+insertCourse :: Attributes.New -> Int32 -> AppM CourseReturnType
 insertCourse newCourse universityId = executeBeamDebug $ do
     [course] <- runInsertReturningList $ insertCourseQuery newCourse universityId
 
@@ -108,7 +111,7 @@ insertCourse newCourse universityId = executeBeamDebug $ do
 
     return (course, university, instructor)
 
-updateCourse :: Int32 -> Attributes.Edit -> AppM (Course, University, (User, Maybe University))
+updateCourse :: Int32 -> Attributes.Edit -> AppM CourseReturnType
 updateCourse courseId editCourse = executeBeamDebug $ do
     [course] <- runUpdateReturningList $ updateCourseQuery courseId editCourse
 
@@ -131,7 +134,7 @@ deleteCourse =
         . runDelete
         . deleteCourseQuery
 
-toCourseType :: (Course, University, (User, Maybe University)) -> Course.Course
+toCourseType :: CourseReturnType -> Course.Course
 toCourseType =
     Course.Course
         <$> (_courseId . tripleFst)

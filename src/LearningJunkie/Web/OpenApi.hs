@@ -6,6 +6,7 @@ module LearningJunkie.Web.OpenApi (API, server) where
 import Control.Lens
 import Data.OpenApi hiding (server)
 import qualified LearningJunkie.Courses.Web as Courses
+import qualified LearningJunkie.Exercises.Web as Exercises
 import qualified LearningJunkie.Lessons.Web as Lessons
 import qualified LearningJunkie.Universities.Web as Universities
 import qualified LearningJunkie.Users.Web as Users
@@ -29,6 +30,9 @@ coursesOps = subOperations (Proxy :: Proxy Courses.API) (Proxy :: Proxy Web.API)
 lessonsOps :: Traversal' OpenApi Operation
 lessonsOps = subOperations (Proxy :: Proxy Lessons.API) (Proxy :: Proxy Web.API)
 
+exercisesOps :: Traversal' OpenApi Operation
+exercisesOps = subOperations (Proxy :: Proxy Exercises.API) (Proxy :: Proxy Web.API)
+
 openApiDoc :: OpenApi
 openApiDoc =
     toOpenApi (Proxy :: Proxy Web.API)
@@ -48,6 +52,7 @@ openApiDoc =
         & applyTagsFor usersOps ["users" & description ?~ "Operations on users"]
         & applyTagsFor coursesOps ["courses" & description ?~ "Operations on courses"]
         & applyTagsFor lessonsOps ["lessons" & description ?~ "Operations on lessons"]
+        & applyTagsFor exercisesOps ["exercises" & description ?~ "Operations on exercises"]
 
 server :: ServerT API AppM
 server = swaggerSchemaUIServerT openApiDoc
