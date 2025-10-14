@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS submissions;
+DROP TABLE IF EXISTS solutions;
 DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS lessons;
 DROP TABLE IF EXISTS chapters;
@@ -130,6 +132,10 @@ CREATE TABLE IF NOT EXISTS lessons (
 	REFERENCES chapters(chapter_number, course__id)
 );
 
+INSERT INTO lessons (lesson_number, chapter__course__id, chapter__chapter_number, title, description, components)
+VALUES 
+(1, 1, 1, 'Hello World: the very basics', 'Hello world is the first program that a programmer ever writes', '[{ "tag": "Markdown", "content": "This is some test content" }]');
+
 CREATE TABLE IF NOT EXISTS exercises (
 	id SERIAL PRIMARY KEY, 
 	title TEXT NOT NULL, 
@@ -137,4 +143,24 @@ CREATE TABLE IF NOT EXISTS exercises (
 	description TEXT NOT NULL,
 	content JSONB NOT NULL,
 	lesson__id INT NOT NULL,
-	FOREIGN KEY (lesson__id) REFERENCES lessons(id));
+	FOREIGN KEY (lesson__id) REFERENCES lessons(id)
+);
+
+INSERT INTO exercises (lesson__id, title, max_grade, description, content)
+VALUES
+(1, 'Example type answer', 2, 'This is example type answer exercise',
+'{ "tag": "TypeAnswer", "question": "Example question", "answer": "Example answer" }'),
+(1, 'Example true false', 2, 'This is example true false exercise',
+'{ "tag": "TrueFalse", "question": "Example question", "correctBool": true }'),
+(1, 'Example quiz', 1, 'This is example quiz exercise',
+'{ "tag": "Quiz", "question": "Example question", "options": { "A": "Option A", "B": "Option B", "C": "Option C", "D": "Option D" }, "correctOption": "A" }'),
+(1, 'Example essay', 3, 'This is example essay exercise',
+'{ "tag": "Essay", "task": "Example essay", "model": "Model answer" }');
+
+CREATE TABLE IF NOT EXISTS submissions (
+	user__id INT NOT NULL,
+	exercise__id INT NOT NULL,
+	content JSONB NOT NULL,
+	state TEXT NOT NULL,
+	grade INT
+);
