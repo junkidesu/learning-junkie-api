@@ -10,6 +10,7 @@ import LearningJunkie.Exercises.Database.Table
 import qualified LearningJunkie.Exercises.Exercise as Exercise
 import qualified LearningJunkie.Exercises.Exercise.Attributes as Attributes
 import LearningJunkie.Exercises.Exercise.Content.Response (toContentResponse)
+import qualified LearningJunkie.Exercises.Exercise.Response as ExerciseResponse
 import LearningJunkie.Lessons.Database (LessonJoinedType, LessonReturnType, allLessonsQuery, lessonByIdQuery)
 import LearningJunkie.Lessons.Database.Table (LessonT (_lessonId), PrimaryKey (LessonId))
 import LearningJunkie.Web.AppM (AppM)
@@ -29,8 +30,8 @@ allExercisesQuery = do
 
     return (exercise, foundLesson)
 
-exerciseById :: Int32 -> ExerciseQuery s
-exerciseById exerciseId =
+exerciseByIdQuery :: Int32 -> ExerciseQuery s
+exerciseByIdQuery exerciseId =
     filter_
         (\(exercise, _) -> _exerciseId exercise ==. val_ exerciseId)
         allExercisesQuery
@@ -69,7 +70,7 @@ selectExerciseById =
     executeBeamDebug
         . runSelectReturningFirst
         . select
-        . exerciseById
+        . exerciseByIdQuery
 
 selectExercisesByLessonId :: Int32 -> AppM [ExerciseReturnType]
 selectExercisesByLessonId =
@@ -99,6 +100,19 @@ deleteExercise = executeBeamDebug . runDelete . deleteExerciseQuery
 toExerciseType :: ExerciseReturnType -> Exercise.Exercise
 toExerciseType =
     ( Exercise.Exercise
+        <$> _exerciseId
+        <*> _exerciseTitle
+        <*> _exerciseDescription
+        <*> _exerciseMaxGrade
+        <*> fromJSONB . _exerciseContent
+    )
+        . fst
+  where
+    fromJSONB (PgJSONB a) = a
+
+toExerciseResponseType :: ExerciseReturnType -> ExerciseResponse.ExerciseResponse
+toExerciseResponseType =
+    ( ExerciseResponse.ExerciseResponse
         <$> _exerciseId
         <*> _exerciseTitle
         <*> _exerciseDescription

@@ -15,6 +15,7 @@ import LearningJunkie.Courses.Database.Table (CourseT)
 import LearningJunkie.Enrollments.Database.Table (EnrollmentT)
 import LearningJunkie.Exercises.Database.Table (ExerciseT)
 import LearningJunkie.Lessons.Database.Table (LessonT)
+import LearningJunkie.Submissions.Database.Table (SubmissionT)
 import LearningJunkie.Universities.Database.Table (UniversityT)
 import LearningJunkie.Users.Database.Table (UserT (_userPasswordHash))
 import System.Environment (getEnv)
@@ -27,6 +28,7 @@ data LearningJunkieDb f = LearningJunkieDb
     , dbChapters :: f (TableEntity ChapterT)
     , dbLessons :: f (TableEntity LessonT)
     , dbExercises :: f (TableEntity ExerciseT)
+    , dbSubmissions :: f (TableEntity SubmissionT)
     }
     deriving (Generic, Database be)
 
@@ -45,11 +47,14 @@ db =
             , dbEnrollments = setEntityName "enrollments"
             , dbChapters = setEntityName "chapters"
             , dbLessons = setEntityName "lessons"
+            , dbExercises = setEntityName "exercises"
+            , dbSubmissions = setEntityName "submissions"
             }
 
 connectToDb :: IO (Pool Connection)
 connectToDb = do
     loadFile defaultConfig
+
     connectString <- getEnv "DATABASE_URL"
 
     newPool . setNumStripes (Just 2) $

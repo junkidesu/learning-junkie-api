@@ -6,13 +6,14 @@ import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
 import Database.Beam.Postgres (PgJSONB (PgJSONB), Postgres)
 import LearningJunkie.Database (LearningJunkieDb (dbSubmissions), db)
-import LearningJunkie.Database.Util (executeBeamDebug)
-import LearningJunkie.Exercises.Database (ExerciseJoinedType, ExerciseReturnType, allExercisesQuery, exerciseByIdQuery)
+import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd)
+import LearningJunkie.Exercises.Database (ExerciseJoinedType, ExerciseReturnType, allExercisesQuery, exerciseByIdQuery, toExerciseType)
 import LearningJunkie.Exercises.Database.Table (ExerciseT (_exerciseId), PrimaryKey (ExerciseId))
-import LearningJunkie.Submissions.Database.Table (Submission, SubmissionT (Submission, _submissionExerciseId, _submissionId, _submissionUserId))
+import LearningJunkie.Submissions.Database.Table
+import qualified LearningJunkie.Submissions.Submission as Submission
 import qualified LearningJunkie.Submissions.Submission.Attributes as Attributes
-import LearningJunkie.Submissions.Submission.State (SubmissionState (Submitted))
-import LearningJunkie.Users.Database (UserJoinedType, UserReturnType, allUsersQuery, userByIdQuery)
+import LearningJunkie.Submissions.Submission.State (SubmissionState (Pending))
+import LearningJunkie.Users.Database (UserJoinedType, UserReturnType, allUsersQuery, toUserType, userByIdQuery)
 import LearningJunkie.Users.Database.Table (PrimaryKey (UserId), UserT (_userId))
 import LearningJunkie.Web.AppM (AppM)
 
@@ -27,11 +28,11 @@ allSubmissionsQ = do
 
     foundUser@(user, _) <- allUsersQuery
 
-    guard_ (_submissionUserId submission `references_` user)
+    guard_ (_submissionUser submission `references_` user)
 
     foundExercise@(exercise, _) <- allExercisesQuery
 
-    guard_ (_submissionExerciseId submission `references_` exercise)
+    guard_ (_submissionExercise submission `references_` exercise)
 
     return (submission, foundUser, foundExercise)
 
@@ -90,7 +91,7 @@ insertSubmissionQ userId exerciseId newSubmission =
                 (UserId $ val_ userId)
                 (ExerciseId $ val_ exerciseId)
                 (val_ $ PgJSONB $ Attributes.content newSubmission)
-                (val_ Submitted)
+                (val_ Pending)
                 (val_ Nothing)
             ]
 
@@ -109,3 +110,15 @@ insertSubmission userId exerciseId newSubmission = executeBeamDebug $ do
     Just exercise <- runSelectReturningFirst $ select $ exerciseByIdQuery exerciseId
 
     return (insertedSubmission, user, exercise)
+
+toSubmissionType :: SubmissionReturnType -> Submission.Submission
+toSubmissionType =
+    Submission.Submission
+        <$> _submissionId . tripleFst
+        <*> toUserType . tripleSnd
+        <*> toExerciseType . tripleThrd
+        <*> fromJSONB . _submissionContent . tripleFst
+        <*> _submissionState . tripleFst
+        <*> _submissionGrade . tripleFst
+  where
+    fromJSONB (PgJSONB a) = a

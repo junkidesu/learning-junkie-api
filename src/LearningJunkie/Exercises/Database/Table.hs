@@ -1,5 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module LearningJunkie.Exercises.Database.Table where
@@ -27,3 +29,6 @@ instance Table ExerciseT where
 
 type Exercise = ExerciseT Identity
 type ExerciseId = PrimaryKey ExerciseT Identity
+
+deriving instance Show Exercise
+deriving instance Show ExerciseId

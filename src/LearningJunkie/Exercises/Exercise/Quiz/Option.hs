@@ -22,7 +22,7 @@ import Data.Proxy (Proxy (Proxy))
 import Data.Text (Text, unpack)
 import GHC.Generics (Generic)
 
-data Option = A | B | C | D deriving (Show, Generic)
+data Option = A | B | C | D deriving (Show, Generic, Eq, Ord)
 
 instance FromJSON Option
 instance ToJSON Option

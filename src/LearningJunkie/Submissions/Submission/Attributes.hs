@@ -7,15 +7,13 @@ module LearningJunkie.Submissions.Submission.Attributes where
 
 import Conduit (Identity)
 import Data.Aeson (FromJSON, ToJSON)
-import Data.Int (Int32)
 import Data.OpenApi (ToSchema)
 import GHC.Generics (Generic)
 import LearningJunkie.Attribute (Attribute)
 import LearningJunkie.Submissions.Submission.Content (SubmissionContent)
 
-data SubmissionAttributes f = Attributes
+newtype SubmissionAttributes f = Attributes
     { content :: Attribute f SubmissionContent
-    , grade :: Attribute f (Maybe Int32)
     }
     deriving (Generic)
 

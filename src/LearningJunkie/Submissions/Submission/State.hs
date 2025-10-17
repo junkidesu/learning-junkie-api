@@ -14,7 +14,7 @@ import Database.Beam.Backend (HasSqlValueSyntax (sqlValueSyntax), autoSqlValueSy
 import Database.Beam.Postgres (Postgres)
 import GHC.Generics
 
-data SubmissionState = Submitted | Graded
+data SubmissionState = Pending | Failure | PartialSuccess | Success
     deriving (Generic, Show, Read, Eq, Ord)
 
 instance FromJSON SubmissionState

@@ -1,6 +1,7 @@
 module LearningJunkie.Enrollments.Database where
 
 import Data.Int (Int32)
+import Data.Maybe (isJust)
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
 import Database.Beam.Postgres (Postgres)
@@ -45,6 +46,14 @@ courseEnrollmentsByIdQuery courseId = do
 
     return (enrollment, foundUser, foundCourse)
 
+checkEnrollmentQ :: Int32 -> Int32 -> EnrollmentQ s
+checkEnrollmentQ courseId userId = do
+    foundEnrollment@(enrollment, _, _) <- courseEnrollmentsByIdQuery courseId
+
+    guard_ $ _enrollmentUser enrollment ==. UserId (val_ userId)
+
+    return foundEnrollment
+
 insertEnrollmentQuery :: Int32 -> Int32 -> SqlInsert Postgres EnrollmentT
 insertEnrollmentQuery userId courseId =
     insert
@@ -65,6 +74,15 @@ selectCourseEnrollmentsById =
         . runSelectReturningList
         . select
         . courseEnrollmentsByIdQuery
+
+checkEnrollment :: Int32 -> Int32 -> AppM Bool
+checkEnrollment userId courseId = executeBeamDebug $ do
+    mbEnrollment <-
+        runSelectReturningFirst $
+            select $
+                checkEnrollmentQ courseId userId
+
+    return $ isJust mbEnrollment
 
 insertEnrollment ::
     Int32 ->

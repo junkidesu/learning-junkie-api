@@ -7,7 +7,7 @@ import Data.Int (Int32)
 import Data.OpenApi (ToSchema)
 import GHC.Generics (Generic)
 import LearningJunkie.Exercises.Exercise (Exercise)
-import LearningJunkie.Submissions.Submission.Content (SubmissionContent)
+import LearningJunkie.Submissions.Submission.Content
 import LearningJunkie.Submissions.Submission.State (SubmissionState)
 import LearningJunkie.Users.User (User)
 

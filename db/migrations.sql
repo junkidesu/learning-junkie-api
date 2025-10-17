@@ -158,6 +158,7 @@ VALUES
 '{ "tag": "Essay", "task": "Example essay", "model": "Model answer" }');
 
 CREATE TABLE IF NOT EXISTS submissions (
+	id SERIAL PRIMARY KEY,
 	user__id INT NOT NULL,
 	exercise__id INT NOT NULL,
 	content JSONB NOT NULL,

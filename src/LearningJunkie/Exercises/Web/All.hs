@@ -3,12 +3,12 @@
 
 module LearningJunkie.Exercises.Web.All where
 
-import LearningJunkie.Exercises.Database (selectAllExercises, toExerciseType)
-import LearningJunkie.Exercises.Exercise (Exercise)
+import LearningJunkie.Exercises.Database (selectAllExercises, toExerciseResponseType)
+import LearningJunkie.Exercises.Exercise.Response (ExerciseResponse)
 import LearningJunkie.Web.AppM (AppM)
 import Servant
 
-type API = Summary "Get all exercises" :> Get '[JSON] [Exercise]
+type API = Summary "Get all exercises" :> Get '[JSON] [ExerciseResponse]
 
-handler :: AppM [Exercise]
-handler = map toExerciseType <$> selectAllExercises
+handler :: AppM [ExerciseResponse]
+handler = map toExerciseResponseType <$> selectAllExercises

@@ -1,5 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module LearningJunkie.Chapters.Database.Table where
@@ -28,3 +30,6 @@ instance Table ChapterT where
 
 type Chapter = ChapterT Identity
 type ChapterId = PrimaryKey ChapterT Identity
+
+deriving instance Show Chapter
+deriving instance Show ChapterId

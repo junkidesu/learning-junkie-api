@@ -17,8 +17,8 @@ import LearningJunkie.Users.Database.Table (UserT)
 
 data SubmissionT f = Submission
         { _submissionId :: C f Int32
-        , _submissionUserId :: PrimaryKey UserT f
-        , _submissionExerciseId :: PrimaryKey ExerciseT f
+        , _submissionUser :: PrimaryKey UserT f
+        , _submissionExercise :: PrimaryKey ExerciseT f
         , _submissionContent :: C f (PgJSONB SubmissionContent)
         , _submissionState :: C f SubmissionState
         , _submissionGrade :: C f (Maybe Int32)

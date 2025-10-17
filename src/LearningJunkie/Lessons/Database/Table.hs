@@ -1,5 +1,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module LearningJunkie.Lessons.Database.Table where
@@ -32,3 +34,6 @@ instance Table LessonT where
 
 type Lesson = LessonT Identity
 type LessonId = PrimaryKey LessonT Identity
+
+deriving instance Show Lesson
+deriving instance Show LessonId

@@ -61,10 +61,15 @@ library
       LearningJunkie.Exercises.Exercise.Content
       LearningJunkie.Exercises.Exercise.Content.Response
       LearningJunkie.Exercises.Exercise.Quiz.Option
+      LearningJunkie.Exercises.Exercise.Response
+      LearningJunkie.Exercises.Grading
       LearningJunkie.Exercises.Web
       LearningJunkie.Exercises.Web.All
       LearningJunkie.Exercises.Web.ById
       LearningJunkie.Exercises.Web.Delete
+      LearningJunkie.Exercises.Web.Submissions
+      LearningJunkie.Exercises.Web.Submissions.Add
+      LearningJunkie.Exercises.Web.Submissions.All
       LearningJunkie.Lessons.Database
       LearningJunkie.Lessons.Database.Table
       LearningJunkie.Lessons.Lesson
@@ -77,6 +82,12 @@ library
       LearningJunkie.Lessons.Web.Exercises
       LearningJunkie.Lessons.Web.Exercises.Add
       LearningJunkie.Lessons.Web.Exercises.All
+      LearningJunkie.Submissions.Database
+      LearningJunkie.Submissions.Database.Table
+      LearningJunkie.Submissions.Submission
+      LearningJunkie.Submissions.Submission.Attributes
+      LearningJunkie.Submissions.Submission.Content
+      LearningJunkie.Submissions.Submission.State
       LearningJunkie.Universities.Database
       LearningJunkie.Universities.Database.Table
       LearningJunkie.Universities.University

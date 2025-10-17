@@ -6,13 +6,14 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.OpenApi (ToSchema)
 import Data.Text (Text)
 import GHC.Generics (Generic)
+import LearningJunkie.Exercises.Exercise.Quiz.Option (Option)
 
 data SubmissionContent
     = TypeAnswer {typedAnswer :: Text}
-    | TrueFalse {trueFalseAnswer :: Text}
+    | TrueFalse {trueFalseAnswer :: Bool}
     | Essay {essayAnswer :: Text}
-    | QuizAnswer {quizAnswer :: Text}
-    deriving (Generic, Show, Read)
+    | QuizAnswer {quizAnswer :: Option}
+    deriving (Generic, Show)
 
 instance FromJSON SubmissionContent
 instance ToJSON SubmissionContent
