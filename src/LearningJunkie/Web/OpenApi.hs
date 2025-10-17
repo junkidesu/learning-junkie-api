@@ -8,6 +8,7 @@ import Data.OpenApi hiding (server)
 import qualified LearningJunkie.Courses.Web as Courses
 import qualified LearningJunkie.Exercises.Web as Exercises
 import qualified LearningJunkie.Lessons.Web as Lessons
+import qualified LearningJunkie.Submissions.Web as Submissions
 import qualified LearningJunkie.Universities.Web as Universities
 import qualified LearningJunkie.Users.Web as Users
 import qualified LearningJunkie.Web.API as Web
@@ -33,6 +34,9 @@ lessonsOps = subOperations (Proxy :: Proxy Lessons.API) (Proxy :: Proxy Web.API)
 exercisesOps :: Traversal' OpenApi Operation
 exercisesOps = subOperations (Proxy :: Proxy Exercises.API) (Proxy :: Proxy Web.API)
 
+submissionsOps :: Traversal' OpenApi Operation
+submissionsOps = subOperations (Proxy :: Proxy Submissions.API) (Proxy :: Proxy Web.API)
+
 openApiDoc :: OpenApi
 openApiDoc =
     toOpenApi (Proxy :: Proxy Web.API)
@@ -53,6 +57,7 @@ openApiDoc =
         & applyTagsFor coursesOps ["courses" & description ?~ "Operations on courses"]
         & applyTagsFor lessonsOps ["lessons" & description ?~ "Operations on lessons"]
         & applyTagsFor exercisesOps ["exercises" & description ?~ "Operations on exercises"]
+        & applyTagsFor submissionsOps ["submissions" & description ?~ "Operators on submissions"]
 
 server :: ServerT API AppM
 server = swaggerSchemaUIServerT openApiDoc

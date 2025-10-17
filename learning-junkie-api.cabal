@@ -87,7 +87,10 @@ library
       LearningJunkie.Submissions.Submission
       LearningJunkie.Submissions.Submission.Attributes
       LearningJunkie.Submissions.Submission.Content
+      LearningJunkie.Submissions.Submission.ManualGrade
       LearningJunkie.Submissions.Submission.State
+      LearningJunkie.Submissions.Web
+      LearningJunkie.Submissions.Web.Grade
       LearningJunkie.Universities.Database
       LearningJunkie.Universities.Database.Table
       LearningJunkie.Universities.University

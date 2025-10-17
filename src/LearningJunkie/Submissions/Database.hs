@@ -3,15 +3,16 @@ module LearningJunkie.Submissions.Database where
 import Control.Exception (throw)
 import Data.Int (Int32)
 import Database.Beam
-import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
+import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
 import Database.Beam.Postgres (PgJSONB (PgJSONB), Postgres)
 import LearningJunkie.Database (LearningJunkieDb (dbSubmissions), db)
-import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd)
+import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd, updateIfChanged)
 import LearningJunkie.Exercises.Database (ExerciseJoinedType, ExerciseReturnType, allExercisesQuery, exerciseByIdQuery, toExerciseType)
 import LearningJunkie.Exercises.Database.Table (ExerciseT (_exerciseId), PrimaryKey (ExerciseId))
 import LearningJunkie.Submissions.Database.Table
 import qualified LearningJunkie.Submissions.Submission as Submission
 import qualified LearningJunkie.Submissions.Submission.Attributes as Attributes
+import LearningJunkie.Submissions.Submission.ManualGrade (ManualGrade (grade, state))
 import LearningJunkie.Submissions.Submission.State (SubmissionState (Pending))
 import LearningJunkie.Users.Database (UserJoinedType, UserReturnType, allUsersQuery, toUserType, userByIdQuery)
 import LearningJunkie.Users.Database.Table (PrimaryKey (UserId), UserT (_userId))
@@ -95,6 +96,16 @@ insertSubmissionQ userId exerciseId newSubmission state mbGrade =
                 (val_ mbGrade)
             ]
 
+upgradeSubmissionGradeQ :: Int32 -> ManualGrade -> SqlUpdate Postgres SubmissionT
+upgradeSubmissionGradeQ submissionId manualGrade =
+    update
+        (dbSubmissions db)
+        ( \r ->
+            updateIfChanged _submissionGrade r (Just $ Just $ grade manualGrade)
+                <> updateIfChanged _submissionState r (Just $ state manualGrade)
+        )
+        (\r -> _submissionId r ==. val_ submissionId)
+
 insertSubmission :: Int32 -> Int32 -> Attributes.New -> SubmissionState -> Maybe Int32 -> AppM SubmissionReturnType
 insertSubmission userId exerciseId newSubmission state mbGrade = executeBeamDebug $ do
     [insertedSubmission] <-
@@ -112,6 +123,23 @@ insertSubmission userId exerciseId newSubmission state mbGrade = executeBeamDebu
     Just exercise <- runSelectReturningFirst $ select $ exerciseByIdQuery exerciseId
 
     return (insertedSubmission, user, exercise)
+
+modifySubmissionGrade :: Int32 -> ManualGrade -> AppM SubmissionReturnType
+modifySubmissionGrade submissionId manualGrade = executeBeamDebug $ do
+    [updatedSubmission] <- runUpdateReturningList (upgradeSubmissionGradeQ submissionId manualGrade)
+
+    let
+        userId :: Int32
+        UserId userId = _submissionUser updatedSubmission
+
+        exerciseId :: Int32
+        ExerciseId exerciseId = _submissionExercise updatedSubmission
+
+    Just user <- runSelectReturningFirst $ select $ userByIdQuery userId
+
+    Just exercise <- runSelectReturningFirst $ select $ exerciseByIdQuery exerciseId
+
+    return (updatedSubmission, user, exercise)
 
 toSubmissionType :: SubmissionReturnType -> Submission.Submission
 toSubmissionType =

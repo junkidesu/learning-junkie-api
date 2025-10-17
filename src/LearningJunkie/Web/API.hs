@@ -6,6 +6,7 @@ module LearningJunkie.Web.API (API, server) where
 import qualified LearningJunkie.Courses.Web as Courses
 import qualified LearningJunkie.Exercises.Web as Exercises
 import qualified LearningJunkie.Lessons.Web as Lessons
+import qualified LearningJunkie.Submissions.Web as Submissions
 import qualified LearningJunkie.Universities.Web as Universities
 import qualified LearningJunkie.Users.Web as Users
 import LearningJunkie.Web.AppM (AppM)
@@ -17,6 +18,7 @@ type API =
     :<|> Courses.API
     :<|> Lessons.API
     :<|> Exercises.API
+    :<|> Submissions.API
 
 server :: ServerT API AppM
 server =
@@ -25,3 +27,4 @@ server =
     :<|> Courses.server
     :<|> Lessons.server
     :<|> Exercises.server
+    :<|> Submissions.server
