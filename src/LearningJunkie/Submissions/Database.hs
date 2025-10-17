@@ -82,8 +82,8 @@ selectSubmissionsByUserId =
         . select
         . submissionsByUserIdQ
 
-insertSubmissionQ :: Int32 -> Int32 -> Attributes.New -> SqlInsert Postgres SubmissionT
-insertSubmissionQ userId exerciseId newSubmission =
+insertSubmissionQ :: Int32 -> Int32 -> Attributes.New -> SubmissionState -> Maybe Int32 -> SqlInsert Postgres SubmissionT
+insertSubmissionQ userId exerciseId newSubmission state mbGrade =
     insert (dbSubmissions db) $
         insertExpressions
             [ Submission
@@ -91,18 +91,20 @@ insertSubmissionQ userId exerciseId newSubmission =
                 (UserId $ val_ userId)
                 (ExerciseId $ val_ exerciseId)
                 (val_ $ PgJSONB $ Attributes.content newSubmission)
-                (val_ Pending)
-                (val_ Nothing)
+                (val_ state)
+                (val_ mbGrade)
             ]
 
-insertSubmission :: Int32 -> Int32 -> Attributes.New -> AppM SubmissionReturnType
-insertSubmission userId exerciseId newSubmission = executeBeamDebug $ do
+insertSubmission :: Int32 -> Int32 -> Attributes.New -> SubmissionState -> Maybe Int32 -> AppM SubmissionReturnType
+insertSubmission userId exerciseId newSubmission state mbGrade = executeBeamDebug $ do
     [insertedSubmission] <-
         runInsertReturningList
             ( insertSubmissionQ
                 userId
                 exerciseId
                 newSubmission
+                state
+                mbGrade
             )
 
     Just user <- runSelectReturningFirst $ select $ userByIdQuery userId

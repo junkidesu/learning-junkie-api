@@ -5,9 +5,10 @@
 module LearningJunkie.Exercises.Web.Submissions.Add where
 
 import Data.Int (Int32)
-import LearningJunkie.Courses.Database.Table (CourseT (_courseId), PrimaryKey (CourseId))
+import LearningJunkie.Courses.Database.Table (CourseT (_courseId))
 import LearningJunkie.Enrollments.Database (checkEnrollment)
 import LearningJunkie.Exercises.Database (selectExerciseById, toExerciseType)
+import LearningJunkie.Exercises.Grading (GradingResult (Result), autoGradeExercise)
 import LearningJunkie.Submissions.Database (insertSubmission, toSubmissionType)
 import LearningJunkie.Submissions.Submission (Submission)
 import qualified LearningJunkie.Submissions.Submission.Attributes as Attributes
@@ -29,7 +30,7 @@ handler exerciseId (Authenticated authUser) newSubmission = do
 
     case mbExercise of
         Nothing -> throwError err404
-        Just _exercise@(_, _lesson@(_, (course, _, _))) -> do
+        Just exercise@(_, _lesson@(_, (course, _, _))) -> do
             let
                 courseId :: Int32
                 courseId = _courseId course
@@ -38,6 +39,14 @@ handler exerciseId (Authenticated authUser) newSubmission = do
 
             if isEnrolled
                 then do
-                    toSubmissionType <$> insertSubmission (Auth.id authUser) exerciseId newSubmission
+                    Result state mbGrade <- autoGradeExercise newSubmission (toExerciseType exercise)
+
+                    toSubmissionType
+                        <$> insertSubmission
+                            (Auth.id authUser)
+                            exerciseId
+                            newSubmission
+                            state
+                            mbGrade
                 else throwError err401{errBody = "Not enrolled in the course"}
 handler _ _ _ = throwAll err401
