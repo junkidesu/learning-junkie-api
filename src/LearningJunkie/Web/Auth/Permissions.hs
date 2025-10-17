@@ -26,8 +26,7 @@ data Action = View | Create | Update | Delete
 data Object = Course | University | User | Lesson | Exercise
     deriving (Show, Read, Eq, Ord)
 
-data Permission
-    = Permission
+data Permission = Permission
     { scope :: Scope
     , action :: Action
     , object :: Object
@@ -132,6 +131,12 @@ checkScope (Permission SameInstructor _ Exercise) authUser exerciseId = do
             let sameInstructor = _userId instructor == Auth.id authUser
             unless sameInstructor $ throwError err401{errBody = "Same instructor required"}
 checkScope _ _ _ = throwError err401
+
+requireAdmin :: Auth.AuthUser -> AppM r -> AppM r
+requireAdmin authUser handler = do
+    case Auth.role authUser of
+        Admin -> handler
+        _ -> throwError err401
 
 requirePermission :: Auth.AuthUser -> Permission -> AppM r -> AppM r
 requirePermission authUser minPermission handler = do
