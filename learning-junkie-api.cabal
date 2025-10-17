@@ -122,6 +122,8 @@ library
       LearningJunkie.Users.Web.Self.Avatar.Delete
       LearningJunkie.Users.Web.Self.Avatar.Upload
       LearningJunkie.Users.Web.Self.Update
+      LearningJunkie.Users.Web.Submissions
+      LearningJunkie.Users.Web.Submissions.All
       LearningJunkie.Web
       LearningJunkie.Web.API
       LearningJunkie.Web.AppM
