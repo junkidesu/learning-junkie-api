@@ -22,12 +22,24 @@ services:
       - db
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_ACCESS_KEY_SECRET=${AWS_ACCESS_KEY_SECRET}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    expose:
+        - "9000"
+        - "9001"
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - ./minio_data:/data
 

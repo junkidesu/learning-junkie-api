@@ -39,8 +39,6 @@ dependencies:
 - warp
 - postgresql-simple
 - http-types
-- swagger2
-- servant-swagger
 - servant-swagger-ui
 - text
 - bytestring
@@ -51,10 +49,20 @@ dependencies:
 - transformers
 - wai-cors
 - aws
+- minio-hs
+- unliftio
+- beam-core
+- beam-postgres
+- openapi3
+- servant-openapi3
 - conduit
 - conduit-extra
 - http-conduit
+- http-client
+- http-media
 - dotenv
+- insert-ordered-containers
+- uuid
 
 ghc-options:
 - -Wall

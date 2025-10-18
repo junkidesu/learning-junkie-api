@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.37.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -25,109 +25,122 @@ source-repository head
 
 library
   exposed-modules:
-      Api
-      Api.Auth
-      Api.Courses
-      Api.Courses.Banner
-      Api.Courses.Enrollments
-      Api.Courses.Exercises.Essays
-      Api.Courses.Exercises.Questions
-      Api.Courses.Exercises.Quizzes
-      Api.Courses.Lessons
-      Api.Exercises
-      Api.Exercises.Essays
-      Api.Exercises.Questions
-      Api.Exercises.Quizzes
-      Api.Universities
-      Api.Universities.Courses
-      Api.Universities.Instructors
-      Api.Universities.Logo
-      Api.Users
-      Api.Users.Avatar
-      Api.Users.Courses
-      Api.Users.Enrollments
-      Api.Users.Progress
-      Api.Users.Solutions
-      Certificate
-      Cors
-      Database
-      Database.Operations.Courses
-      Database.Operations.Courses.Banner
-      Database.Operations.Courses.Completions
-      Database.Operations.Courses.Enrollments
-      Database.Operations.Exercises
-      Database.Operations.Exercises.Essays
-      Database.Operations.Exercises.Questions
-      Database.Operations.Exercises.Quizzes
-      Database.Operations.Exercises.Solutions
-      Database.Operations.Lessons
-      Database.Operations.Universities
-      Database.Operations.Universities.Instructors
-      Database.Operations.Universities.Logo
-      Database.Operations.Users
-      Database.Operations.Users.Avatar
-      Database.Operations.Users.Courses
-      Database.Operations.Users.Progress
-      Database.Operations.Users.Solutions
-      Database.Queries.Courses
-      Database.Queries.Courses.Banner
-      Database.Queries.Courses.Completions
-      Database.Queries.Courses.Enrollments
-      Database.Queries.Exercises
-      Database.Queries.Exercises.Essays
-      Database.Queries.Exercises.Questions
-      Database.Queries.Exercises.Quizzes
-      Database.Queries.Exercises.Solutions
-      Database.Queries.Lessons
-      Database.Queries.Universities
-      Database.Queries.Universities.Instructors
-      Database.Queries.Universities.Logo
-      Database.Queries.Users
-      Database.Queries.Users.Avatar
-      Database.Queries.Users.Courses
-      Database.Queries.Users.Progress
-      Database.Queries.Users.Solutions
-      Lib
-      Types.Auth.Credentials
-      Types.Auth.JWTAuth
-      Types.Auth.Response
-      Types.Auth.User
-      Types.Course
-      Types.Course.Completion
-      Types.Course.Difficulty
-      Types.Course.NewCourse
-      Types.Exercise
-      Types.Exercise.Choice
-      Types.Exercise.EditEssay
-      Types.Exercise.EditQuestion
-      Types.Exercise.EditQuiz
-      Types.Exercise.Essay
-      Types.Exercise.NewEssay
-      Types.Exercise.NewQuestion
-      Types.Exercise.NewQuiz
-      Types.Exercise.Question
-      Types.Exercise.Quiz
-      Types.HasCourse
-      Types.Lesson
-      Types.Lesson.EditLesson
-      Types.Lesson.NewLesson
-      Types.PDF
-      Types.Solution.Essay
-      Types.Solution.ExerciseCheck
-      Types.Solution.Question
-      Types.Solution.Quiz
-      Types.Solution.Response
-      Types.Solvable
-      Types.University
-      Types.University.NewUniversity
-      Types.User
-      Types.User.Education
-      Types.User.NewUser
-      Types.User.Progress
-      Types.User.Role
-      Upload
-      Upload.Environment
-      Upload.Swagger
+      LearningJunkie.Attribute
+      LearningJunkie.Chapters.Chapter
+      LearningJunkie.Chapters.Chapter.Attributes
+      LearningJunkie.Chapters.Database
+      LearningJunkie.Chapters.Database.Table
+      LearningJunkie.Courses.Course
+      LearningJunkie.Courses.Course.Attributes
+      LearningJunkie.Courses.Course.Difficulty
+      LearningJunkie.Courses.Database
+      LearningJunkie.Courses.Database.Table
+      LearningJunkie.Courses.Web
+      LearningJunkie.Courses.Web.All
+      LearningJunkie.Courses.Web.ById
+      LearningJunkie.Courses.Web.Chapters
+      LearningJunkie.Courses.Web.Chapters.Add
+      LearningJunkie.Courses.Web.Chapters.All
+      LearningJunkie.Courses.Web.Chapters.Lessons
+      LearningJunkie.Courses.Web.Chapters.Lessons.Add
+      LearningJunkie.Courses.Web.Chapters.Lessons.All
+      LearningJunkie.Courses.Web.Delete
+      LearningJunkie.Courses.Web.Enrollments
+      LearningJunkie.Courses.Web.Enrollments.All
+      LearningJunkie.Courses.Web.Enrollments.Enroll
+      LearningJunkie.Courses.Web.Update
+      LearningJunkie.Database
+      LearningJunkie.Database.Util
+      LearningJunkie.Enrollments.Database
+      LearningJunkie.Enrollments.Database.Table
+      LearningJunkie.Enrollments.Enrollment
+      LearningJunkie.Exercises.Database
+      LearningJunkie.Exercises.Database.Table
+      LearningJunkie.Exercises.Exercise
+      LearningJunkie.Exercises.Exercise.Attributes
+      LearningJunkie.Exercises.Exercise.Content
+      LearningJunkie.Exercises.Exercise.Content.Response
+      LearningJunkie.Exercises.Exercise.Quiz.Option
+      LearningJunkie.Exercises.Exercise.Response
+      LearningJunkie.Exercises.Grading
+      LearningJunkie.Exercises.Web
+      LearningJunkie.Exercises.Web.All
+      LearningJunkie.Exercises.Web.ById
+      LearningJunkie.Exercises.Web.Delete
+      LearningJunkie.Exercises.Web.Submissions
+      LearningJunkie.Exercises.Web.Submissions.Add
+      LearningJunkie.Exercises.Web.Submissions.All
+      LearningJunkie.Lessons.Database
+      LearningJunkie.Lessons.Database.Table
+      LearningJunkie.Lessons.Lesson
+      LearningJunkie.Lessons.Lesson.Attributes
+      LearningJunkie.Lessons.Lesson.Component
+      LearningJunkie.Lessons.Web
+      LearningJunkie.Lessons.Web.ById
+      LearningJunkie.Lessons.Web.Delete
+      LearningJunkie.Lessons.Web.Edit
+      LearningJunkie.Lessons.Web.Exercises
+      LearningJunkie.Lessons.Web.Exercises.Add
+      LearningJunkie.Lessons.Web.Exercises.All
+      LearningJunkie.Submissions.Database
+      LearningJunkie.Submissions.Database.Table
+      LearningJunkie.Submissions.Submission
+      LearningJunkie.Submissions.Submission.Attributes
+      LearningJunkie.Submissions.Submission.Content
+      LearningJunkie.Submissions.Submission.ManualGrade
+      LearningJunkie.Submissions.Submission.State
+      LearningJunkie.Submissions.Web
+      LearningJunkie.Submissions.Web.Grade
+      LearningJunkie.Universities.Database
+      LearningJunkie.Universities.Database.Table
+      LearningJunkie.Universities.University
+      LearningJunkie.Universities.University.Attributes
+      LearningJunkie.Universities.Web
+      LearningJunkie.Universities.Web.All
+      LearningJunkie.Universities.Web.ById
+      LearningJunkie.Universities.Web.Courses
+      LearningJunkie.Universities.Web.Courses.Add
+      LearningJunkie.Universities.Web.Create
+      LearningJunkie.Universities.Web.Delete
+      LearningJunkie.Universities.Web.Instructors
+      LearningJunkie.Universities.Web.Instructors.Add
+      LearningJunkie.Universities.Web.Instructors.All
+      LearningJunkie.Universities.Web.Representatives
+      LearningJunkie.Universities.Web.Representatives.Add
+      LearningJunkie.Universities.Web.Representatives.All
+      LearningJunkie.Universities.Web.Update
+      LearningJunkie.Users.Database
+      LearningJunkie.Users.Database.Education
+      LearningJunkie.Users.Database.Role
+      LearningJunkie.Users.Database.Table
+      LearningJunkie.Users.User
+      LearningJunkie.Users.User.Attributes
+      LearningJunkie.Users.Web
+      LearningJunkie.Users.Web.All
+      LearningJunkie.Users.Web.ById
+      LearningJunkie.Users.Web.Login
+      LearningJunkie.Users.Web.Register
+      LearningJunkie.Users.Web.Self
+      LearningJunkie.Users.Web.Self.Avatar
+      LearningJunkie.Users.Web.Self.Avatar.Delete
+      LearningJunkie.Users.Web.Self.Avatar.Upload
+      LearningJunkie.Users.Web.Self.Update
+      LearningJunkie.Users.Web.Submissions
+      LearningJunkie.Users.Web.Submissions.All
+      LearningJunkie.Web
+      LearningJunkie.Web.API
+      LearningJunkie.Web.AppM
+      LearningJunkie.Web.Auth.Credentials
+      LearningJunkie.Web.Auth.Permissions
+      LearningJunkie.Web.Auth.Response
+      LearningJunkie.Web.Auth.User
+      LearningJunkie.Web.Cors
+      LearningJunkie.Web.Environment
+      LearningJunkie.Web.JWTAuth
+      LearningJunkie.Web.Minio
+      LearningJunkie.Web.OpenApi
+      Servant.Auth.OpenApi
+      Servant.Multipart.OpenApi
   other-modules:
       Paths_learning_junkie_api
   autogen-modules:
@@ -139,6 +152,8 @@ library
       aeson
     , aws
     , base >=4.7 && <5
+    , beam-core
+    , beam-postgres
     , bytestring
     , conduit
     , conduit-extra
@@ -146,9 +161,14 @@ library
     , diagrams-lib
     , diagrams-rasterific
     , dotenv
+    , http-client
     , http-conduit
+    , http-media
     , http-types
+    , insert-ordered-containers
     , lens
+    , minio-hs
+    , openapi3
     , password
     , postgresql-simple
     , resource-pool
@@ -157,15 +177,16 @@ library
     , servant-auth-server
     , servant-auth-swagger
     , servant-multipart
+    , servant-openapi3
     , servant-server
-    , servant-swagger
     , servant-swagger-ui
     , string-conversions
-    , swagger2
     , text
     , time
     , transformers
+    , unliftio
     , utf8-string
+    , uuid
     , wai
     , wai-cors
     , wai-logger
@@ -185,6 +206,8 @@ executable learning-junkie-api-exe
       aeson
     , aws
     , base >=4.7 && <5
+    , beam-core
+    , beam-postgres
     , bytestring
     , conduit
     , conduit-extra
@@ -192,10 +215,15 @@ executable learning-junkie-api-exe
     , diagrams-lib
     , diagrams-rasterific
     , dotenv
+    , http-client
     , http-conduit
+    , http-media
     , http-types
+    , insert-ordered-containers
     , learning-junkie-api
     , lens
+    , minio-hs
+    , openapi3
     , password
     , postgresql-simple
     , resource-pool
@@ -204,15 +232,16 @@ executable learning-junkie-api-exe
     , servant-auth-server
     , servant-auth-swagger
     , servant-multipart
+    , servant-openapi3
     , servant-server
-    , servant-swagger
     , servant-swagger-ui
     , string-conversions
-    , swagger2
     , text
     , time
     , transformers
+    , unliftio
     , utf8-string
+    , uuid
     , wai
     , wai-cors
     , wai-logger
@@ -233,6 +262,8 @@ test-suite learning-junkie-api-test
       aeson
     , aws
     , base >=4.7 && <5
+    , beam-core
+    , beam-postgres
     , bytestring
     , conduit
     , conduit-extra
@@ -240,10 +271,15 @@ test-suite learning-junkie-api-test
     , diagrams-lib
     , diagrams-rasterific
     , dotenv
+    , http-client
     , http-conduit
+    , http-media
     , http-types
+    , insert-ordered-containers
     , learning-junkie-api
     , lens
+    , minio-hs
+    , openapi3
     , password
     , postgresql-simple
     , resource-pool
@@ -252,15 +288,16 @@ test-suite learning-junkie-api-test
     , servant-auth-server
     , servant-auth-swagger
     , servant-multipart
+    , servant-openapi3
     , servant-server
-    , servant-swagger
     , servant-swagger-ui
     , string-conversions
-    , swagger2
     , text
     , time
     , transformers
+    , unliftio
     , utf8-string
+    , uuid
     , wai
     , wai-cors
     , wai-logger

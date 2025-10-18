@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Lib (startApp)
+import LearningJunkie.Web (startApp)
 
 main :: IO ()
 main = startApp
