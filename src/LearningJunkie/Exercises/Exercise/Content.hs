@@ -29,6 +29,9 @@ data Content
         , options :: Option -> Text
         , correctOption :: Option
         }
+    | Project
+        { requirements :: Text
+        }
     deriving (Show, Generic)
 
 instance ToJSON Content
