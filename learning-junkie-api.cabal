@@ -30,6 +30,9 @@ library
       LearningJunkie.Chapters.Chapter.Attributes
       LearningJunkie.Chapters.Database
       LearningJunkie.Chapters.Database.Table
+      LearningJunkie.Codex
+      LearningJunkie.Codex.Environment
+      LearningJunkie.Codex.ExecutionResult
       LearningJunkie.Courses.Course
       LearningJunkie.Courses.Course.Attributes
       LearningJunkie.Courses.Course.Difficulty
@@ -171,6 +174,7 @@ library
     , openapi3
     , password
     , postgresql-simple
+    , process
     , resource-pool
     , servant
     , servant-auth
@@ -226,6 +230,7 @@ executable learning-junkie-api-exe
     , openapi3
     , password
     , postgresql-simple
+    , process
     , resource-pool
     , servant
     , servant-auth
@@ -282,6 +287,7 @@ test-suite learning-junkie-api-test
     , openapi3
     , password
     , postgresql-simple
+    , process
     , resource-pool
     , servant
     , servant-auth
