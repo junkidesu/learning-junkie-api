@@ -1,6 +1,5 @@
 module LearningJunkie.Submissions.Database where
 
-import Control.Exception (throw)
 import Data.Int (Int32)
 import Data.Text (Text)
 import Database.Beam
@@ -8,13 +7,13 @@ import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runIn
 import Database.Beam.Postgres (PgJSONB (PgJSONB), Postgres)
 import LearningJunkie.Database (LearningJunkieDb (dbSubmissions), db)
 import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd, updateIfChanged)
-import LearningJunkie.Exercises.Database (ExerciseJoinedType, ExerciseReturnType, allExercisesQuery, exerciseByIdQuery, toExerciseType)
+import LearningJunkie.Exercises.Database (ExerciseJoinedType, ExerciseReturnType, allExercisesQuery, exerciseByIdQuery, toExerciseResponseType)
 import LearningJunkie.Exercises.Database.Table (ExerciseT (_exerciseId), PrimaryKey (ExerciseId))
 import LearningJunkie.Submissions.Database.Table
 import qualified LearningJunkie.Submissions.Submission as Submission
 import qualified LearningJunkie.Submissions.Submission.Attributes as Attributes
 import LearningJunkie.Submissions.Submission.ManualGrade (ManualGrade (comment, grade, state))
-import LearningJunkie.Submissions.Submission.State (SubmissionState (Pending))
+import LearningJunkie.Submissions.Submission.State (SubmissionState)
 import LearningJunkie.Users.Database (UserJoinedType, UserReturnType, allUsersQuery, toUserType, userByIdQuery)
 import LearningJunkie.Users.Database.Table (PrimaryKey (UserId), UserT (_userId))
 import LearningJunkie.Web.AppM (AppM)
@@ -150,7 +149,7 @@ toSubmissionType =
     Submission.Submission
         <$> _submissionId . tripleFst
         <*> toUserType . tripleSnd
-        <*> toExerciseType . tripleThrd
+        <*> toExerciseResponseType . tripleThrd
         <*> fromJSONB . _submissionContent . tripleFst
         <*> _submissionState . tripleFst
         <*> _submissionGrade . tripleFst

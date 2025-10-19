@@ -7,7 +7,7 @@ import Data.Int (Int32)
 import Data.OpenApi (ToSchema)
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import LearningJunkie.Exercises.Exercise (Exercise)
+import LearningJunkie.Exercises.Exercise.Response (ExerciseResponse)
 import LearningJunkie.Submissions.Submission.Content
 import LearningJunkie.Submissions.Submission.State (SubmissionState)
 import LearningJunkie.Users.User (User)
@@ -15,7 +15,7 @@ import LearningJunkie.Users.User (User)
 data Submission = Submission
     { id :: Int32
     , user :: User
-    , exercise :: Exercise
+    , exercise :: ExerciseResponse
     , content :: SubmissionContent
     , state :: SubmissionState
     , grade :: Maybe Int32
