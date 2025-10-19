@@ -9,6 +9,7 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.OpenApi (ToSchema)
 import Data.Text
 import GHC.Generics (Generic)
+import LearningJunkie.Codex (Environment)
 import LearningJunkie.Exercises.Exercise.Quiz.Option (Option)
 
 data Content
@@ -31,6 +32,11 @@ data Content
         }
     | Project
         { requirements :: Text
+        }
+    | Coding
+        { requirements :: Text
+        , environment :: Environment
+        , correctOutput :: Text
         }
     deriving (Show, Generic)
 

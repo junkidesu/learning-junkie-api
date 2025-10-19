@@ -2,6 +2,7 @@ module LearningJunkie.Submissions.Database where
 
 import Control.Exception (throw)
 import Data.Int (Int32)
+import Data.Text (Text)
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
 import Database.Beam.Postgres (PgJSONB (PgJSONB), Postgres)
@@ -12,7 +13,7 @@ import LearningJunkie.Exercises.Database.Table (ExerciseT (_exerciseId), Primary
 import LearningJunkie.Submissions.Database.Table
 import qualified LearningJunkie.Submissions.Submission as Submission
 import qualified LearningJunkie.Submissions.Submission.Attributes as Attributes
-import LearningJunkie.Submissions.Submission.ManualGrade (ManualGrade (grade, state))
+import LearningJunkie.Submissions.Submission.ManualGrade (ManualGrade (comment, grade, state))
 import LearningJunkie.Submissions.Submission.State (SubmissionState (Pending))
 import LearningJunkie.Users.Database (UserJoinedType, UserReturnType, allUsersQuery, toUserType, userByIdQuery)
 import LearningJunkie.Users.Database.Table (PrimaryKey (UserId), UserT (_userId))
@@ -83,8 +84,8 @@ selectSubmissionsByUserId =
         . select
         . submissionsByUserIdQ
 
-insertSubmissionQ :: Int32 -> Int32 -> Attributes.New -> SubmissionState -> Maybe Int32 -> SqlInsert Postgres SubmissionT
-insertSubmissionQ userId exerciseId newSubmission state mbGrade =
+insertSubmissionQ :: Int32 -> Int32 -> Attributes.New -> SubmissionState -> Maybe Int32 -> Maybe Text -> SqlInsert Postgres SubmissionT
+insertSubmissionQ userId exerciseId newSubmission initialState mbGrade mbComment =
     insert (dbSubmissions db) $
         insertExpressions
             [ Submission
@@ -92,8 +93,9 @@ insertSubmissionQ userId exerciseId newSubmission state mbGrade =
                 (UserId $ val_ userId)
                 (ExerciseId $ val_ exerciseId)
                 (val_ $ PgJSONB $ Attributes.content newSubmission)
-                (val_ state)
+                (val_ initialState)
                 (val_ mbGrade)
+                (val_ mbComment)
             ]
 
 upgradeSubmissionGradeQ :: Int32 -> ManualGrade -> SqlUpdate Postgres SubmissionT
@@ -103,19 +105,21 @@ upgradeSubmissionGradeQ submissionId manualGrade =
         ( \r ->
             updateIfChanged _submissionGrade r (Just $ Just $ grade manualGrade)
                 <> updateIfChanged _submissionState r (Just $ state manualGrade)
+                <> updateIfChanged _submissionComment r (Just $ Just $ comment manualGrade)
         )
         (\r -> _submissionId r ==. val_ submissionId)
 
-insertSubmission :: Int32 -> Int32 -> Attributes.New -> SubmissionState -> Maybe Int32 -> AppM SubmissionReturnType
-insertSubmission userId exerciseId newSubmission state mbGrade = executeBeamDebug $ do
+insertSubmission :: Int32 -> Int32 -> Attributes.New -> SubmissionState -> Maybe Int32 -> Maybe Text -> AppM SubmissionReturnType
+insertSubmission userId exerciseId newSubmission initialState mbGrade mbComment = executeBeamDebug $ do
     [insertedSubmission] <-
         runInsertReturningList
             ( insertSubmissionQ
                 userId
                 exerciseId
                 newSubmission
-                state
+                initialState
                 mbGrade
+                mbComment
             )
 
     Just user <- runSelectReturningFirst $ select $ userByIdQuery userId
@@ -150,5 +154,6 @@ toSubmissionType =
         <*> fromJSONB . _submissionContent . tripleFst
         <*> _submissionState . tripleFst
         <*> _submissionGrade . tripleFst
+        <*> _submissionComment . tripleFst
   where
     fromJSONB (PgJSONB a) = a

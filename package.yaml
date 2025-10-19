@@ -63,6 +63,7 @@ dependencies:
 - dotenv
 - insert-ordered-containers
 - uuid
+- process 
 
 ghc-options:
 - -Wall

@@ -4,6 +4,7 @@
 
 module LearningJunkie.Exercises.Web.Submissions.Add where
 
+import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Int (Int32)
 import LearningJunkie.Courses.Database.Table (CourseT (_courseId))
 import LearningJunkie.Enrollments.Database (checkEnrollment)
@@ -39,7 +40,9 @@ handler exerciseId (Authenticated authUser) newSubmission = do
 
             if isEnrolled
                 then do
-                    Result state mbGrade <- autoGradeExercise newSubmission (toExerciseType exercise)
+                    result@(Result state mbGrade mbComment) <- autoGradeExercise newSubmission (toExerciseType exercise)
+
+                    liftIO $ print result
 
                     toSubmissionType
                         <$> insertSubmission
@@ -48,5 +51,6 @@ handler exerciseId (Authenticated authUser) newSubmission = do
                             newSubmission
                             state
                             mbGrade
+                            mbComment
                 else throwError err401{errBody = "Not enrolled in the course"}
 handler _ _ _ = throwAll err401

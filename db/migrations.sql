@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS submissions;
-DROP TABLE IF EXISTS solutions;
 DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS lessons;
 DROP TABLE IF EXISTS chapters;
@@ -163,5 +162,8 @@ CREATE TABLE IF NOT EXISTS submissions (
 	exercise__id INT NOT NULL,
 	content JSONB NOT NULL,
 	state TEXT NOT NULL,
-	grade INT
+	grade INT,
+	comment TEXT,
+	FOREIGN KEY (user__id) REFERENCES users(id),
+	FOREIGN KEY (exercise__id) REFERENCES exercises(id)
 );

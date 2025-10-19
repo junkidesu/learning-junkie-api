@@ -14,6 +14,7 @@ data SubmissionContent
     | Essay {essayAnswer :: Text}
     | QuizAnswer {quizAnswer :: Option}
     | Project {uploadedAttachment :: Text} -- attach
+    | Coding {program :: Text}
     deriving (Generic, Show)
 
 instance FromJSON SubmissionContent
