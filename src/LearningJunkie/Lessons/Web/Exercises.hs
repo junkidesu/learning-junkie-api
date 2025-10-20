@@ -9,7 +9,7 @@ import qualified LearningJunkie.Lessons.Web.Exercises.All as All
 import LearningJunkie.Web.AppM (AppM)
 import Servant
 
-type API = All.API :<|> Add.API
+type API = "exercises" :> (All.API :<|> Add.API)
 
 server :: Int32 -> ServerT API AppM
 server lessonId =

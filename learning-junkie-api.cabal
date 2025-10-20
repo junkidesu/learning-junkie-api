@@ -77,6 +77,9 @@ library
       LearningJunkie.Exercises.Web.Submissions
       LearningJunkie.Exercises.Web.Submissions.Add
       LearningJunkie.Exercises.Web.Submissions.All
+      LearningJunkie.LessonCompletions.Database
+      LearningJunkie.LessonCompletions.Database.Table
+      LearningJunkie.LessonCompletions.LessonCompletion
       LearningJunkie.Lessons.Database
       LearningJunkie.Lessons.Database.Table
       LearningJunkie.Lessons.Lesson
@@ -84,6 +87,9 @@ library
       LearningJunkie.Lessons.Lesson.Component
       LearningJunkie.Lessons.Web
       LearningJunkie.Lessons.Web.ById
+      LearningJunkie.Lessons.Web.Completions
+      LearningJunkie.Lessons.Web.Completions.Add
+      LearningJunkie.Lessons.Web.Completions.All
       LearningJunkie.Lessons.Web.Delete
       LearningJunkie.Lessons.Web.Edit
       LearningJunkie.Lessons.Web.Exercises

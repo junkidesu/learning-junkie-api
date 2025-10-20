@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS lesson_completions;
 DROP TABLE IF EXISTS submissions;
 DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS lessons;
@@ -29,30 +30,30 @@ CREATE TABLE IF NOT EXISTS users (
 	education TEXT,
 	role TEXT NOT NULL,
 	email TEXT NOT NULL UNIQUE,
-	passwordHash TEXT NOT NULL,
+	password_hash TEXT NOT NULL,
 	avatar TEXT,
 	university__id INT,
 	FOREIGN KEY (university__id) REFERENCES universities(id) ON DELETE SET NULL
 );
 
 -- admins
-INSERT INTO users (name, birthday, education, role, email, passwordHash)
+INSERT INTO users (name, birthday, education, role, email, password_hash)
 VALUES ('Admin', '2003-08-24', 'Bachelor', 'Admin', 'admin@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu');
 
 -- university representative 
-INSERT INTO users (name, education, role, email, passwordHash, university__id)
+INSERT INTO users (name, education, role, email, password_hash, university__id)
 VALUES
 ('FUT Representative', 'Master', 'UniversityRep', 'fut_rep1@fut.ac.uz', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', 1),
 ('IU Representative', 'Master', 'UniversityRep', 'iu_rep1@iu.ac.uz', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', 2);
 
 -- instructors
-INSERT INTO users (name, birthday, education, role, email, passwordHash, university__id)
+INSERT INTO users (name, birthday, education, role, email, password_hash, university__id)
 VALUES
 ('Jake Chen', '1990-08-24', 'Master', 'Instructor', 'jake@iu.ac.uz', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', 1),
 ('John Doe', '1985-08-24', 'PhD', 'Instructor', 'john@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', 2);
 
 -- students
-INSERT INTO users (name, birthday, education, role, email, passwordHash, university__id)
+INSERT INTO users (name, birthday, education, role, email, password_hash, university__id)
 VALUES
 ('Junki', '2003-08-24', 'Bachelor', 'Student', 'junki@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', NULL),
 ('Alvaro', '2003-08-24', NULL, 'Student', 'alvaro@example.com', '$2b$10$2dsWB4pJedMef6Iuv4J64OyKYn85z/CHYzrWJ0iGouv2e3NMKWADu', NULL);
@@ -170,4 +171,14 @@ CREATE TABLE IF NOT EXISTS submissions (
 	submitted TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
 	FOREIGN KEY (user__id) REFERENCES users(id),
 	FOREIGN KEY (exercise__id) REFERENCES exercises(id)
+);
+
+CREATE TABLE IF NOT EXISTS lesson_completions (
+	id SERIAL PRIMARY KEY,
+	user__id INT NOT NULL,
+	lesson__id INT NOT NULL,
+	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
+	FOREIGN KEY (user__id) REFERENCES users(id),
+	FOREIGN KEY (lesson__id) REFERENCES lessons(id),
+	UNIQUE (user__id, lesson__id)
 );
