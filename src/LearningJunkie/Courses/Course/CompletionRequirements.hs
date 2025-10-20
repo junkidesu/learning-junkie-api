@@ -8,7 +8,8 @@ import Data.OpenApi (ToSchema)
 import GHC.Generics (Generic)
 
 data CompletionRequirements = CompletionRequirements
-        { exercisePercentage :: Int32 -- value from 0 to 100
+        { lessonPercentage :: Int32 -- value from 0 to 100
+        , exercisePercentage :: Int32 -- value from 0 to 100
         , finalProject :: Bool -- whether mandatory or not
         }
         deriving (Generic, Show, Read, Eq)

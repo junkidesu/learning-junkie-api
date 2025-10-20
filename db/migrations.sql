@@ -81,11 +81,19 @@ with text user interfaces.',
 'Beginner',
 1,
 4,
-'{ "exercisePercentage": 85, "finalProject": true }'),
-('OOP in Python', 'Learn object-oriented programming in Python', 'Intermediate', 1, 4, '{ "exercisePercentage": 85, "finalProject": true }'
+'{ lessonPercentage: 100, "exercisePercentage": 85, "finalProject": true }'),
+('OOP in Python', 'Learn object-oriented programming in Python', 
+'Intermediate', 1, 4,
+'{ "lessonPercentage": 100, "exercisePercentage": 85, "finalProject": true }'
 ),
-('Calculus 1', 'Learn fundamental single-variable differential and integral calculus', 'Intermediate', 2, 5, '{ "exercisePercentage": 85, "finalProject": true }'),
-('Linear Algebra', 'Learn vectors, matrices, vector spaces, and linear equations', 'Advanced', 2, 5, '{ "exercisePercentage": 85, "finalProject": true }');
+('Calculus 1',
+'Learn fundamental single-variable differential and integral calculus',
+'Intermediate', 2, 5,
+'{ "lessonPercentage": 85,  "exercisePercentage": 85, "finalProject": true }'),
+('Linear Algebra',
+'Learn vectors, matrices, vector spaces, and linear equations',
+'Advanced', 2, 5,
+'{ "lessonPercentage": 90,  "exercisePercentage": 85, "finalProject": true }');
 
 CREATE TABLE IF NOT EXISTS enrollments (
 	user__id INT NOT NULL,
