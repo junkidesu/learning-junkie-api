@@ -8,6 +8,7 @@ import qualified LearningJunkie.Lessons.Web.Edit as Edit
 
 import Data.Int (Int32)
 import qualified LearningJunkie.Lessons.Web.ById as ById
+import qualified LearningJunkie.Lessons.Web.Completions as Completions
 import qualified LearningJunkie.Lessons.Web.Exercises as Exercises
 import LearningJunkie.Web.AppM (AppM)
 import Servant
@@ -18,7 +19,8 @@ type API =
         :> ( ById.API
                 :<|> Delete.API
                 :<|> Edit.API
-                :<|> "exercises" :> Exercises.API
+                :<|> Exercises.API
+                :<|> Completions.API
            )
 
 server :: ServerT API AppM
@@ -27,3 +29,4 @@ server lessonId =
         :<|> Delete.handler lessonId
         :<|> Edit.handler lessonId
         :<|> Exercises.server lessonId
+        :<|> Completions.server lessonId
