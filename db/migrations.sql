@@ -81,7 +81,7 @@ with text user interfaces.',
 'Beginner',
 1,
 4,
-'{ lessonPercentage: 100, "exercisePercentage": 85, "finalProject": true }'),
+'{ "lessonPercentage": 100, "exercisePercentage": 85, "finalProject": true }'),
 ('OOP in Python', 'Learn object-oriented programming in Python', 
 'Intermediate', 1, 4,
 '{ "lessonPercentage": 100, "exercisePercentage": 85, "finalProject": true }'
