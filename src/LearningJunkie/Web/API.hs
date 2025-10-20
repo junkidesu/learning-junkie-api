@@ -3,6 +3,7 @@
 
 module LearningJunkie.Web.API (API, server) where
 
+import qualified LearningJunkie.Codex.Web as Codex
 import qualified LearningJunkie.Courses.Web as Courses
 import qualified LearningJunkie.Exercises.Web as Exercises
 import qualified LearningJunkie.Lessons.Web as Lessons
@@ -19,6 +20,7 @@ type API =
     :<|> Lessons.API
     :<|> Exercises.API
     :<|> Submissions.API
+    :<|> Codex.API
 
 server :: ServerT API AppM
 server =
@@ -28,3 +30,4 @@ server =
     :<|> Lessons.server
     :<|> Exercises.server
     :<|> Submissions.server
+    :<|> Codex.server

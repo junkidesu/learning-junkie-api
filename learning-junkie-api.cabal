@@ -33,6 +33,9 @@ library
       LearningJunkie.Codex
       LearningJunkie.Codex.Environment
       LearningJunkie.Codex.ExecutionResult
+      LearningJunkie.Codex.TestInput
+      LearningJunkie.Codex.Web
+      LearningJunkie.Codex.Web.Test
       LearningJunkie.Courses.Course
       LearningJunkie.Courses.Course.Attributes
       LearningJunkie.Courses.Course.Difficulty
