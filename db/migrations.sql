@@ -164,6 +164,7 @@ CREATE TABLE IF NOT EXISTS submissions (
 	state TEXT NOT NULL,
 	grade INT,
 	comment TEXT,
+	submitted TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
 	FOREIGN KEY (user__id) REFERENCES users(id),
 	FOREIGN KEY (exercise__id) REFERENCES exercises(id)
 );

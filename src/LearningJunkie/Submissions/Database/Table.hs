@@ -9,6 +9,7 @@ module LearningJunkie.Submissions.Database.Table where
 
 import Data.Int (Int32)
 import Data.Text (Text)
+import Data.Time (UTCTime)
 import Database.Beam
 import Database.Beam.Postgres (PgJSONB)
 import LearningJunkie.Exercises.Database.Table (ExerciseT)
@@ -24,6 +25,7 @@ data SubmissionT f = Submission
         , _submissionState :: C f SubmissionState
         , _submissionGrade :: C f (Maybe Int32)
         , _submissionComment :: C f (Maybe Text)
+        , _submissionSubmitted :: C f UTCTime
         }
         deriving (Generic, Beamable)
 

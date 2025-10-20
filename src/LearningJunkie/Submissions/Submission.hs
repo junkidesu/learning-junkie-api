@@ -6,6 +6,7 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.Int (Int32)
 import Data.OpenApi (ToSchema)
 import Data.Text (Text)
+import Data.Time (UTCTime)
 import GHC.Generics (Generic)
 import LearningJunkie.Exercises.Exercise.Response (ExerciseResponse)
 import LearningJunkie.Submissions.Submission.Content
@@ -20,6 +21,7 @@ data Submission = Submission
     , state :: SubmissionState
     , grade :: Maybe Int32
     , comment :: Maybe Text
+    , submitted :: UTCTime
     }
     deriving (Generic)
 
