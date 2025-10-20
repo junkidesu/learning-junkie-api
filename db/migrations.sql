@@ -65,11 +65,12 @@ CREATE TABLE IF NOT EXISTS courses (
 	banner TEXT,
 	university__id INT NOT NULL,
 	instructor__id INT NOT NULL, 
+	completion_requirements JSONB NOT NULL,
 	FOREIGN KEY (university__id) REFERENCES universities(id) ON DELETE CASCADE,
 	FOREIGN KEY (instructor__id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-INSERT INTO courses (title, description, difficulty, university__id, instructor__id)
+INSERT INTO courses (title, description, difficulty, university__id, instructor__id, completion_requirements)
 VALUES
 ('Basic Python',
 'Python is one of the most popular programming languages today. It is used in a multitude of areas, from 
@@ -78,10 +79,12 @@ to start writing real Python programs. By the end of this course, you will be ab
 with text user interfaces.',
 'Beginner',
 1,
-4),
-('OOP in Python', 'Learn object-oriented programming in Python', 'Intermediate', 1, 4),
-('Calculus 1', 'Learn fundamental single-variable differential and integral calculus', 'Intermediate', 2, 5),
-('Linear Algebra', 'Learn vectors, matrices, vector spaces, and linear equations', 'Advanced', 2, 5);
+4,
+'{ "exercisePercentage": 85, "finalProject": true }'),
+('OOP in Python', 'Learn object-oriented programming in Python', 'Intermediate', 1, 4, '{ "exercisePercentage": 85, "finalProject": true }'
+),
+('Calculus 1', 'Learn fundamental single-variable differential and integral calculus', 'Intermediate', 2, 5, '{ "exercisePercentage": 85, "finalProject": true }'),
+('Linear Algebra', 'Learn vectors, matrices, vector spaces, and linear equations', 'Advanced', 2, 5, '{ "exercisePercentage": 85, "finalProject": true }');
 
 CREATE TABLE IF NOT EXISTS enrollments (
 	user__id INT NOT NULL,
@@ -164,6 +167,7 @@ CREATE TABLE IF NOT EXISTS submissions (
 	state TEXT NOT NULL,
 	grade INT,
 	comment TEXT,
+	submitted TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
 	FOREIGN KEY (user__id) REFERENCES users(id),
 	FOREIGN KEY (exercise__id) REFERENCES exercises(id)
 );

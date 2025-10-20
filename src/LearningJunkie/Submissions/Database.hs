@@ -95,6 +95,7 @@ insertSubmissionQ userId exerciseId newSubmission initialState mbGrade mbComment
                 (val_ initialState)
                 (val_ mbGrade)
                 (val_ mbComment)
+                default_
             ]
 
 upgradeSubmissionGradeQ :: Int32 -> ManualGrade -> SqlUpdate Postgres SubmissionT
@@ -154,5 +155,6 @@ toSubmissionType =
         <*> _submissionState . tripleFst
         <*> _submissionGrade . tripleFst
         <*> _submissionComment . tripleFst
+        <*> _submissionSubmitted . tripleFst
   where
     fromJSONB (PgJSONB a) = a

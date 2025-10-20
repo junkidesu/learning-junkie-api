@@ -12,6 +12,7 @@ import Data.OpenApi (ToSchema)
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import LearningJunkie.Attribute (Attribute)
+import LearningJunkie.Courses.Course.CompletionRequirements (CompletionRequirements)
 import LearningJunkie.Courses.Course.Difficulty (Difficulty)
 
 data CourseAttributes f = CourseAttributes
@@ -20,6 +21,7 @@ data CourseAttributes f = CourseAttributes
         , difficulty :: Attribute f Difficulty
         , banner :: Attribute f (Maybe Text)
         , instructor :: Attribute f Int32
+        , completionRequirements :: Attribute f CompletionRequirements
         }
 
 type New = CourseAttributes Identity

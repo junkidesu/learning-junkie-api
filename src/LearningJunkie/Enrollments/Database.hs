@@ -46,6 +46,20 @@ courseEnrollmentsByIdQuery courseId = do
 
     return (enrollment, foundUser, foundCourse)
 
+enrollmentsByUserIdQ :: Int32 -> EnrollmentQ s
+enrollmentsByUserIdQ userId = do
+    foundUser@(user, _) <- userByIdQuery userId
+
+    enrollment <- all_ $ dbEnrollments db
+
+    guard_ $ _enrollmentUser enrollment `references_` user
+
+    foundCourse@(course, _, _) <- allCoursesQuery
+
+    guard_ $ _enrollmentCourse enrollment `references_` course
+
+    return (enrollment, foundUser, foundCourse)
+
 checkEnrollmentQ :: Int32 -> Int32 -> EnrollmentQ s
 checkEnrollmentQ courseId userId = do
     foundEnrollment@(enrollment, _, _) <- courseEnrollmentsByIdQuery courseId
@@ -74,6 +88,13 @@ selectCourseEnrollmentsById =
         . runSelectReturningList
         . select
         . courseEnrollmentsByIdQuery
+
+selectEnrollmentsByUserId :: Int32 -> AppM [EnrollmentReturnType]
+selectEnrollmentsByUserId =
+    executeBeamDebug
+        . runSelectReturningList
+        . select
+        . enrollmentsByUserIdQ
 
 checkEnrollment :: Int32 -> Int32 -> AppM Bool
 checkEnrollment userId courseId = executeBeamDebug $ do

@@ -33,8 +33,12 @@ library
       LearningJunkie.Codex
       LearningJunkie.Codex.Environment
       LearningJunkie.Codex.ExecutionResult
+      LearningJunkie.Codex.TestInput
+      LearningJunkie.Codex.Web
+      LearningJunkie.Codex.Web.Test
       LearningJunkie.Courses.Course
       LearningJunkie.Courses.Course.Attributes
+      LearningJunkie.Courses.Course.CompletionRequirements
       LearningJunkie.Courses.Course.Difficulty
       LearningJunkie.Courses.Database
       LearningJunkie.Courses.Database.Table
@@ -121,6 +125,8 @@ library
       LearningJunkie.Users.Web
       LearningJunkie.Users.Web.All
       LearningJunkie.Users.Web.ById
+      LearningJunkie.Users.Web.Enrollments
+      LearningJunkie.Users.Web.Enrollments.All
       LearningJunkie.Users.Web.Login
       LearningJunkie.Users.Web.Register
       LearningJunkie.Users.Web.Self
