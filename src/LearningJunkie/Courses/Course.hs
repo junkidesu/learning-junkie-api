@@ -7,6 +7,7 @@ import Data.Int (Int32)
 import Data.OpenApi (ToSchema)
 import Data.Text (Text)
 import GHC.Generics (Generic)
+import LearningJunkie.Courses.Course.CompletionRequirements (CompletionRequirements)
 import LearningJunkie.Courses.Course.Difficulty (Difficulty)
 import LearningJunkie.Universities.University (University)
 import LearningJunkie.Users.User (User)
@@ -19,6 +20,7 @@ data Course = Course
     , banner :: Maybe Text
     , university :: University
     , instructor :: User
+    , completionRequirements :: CompletionRequirements
     }
     deriving (Generic, Show)
 

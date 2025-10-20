@@ -38,6 +38,7 @@ library
       LearningJunkie.Codex.Web.Test
       LearningJunkie.Courses.Course
       LearningJunkie.Courses.Course.Attributes
+      LearningJunkie.Courses.Course.CompletionRequirements
       LearningJunkie.Courses.Course.Difficulty
       LearningJunkie.Courses.Database
       LearningJunkie.Courses.Database.Table

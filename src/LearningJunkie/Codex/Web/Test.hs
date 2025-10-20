@@ -18,4 +18,7 @@ type API =
 
 handler :: TestInput -> AppM ExecutionResult
 handler testInput = do
-        liftIO $ executeCode (environment testInput) (program testInput)
+        liftIO $
+                executeCode
+                        (environment testInput)
+                        (program testInput)

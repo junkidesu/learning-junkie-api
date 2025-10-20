@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS courses (
 	banner TEXT,
 	university__id INT NOT NULL,
 	instructor__id INT NOT NULL, 
+	completion_requirements JSONB NOT NULL,
 	FOREIGN KEY (university__id) REFERENCES universities(id) ON DELETE CASCADE,
 	FOREIGN KEY (instructor__id) REFERENCES users(id) ON DELETE CASCADE
 );

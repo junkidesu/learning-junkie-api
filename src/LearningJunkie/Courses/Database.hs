@@ -8,7 +8,7 @@ import qualified LearningJunkie.Courses.Course as Course
 import qualified LearningJunkie.Courses.Course.Attributes as Attributes
 import LearningJunkie.Courses.Database.Table
 import LearningJunkie.Database
-import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd, updateIfChanged)
+import LearningJunkie.Database.Util (executeBeamDebug, fromJSONB, tripleFst, tripleSnd, tripleThrd, updateIfChanged)
 import LearningJunkie.Universities.Database
 import LearningJunkie.Universities.Database.Table (PrimaryKey (UniversityId), University)
 import LearningJunkie.Users.Database
@@ -63,6 +63,7 @@ insertCourseQuery newCourse universityId = do
                 (val_ $ Attributes.banner newCourse)
                 (val_ $ UniversityId universityId)
                 (val_ $ UserId $ Attributes.instructor newCourse)
+                (val_ $ PgJSONB $ Attributes.completionRequirements newCourse)
             ]
 
 updateCourseQuery :: Int32 -> Attributes.Edit -> SqlUpdate Postgres CourseT
@@ -74,6 +75,7 @@ updateCourseQuery courseId editCourse = do
                 <> updateIfChanged _courseBanner r (Attributes.banner editCourse)
                 <> updateIfChanged _courseDescription r (Attributes.description editCourse)
                 <> updateIfChanged _courseDifficulty r (Attributes.difficulty editCourse)
+                <> updateIfChanged _courseCompletionRequirements r (PgJSONB <$> Attributes.completionRequirements editCourse)
         )
         (\r -> _courseId r ==. val_ courseId)
 
@@ -144,3 +146,4 @@ toCourseType =
         <*> (_courseBanner . tripleFst)
         <*> (toUniversityType . tripleSnd)
         <*> (toUserType . tripleThrd)
+        <*> (fromJSONB . _courseCompletionRequirements . tripleFst)

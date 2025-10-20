@@ -9,6 +9,8 @@ module LearningJunkie.Courses.Database.Table where
 import Data.Int (Int32)
 import Data.Text (Text)
 import Database.Beam
+import Database.Beam.Postgres (PgJSONB)
+import LearningJunkie.Courses.Course.CompletionRequirements (CompletionRequirements)
 import LearningJunkie.Courses.Course.Difficulty (Difficulty)
 import LearningJunkie.Universities.Database.Table (UniversityT)
 import LearningJunkie.Users.Database.Table (UserT)
@@ -21,6 +23,7 @@ data CourseT f = Course
         , _courseBanner :: C f (Maybe Text)
         , _courseUniversity :: PrimaryKey UniversityT f
         , _courseInstructor :: PrimaryKey UserT f
+        , _courseCompletionRequirements :: C f (PgJSONB CompletionRequirements)
         }
         deriving (Generic, Beamable)
 
