@@ -125,6 +125,8 @@ library
       LearningJunkie.Users.Web
       LearningJunkie.Users.Web.All
       LearningJunkie.Users.Web.ById
+      LearningJunkie.Users.Web.Enrollments
+      LearningJunkie.Users.Web.Enrollments.All
       LearningJunkie.Users.Web.Login
       LearningJunkie.Users.Web.Register
       LearningJunkie.Users.Web.Self
