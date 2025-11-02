@@ -58,7 +58,7 @@ handler universityId (Authenticated authUser) multipartData = Permissions.requir
 
                 avatarFileNameId <- toText <$> liftIO nextRandom
 
-                let avatarFilePath = "avatars/" <> avatarFileNameId <> "." <> extension
+                let avatarFilePath = "logos/" <> avatarFileNameId <> "." <> extension
 
                 avatarUploadResult <- uploadFileMinio avatarFilePath logoContentType payload
 
