@@ -8,6 +8,7 @@ import qualified LearningJunkie.Users.Web.All as All
 import qualified LearningJunkie.Users.Web.ById as ById
 import qualified LearningJunkie.Users.Web.Enrollments as Enrollments
 import qualified LearningJunkie.Users.Web.Login as Login
+import qualified LearningJunkie.Users.Web.Progress as Progress
 import qualified LearningJunkie.Users.Web.Register as Register
 import qualified LearningJunkie.Users.Web.Self as Self
 import qualified LearningJunkie.Users.Web.Submissions as Submissions
@@ -24,6 +25,7 @@ type API =
           :<|> Capture' '[Required, Description "ID of the user"] "id" Int32
             :> ( Submissions.API
                   :<|> Enrollments.API
+                  :<|> Progress.API
                )
        )
 
@@ -37,4 +39,5 @@ server =
     :<|> ( \userId ->
             Submissions.server userId
               :<|> Enrollments.server userId
+              :<|> Progress.handler userId
          )

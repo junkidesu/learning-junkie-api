@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeApplications #-}
+
 module LearningJunkie.Submissions.Database where
 
 import Data.Int (Int32)
@@ -5,6 +7,7 @@ import Data.Text (Text)
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
 import Database.Beam.Postgres (PgJSONB (PgJSONB), Postgres)
+import LearningJunkie.Courses.Database.Table (CourseT (_courseId))
 import LearningJunkie.Database (LearningJunkieDb (dbSubmissions), db)
 import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd, updateIfChanged)
 import LearningJunkie.Exercises.Database (ExerciseJoinedType, ExerciseReturnType, allExercisesQuery, exerciseByIdQuery, toExerciseResponseType)
@@ -55,6 +58,38 @@ submissionsByUserIdQ userId =
         (\(_, (u, _), _) -> _userId u ==. val_ userId)
         allSubmissionsQ
 
+uniqueSubmissionsByUserIdQ :: Int32 -> SubmissionQ s
+uniqueSubmissionsByUserIdQ userId = do
+    foundSubmission@(userSubmission, _user, _exercise@(exercise, _)) <- submissionsByUserIdQ userId
+
+    let exerciseId = _exerciseId exercise
+
+    (submissionExerciseId, mbMaxSubmissionId) <- aggregate_
+        ( \(submission, _, (ex, _)) ->
+            (group_ (_exerciseId ex), max_ (_submissionId submission))
+        )
+        $ do
+            submissionsByUserIdQ userId
+
+    guard_
+        ( submissionExerciseId
+            ==. exerciseId
+            &&. fromMaybe_ (val_ 0) mbMaxSubmissionId
+            ==. _submissionId userSubmission
+        )
+
+    return foundSubmission
+
+submissionsByCourseIdQ :: Int32 -> SubmissionQ s
+submissionsByCourseIdQ courseId = do
+    submission <- allSubmissionsQ
+
+    (_exercise, _lesson@(_, _course@(course, _, _))) <- allExercisesQuery
+
+    guard_ (_courseId course ==. val_ courseId)
+
+    return submission
+
 selectAllSubmissions :: AppM [SubmissionReturnType]
 selectAllSubmissions =
     executeBeamDebug
@@ -82,6 +117,13 @@ selectSubmissionsByUserId =
         . runSelectReturningList
         . select
         . submissionsByUserIdQ
+
+selectSubmissionsByCourseId :: Int32 -> AppM [SubmissionReturnType]
+selectSubmissionsByCourseId =
+    executeBeamDebug
+        . runSelectReturningList
+        . select
+        . submissionsByCourseIdQ
 
 insertSubmissionQ :: Int32 -> Int32 -> Attributes.New -> SubmissionState -> Maybe Int32 -> Maybe Text -> SqlInsert Postgres SubmissionT
 insertSubmissionQ userId exerciseId newSubmission initialState mbGrade mbComment =

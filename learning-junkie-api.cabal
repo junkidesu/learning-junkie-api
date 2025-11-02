@@ -95,6 +95,8 @@ library
       LearningJunkie.Lessons.Web.Exercises
       LearningJunkie.Lessons.Web.Exercises.Add
       LearningJunkie.Lessons.Web.Exercises.All
+      LearningJunkie.Progress.Database
+      LearningJunkie.Progress.Progress
       LearningJunkie.Submissions.Database
       LearningJunkie.Submissions.Database.Table
       LearningJunkie.Submissions.Submission
@@ -134,11 +136,13 @@ library
       LearningJunkie.Users.Web.Enrollments
       LearningJunkie.Users.Web.Enrollments.All
       LearningJunkie.Users.Web.Login
+      LearningJunkie.Users.Web.Progress
       LearningJunkie.Users.Web.Register
       LearningJunkie.Users.Web.Self
       LearningJunkie.Users.Web.Self.Avatar
       LearningJunkie.Users.Web.Self.Avatar.Delete
       LearningJunkie.Users.Web.Self.Avatar.Upload
+      LearningJunkie.Users.Web.Self.Progress
       LearningJunkie.Users.Web.Self.Update
       LearningJunkie.Users.Web.Submissions
       LearningJunkie.Users.Web.Submissions.All
