@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       LearningJunkie.Attribute
+      LearningJunkie.Certificate.Template
       LearningJunkie.Chapters.Chapter
       LearningJunkie.Chapters.Chapter.Attributes
       LearningJunkie.Chapters.Database
@@ -36,6 +37,9 @@ library
       LearningJunkie.Codex.TestInput
       LearningJunkie.Codex.Web
       LearningJunkie.Codex.Web.Test
+      LearningJunkie.CourseCompletions.CourseCompletion
+      LearningJunkie.CourseCompletions.Database
+      LearningJunkie.CourseCompletions.Database.Table
       LearningJunkie.Courses.Course
       LearningJunkie.Courses.Course.Attributes
       LearningJunkie.Courses.Course.CompletionRequirements
@@ -45,6 +49,7 @@ library
       LearningJunkie.Courses.Web
       LearningJunkie.Courses.Web.All
       LearningJunkie.Courses.Web.ById
+      LearningJunkie.Courses.Web.Certificate.Generate
       LearningJunkie.Courses.Web.Chapters
       LearningJunkie.Courses.Web.Chapters.Add
       LearningJunkie.Courses.Web.Chapters.All
@@ -186,6 +191,7 @@ library
     , http-types
     , insert-ordered-containers
     , lens
+    , lucid
     , minio-hs
     , openapi3
     , password
@@ -196,6 +202,7 @@ library
     , servant-auth
     , servant-auth-server
     , servant-auth-swagger
+    , servant-lucid
     , servant-multipart
     , servant-openapi3
     , servant-server
@@ -242,6 +249,7 @@ executable learning-junkie-api-exe
     , insert-ordered-containers
     , learning-junkie-api
     , lens
+    , lucid
     , minio-hs
     , openapi3
     , password
@@ -252,6 +260,7 @@ executable learning-junkie-api-exe
     , servant-auth
     , servant-auth-server
     , servant-auth-swagger
+    , servant-lucid
     , servant-multipart
     , servant-openapi3
     , servant-server
@@ -299,6 +308,7 @@ test-suite learning-junkie-api-test
     , insert-ordered-containers
     , learning-junkie-api
     , lens
+    , lucid
     , minio-hs
     , openapi3
     , password
@@ -309,6 +319,7 @@ test-suite learning-junkie-api-test
     , servant-auth
     , servant-auth-server
     , servant-auth-swagger
+    , servant-lucid
     , servant-multipart
     , servant-openapi3
     , servant-server

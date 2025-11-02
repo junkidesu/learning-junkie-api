@@ -21,6 +21,8 @@ data Course = Course
     , university :: University
     , instructor :: User
     , completionRequirements :: CompletionRequirements
+    , totalLessonsNum :: Int32
+    , totalExercisesNum :: Int32
     }
     deriving (Generic, Show)
 

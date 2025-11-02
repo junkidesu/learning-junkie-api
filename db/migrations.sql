@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS course_completions;
 DROP TABLE IF EXISTS lesson_completions;
 DROP TABLE IF EXISTS submissions;
 DROP TABLE IF EXISTS exercises;
@@ -145,7 +146,15 @@ CREATE TABLE IF NOT EXISTS lessons (
 
 INSERT INTO lessons (lesson_number, chapter__course__id, chapter__chapter_number, title, description, components)
 VALUES 
-(1, 1, 1, 'Hello World: the very basics', 'Hello world is the first program that a programmer ever writes', '[{ "tag": "Markdown", "content": "This is some test content" }]');
+(1, 1, 1,
+	'Hello World: the very basics',
+	'Hello world is the first program that a programmer ever writes',
+	'[{ "tag": "Markdown", "content": "This is some test content" }]'),
+(2, 1, 1, 
+	'Getting user input',
+	'We have learned how to show information to user. Now, how do we get information from the user?',
+	'[{ "tag": "Markdown", "content": "This is some test content" }]');
+
 
 CREATE TABLE IF NOT EXISTS exercises (
 	id SERIAL PRIMARY KEY, 
@@ -189,4 +198,14 @@ CREATE TABLE IF NOT EXISTS lesson_completions (
 	FOREIGN KEY (user__id) REFERENCES users(id),
 	FOREIGN KEY (lesson__id) REFERENCES lessons(id),
 	UNIQUE (user__id, lesson__id)
+);
+
+CREATE TABLE IF NOT EXISTS course_completions (
+	id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+	user__id INT NOT NULL,
+	course__id INT NOT NULL,
+	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
+	FOREIGN KEY (user__id) REFERENCES users(id),
+	FOREIGN KEY (course__id) REFERENCES courses(id),
+	UNIQUE (user__id, course__id)
 );

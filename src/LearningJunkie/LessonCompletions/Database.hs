@@ -4,14 +4,13 @@ import Data.Int (Int32)
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
 import Database.Beam.Postgres (Postgres)
-import Database.Beam.Query.Internal (QNested)
-import LearningJunkie.Courses.Database.Table (CourseT (_courseId), PrimaryKey (CourseId))
+import LearningJunkie.Courses.Database.Table (CourseT (_courseId))
 import LearningJunkie.Database (LearningJunkieDb (dbLessonCompletions), db)
 import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd)
 import LearningJunkie.LessonCompletions.Database.Table (LessonCompletion, LessonCompletionT (LessonCompletion, _lessonCompletionId, _lessonCompletionLesson, _lessonCompletionTime, _lessonCompletionUser))
 import qualified LearningJunkie.LessonCompletions.LessonCompletion as LC
 import LearningJunkie.Lessons.Database (LessonJoinedType, LessonReturnType, allLessonsQuery, lessonByIdQuery, toLessonType)
-import LearningJunkie.Lessons.Database.Table (LessonT (_lessonChapter), PrimaryKey (LessonId))
+import LearningJunkie.Lessons.Database.Table (PrimaryKey (LessonId))
 import LearningJunkie.Users.Database (UserJoinedType, UserReturnType, allUsersQuery, toUserType, userByIdQuery)
 import LearningJunkie.Users.Database.Table (PrimaryKey (UserId))
 import LearningJunkie.Web.AppM (AppM)
@@ -57,7 +56,7 @@ lessonCompletionsByCourseIdQ courseId = do
 
     guard_ $ _lessonCompletionUser lessonCompletion `references_` user
 
-    foundLesson@(lesson, _course@(course, _, _)) <- allLessonsQuery
+    foundLesson@(lesson, _course@(course, _, _, _, _)) <- allLessonsQuery
 
     guard_ $ _lessonCompletionLesson lessonCompletion `references_` lesson
 

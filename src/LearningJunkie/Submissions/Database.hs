@@ -16,7 +16,7 @@ import LearningJunkie.Submissions.Database.Table
 import qualified LearningJunkie.Submissions.Submission as Submission
 import qualified LearningJunkie.Submissions.Submission.Attributes as Attributes
 import LearningJunkie.Submissions.Submission.ManualGrade (ManualGrade (comment, grade, state))
-import LearningJunkie.Submissions.Submission.State (SubmissionState)
+import LearningJunkie.Submissions.Submission.State (SubmissionState (Success))
 import LearningJunkie.Users.Database (UserJoinedType, UserReturnType, allUsersQuery, toUserType, userByIdQuery)
 import LearningJunkie.Users.Database.Table (PrimaryKey (UserId), UserT (_userId))
 import LearningJunkie.Web.AppM (AppM)
@@ -76,6 +76,9 @@ uniqueSubmissionsByUserIdQ userId = do
             ==. exerciseId
             &&. fromMaybe_ (val_ 0) mbMaxSubmissionId
             ==. _submissionId userSubmission
+            &&. ( _submissionState userSubmission
+                    ==. val_ Success
+                )
         )
 
     return foundSubmission
@@ -84,7 +87,7 @@ submissionsByCourseIdQ :: Int32 -> SubmissionQ s
 submissionsByCourseIdQ courseId = do
     submission <- allSubmissionsQ
 
-    (_exercise, _lesson@(_, _course@(course, _, _))) <- allExercisesQuery
+    (_exercise, _lesson@(_, _course@(course, _, _, _, _))) <- allExercisesQuery
 
     guard_ (_courseId course ==. val_ courseId)
 

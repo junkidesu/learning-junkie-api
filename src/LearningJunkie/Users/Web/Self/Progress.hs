@@ -18,5 +18,7 @@ type API =
         :> Get '[JSON] [Progress]
 
 handler :: AuthResult Auth.AuthUser -> AppM [Progress]
-handler (Authenticated authUser) = map toProgressType <$> selectUserProgress (Auth.id authUser)
+handler (Authenticated authUser) =
+    map toProgressType
+        <$> selectUserProgress (Auth.id authUser)
 handler _ = throwError err401

@@ -29,7 +29,7 @@ handler (Authenticated authUser) submissionId manualGrade = do
 
     case mbSubmission of
         Nothing -> throwError err404
-        Just _submission@(_, _, _exercise@(_, _lesson@(_, _course@(_, _, _instructor@(user, _))))) -> do
+        Just _submission@(_, _, _exercise@(_, _lesson@(_, _course@(_, _, _instructor@(user, _), _, _)))) -> do
             -- we first check if the teacher is allowed to change the submission
             let
                 userId :: Int32

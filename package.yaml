@@ -64,6 +64,8 @@ dependencies:
 - insert-ordered-containers
 - uuid
 - process 
+- lucid
+- servant-lucid
 
 ghc-options:
 - -Wall

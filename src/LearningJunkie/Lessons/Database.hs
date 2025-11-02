@@ -12,8 +12,6 @@ import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, updateIfChange
 import LearningJunkie.Lessons.Database.Table
 import qualified LearningJunkie.Lessons.Lesson as Lesson
 import qualified LearningJunkie.Lessons.Lesson.Attributes as Attributes
-import LearningJunkie.Universities.Database.Table (University)
-import LearningJunkie.Users.Database.Table (User)
 import LearningJunkie.Web.AppM (AppM)
 
 type LessonExpr s = LessonT (QExpr Postgres s)
@@ -33,7 +31,7 @@ allLessonsQuery :: LessonQ s
 allLessonsQuery = do
     lesson <- all_ $ dbLessons db
 
-    joinedCourse@(course, _, _) <- allCoursesQuery
+    joinedCourse@(course, _, _, _, _) <- allCoursesQuery
 
     let ChapterId (CourseId courseId) _ = _lessonChapter lesson
 
@@ -63,7 +61,7 @@ lessonByIdQuery lessonId =
             _lessonId (fst r)
                 ==. val_ lessonId
         )
-        $ allLessonsQuery
+        allLessonsQuery
 
 insertLessonQuery :: Int32 -> Int32 -> Attributes.New -> SqlInsert Postgres LessonT
 insertLessonQuery courseId chapterNumber newLesson =
@@ -119,7 +117,7 @@ selectLessonsByChapter courseId chapterNumber =
         . select
         $ lessonsByChapterQuery courseId chapterNumber
 
-selectLessonById :: Int32 -> AppM (Maybe (Lesson, (Course, University, (User, Maybe University))))
+selectLessonById :: Int32 -> AppM (Maybe LessonReturnType)
 selectLessonById =
     executeBeamDebug
         . runSelectReturningFirst

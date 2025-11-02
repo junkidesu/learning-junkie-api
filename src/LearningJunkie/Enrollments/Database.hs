@@ -11,7 +11,6 @@ import LearningJunkie.Database
 import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd)
 import LearningJunkie.Enrollments.Database.Table
 import qualified LearningJunkie.Enrollments.Enrollment as Enrollment
-import LearningJunkie.Universities.Database.Table (University)
 import LearningJunkie.Users.Database
 import LearningJunkie.Users.Database.Table
 import LearningJunkie.Web.AppM (AppM)
@@ -28,13 +27,13 @@ type EnrollmentQ s =
         )
 type EnrollmentReturnType =
     ( Enrollment
-    , (User, Maybe University)
-    , (Course, University, (User, Maybe University))
+    , UserReturnType
+    , CourseReturnType
     )
 
 courseEnrollmentsByIdQuery :: Int32 -> EnrollmentQ s
 courseEnrollmentsByIdQuery courseId = do
-    foundCourse@(course, _, _) <- courseByIdQuery courseId
+    foundCourse@(course, _, _, _, _) <- courseByIdQuery courseId
 
     enrollment <- all_ $ dbEnrollments db
 
@@ -54,7 +53,7 @@ enrollmentsByUserIdQ userId = do
 
     guard_ $ _enrollmentUser enrollment `references_` user
 
-    foundCourse@(course, _, _) <- allCoursesQuery
+    foundCourse@(course, _, _, _, _) <- allCoursesQuery
 
     guard_ $ _enrollmentCourse enrollment `references_` course
 

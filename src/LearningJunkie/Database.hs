@@ -11,14 +11,15 @@ import Data.Pool (Pool, defaultPoolConfig, newPool, setNumStripes, withResource)
 import Database.Beam
 import Database.Beam.Postgres
 import LearningJunkie.Chapters.Database.Table (ChapterT)
-import LearningJunkie.Courses.Database.Table (CourseT)
+import LearningJunkie.CourseCompletions.Database.Table (CourseCompletionT (_courseCompletionCourse, _courseCompletionId, _courseCompletionTime, _courseCompletionUser))
+import LearningJunkie.Courses.Database.Table (CourseT, PrimaryKey (CourseId))
 import LearningJunkie.Enrollments.Database.Table (EnrollmentT)
 import LearningJunkie.Exercises.Database.Table (ExerciseT)
 import LearningJunkie.LessonCompletions.Database.Table (LessonCompletionT (_lessonCompletionId, _lessonCompletionLesson, _lessonCompletionTime, _lessonCompletionUser))
 import LearningJunkie.Lessons.Database.Table (LessonT, PrimaryKey (LessonId))
 import LearningJunkie.Submissions.Database.Table (SubmissionT)
 import LearningJunkie.Universities.Database.Table (UniversityT)
-import LearningJunkie.Users.Database.Table (PrimaryKey (UserId), UserT (_userPasswordHash))
+import LearningJunkie.Users.Database.Table (PrimaryKey (UserId), UserT)
 import System.Environment (getEnv)
 
 data LearningJunkieDb f = LearningJunkieDb
@@ -31,6 +32,7 @@ data LearningJunkieDb f = LearningJunkieDb
     , dbExercises :: f (TableEntity ExerciseT)
     , dbSubmissions :: f (TableEntity SubmissionT)
     , dbLessonCompletions :: f (TableEntity LessonCompletionT)
+    , dbCourseCompletions :: f (TableEntity CourseCompletionT)
     }
     deriving (Generic, Database be)
 
@@ -54,6 +56,15 @@ db =
                             , _lessonCompletionUser = UserId $ fieldNamed "user__id"
                             , _lessonCompletionLesson = LessonId $ fieldNamed "lesson__id"
                             , _lessonCompletionTime = fieldNamed "time"
+                            }
+            , dbCourseCompletions =
+                setEntityName "course_completions"
+                    <> modifyTableFields
+                        tableModification
+                            { _courseCompletionId = fieldNamed "id"
+                            , _courseCompletionUser = UserId $ fieldNamed "user__id"
+                            , _courseCompletionCourse = CourseId $ fieldNamed "course__id"
+                            , _courseCompletionTime = fieldNamed "time"
                             }
             }
 

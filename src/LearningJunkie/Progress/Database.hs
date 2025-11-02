@@ -12,7 +12,7 @@ import LearningJunkie.Database.Util (executeBeamDebug)
 import LearningJunkie.Enrollments.Database (enrollmentsByUserIdQ)
 import LearningJunkie.LessonCompletions.Database (allLessonCompletionsByUserIdQ)
 import qualified LearningJunkie.Progress.Progress as Progress
-import LearningJunkie.Submissions.Database (submissionsByUserIdQ, uniqueSubmissionsByUserIdQ)
+import LearningJunkie.Submissions.Database (uniqueSubmissionsByUserIdQ)
 import LearningJunkie.Users.Database (UserJoinedType, UserReturnType, toUserType)
 import LearningJunkie.Web.AppM (AppM)
 
@@ -27,13 +27,17 @@ type ProgressQ s =
         Postgres
         LearningJunkieDb
         s
-        (UserJoinedType s, CourseJoinedType s, CompletedLessonsNumExpr s, CompletedExercisesNumExpr s)
+        ( UserJoinedType s
+        , CourseJoinedType s
+        , CompletedLessonsNumExpr s
+        , CompletedExercisesNumExpr s
+        )
 
 type ProgressJoinedType s =
     ( UserJoinedType s
     , CourseJoinedType s
     , CompletedLessonsNumExpr s
-    , CompletedExercisesNum
+    , CompletedExercisesNumExpr s
     )
 
 type ProgressReturnType =
@@ -45,7 +49,7 @@ type ProgressReturnType =
 
 progressByUserIdQ :: Int32 -> ProgressQ s
 progressByUserIdQ userId = do
-    _foundEnrollment@(_enrollment, foundUser, foundCourse@(course, _, _)) <- enrollmentsByUserIdQ userId
+    _foundEnrollment@(_enrollment, foundUser, foundCourse@(course, _, _, _, _)) <- enrollmentsByUserIdQ userId
 
     let
         courseId = _courseId course
@@ -54,7 +58,7 @@ progressByUserIdQ userId = do
         leftJoin_
             ( subselect_
                 $ aggregate_
-                    ( \(_, _, (_, _course@(lessonCourse, _, _))) ->
+                    ( \(_, _, (_, _course@(lessonCourse, _, _, _, _))) ->
                         (group_ (_courseId lessonCourse), as_ @Int32 $ countAll_)
                     )
                 $ do
@@ -68,7 +72,7 @@ progressByUserIdQ userId = do
         leftJoin_
             ( subselect_
                 $ aggregate_
-                    ( \(_, _, _exercise@(_, _lesson@(_, _course@(exerciseCourse, _, _)))) ->
+                    ( \(_, _, _exercise@(_, _lesson@(_, _course@(exerciseCourse, _, _, _, _)))) ->
                         (group_ (_courseId exerciseCourse), as_ @Int32 $ countAll_)
                     )
                 $ do
@@ -81,12 +85,27 @@ progressByUserIdQ userId = do
 
     return (foundUser, foundCourse, completedLessonsNum, completedExercisesNum)
 
+progressByUserAndCourseIdQ :: Int32 -> Int32 -> ProgressQ s
+progressByUserAndCourseIdQ userId courseId =
+    filter_ (\(_, _course@(course, _, _, _, _), _, _) -> _courseId course ==. val_ courseId) $ progressByUserIdQ userId
+
 selectUserProgress :: Int32 -> AppM [ProgressReturnType]
 selectUserProgress =
     executeBeamDebug
         . runSelectReturningList
         . select
         . progressByUserIdQ
+
+selectProgressByUserAndCourseId :: Int32 -> Int32 -> AppM (Maybe ProgressReturnType)
+selectProgressByUserAndCourseId userId courseId = do
+    mbProgress <- executeBeamDebug $ do
+        runSelectReturningFirst $
+            select $
+                progressByUserAndCourseIdQ userId courseId
+
+    case mbProgress of
+        Nothing -> return Nothing
+        Just progress -> return $ Just progress
 
 toProgressType :: ProgressReturnType -> Progress.Progress
 toProgressType (user, course, completedLessonsNum, completedExercisesNum) =

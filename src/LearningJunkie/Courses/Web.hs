@@ -6,6 +6,7 @@ module LearningJunkie.Courses.Web where
 import Data.Int (Int32)
 import qualified LearningJunkie.Courses.Web.All as All
 import qualified LearningJunkie.Courses.Web.ById as ById
+import qualified LearningJunkie.Courses.Web.Certificate.Generate as Certificate
 import qualified LearningJunkie.Courses.Web.Chapters as Chapters
 import qualified LearningJunkie.Courses.Web.Delete as Delete
 import qualified LearningJunkie.Courses.Web.Enrollments as Enrollments
@@ -22,6 +23,7 @@ type API =
                 :<|> Capture' '[Required, Description "ID of the course"] "id" Int32
                     :> ( Enrollments.API
                             :<|> Chapters.API
+                            :<|> Certificate.API
                        )
            )
 
@@ -34,3 +36,4 @@ server =
         :<|> \courseId ->
             Enrollments.server courseId
                 :<|> Chapters.server courseId
+                :<|> Certificate.handler courseId

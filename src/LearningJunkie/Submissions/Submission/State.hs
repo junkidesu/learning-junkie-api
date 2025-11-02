@@ -9,8 +9,8 @@ module LearningJunkie.Submissions.Submission.State where
 import Data.Aeson (FromJSON, ToJSON)
 import Data.OpenApi (ToSchema)
 import qualified Data.Text as T
-import Database.Beam (FromBackendRow (fromBackendRow))
-import Database.Beam.Backend (HasSqlValueSyntax (sqlValueSyntax), autoSqlValueSyntax)
+import Database.Beam (FromBackendRow (fromBackendRow), HasSqlEqualityCheck)
+import Database.Beam.Backend (BeamSqlBackend, HasSqlValueSyntax (sqlValueSyntax), autoSqlValueSyntax)
 import Database.Beam.Postgres (Postgres)
 import GHC.Generics
 
@@ -26,3 +26,5 @@ instance FromBackendRow Postgres SubmissionState where
 
 instance (HasSqlValueSyntax be String) => HasSqlValueSyntax be SubmissionState where
     sqlValueSyntax = autoSqlValueSyntax
+
+instance (BeamSqlBackend be, HasSqlEqualityCheck be String) => HasSqlEqualityCheck be SubmissionState

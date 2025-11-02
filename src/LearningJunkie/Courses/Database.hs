@@ -1,25 +1,38 @@
+{-# LANGUAGE TypeApplications #-}
+
 module LearningJunkie.Courses.Database where
 
 import Data.Int (Int32)
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
 import Database.Beam.Postgres
+import LearningJunkie.Chapters.Database.Table (PrimaryKey (ChapterId))
 import qualified LearningJunkie.Courses.Course as Course
 import qualified LearningJunkie.Courses.Course.Attributes as Attributes
 import LearningJunkie.Courses.Database.Table
 import LearningJunkie.Database
-import LearningJunkie.Database.Util (executeBeamDebug, fromJSONB, tripleFst, tripleSnd, tripleThrd, updateIfChanged)
+import LearningJunkie.Database.Util (executeBeamDebug, fromJSONB, updateIfChanged)
+import LearningJunkie.Exercises.Database.Table (ExerciseT (_exerciseLesson))
+import LearningJunkie.Lessons.Database.Table (LessonT (_lessonChapter))
 import LearningJunkie.Universities.Database
 import LearningJunkie.Universities.Database.Table (PrimaryKey (UniversityId), University)
 import LearningJunkie.Users.Database
 import LearningJunkie.Users.Database.Table (PrimaryKey (UserId))
 import LearningJunkie.Web.AppM (AppM)
 
+type TotalLessonsNum = Int32
+type TotalLessonsNumExpr s = QExpr Postgres s Int32
+
+type TotalExercisesNum = Int32
+type TotalExercisesNumExpr s = QExpr Postgres s Int32
+
 type CourseExpr s = CourseT (QExpr Postgres s)
 type CourseJoinedType s =
     ( CourseExpr s
     , UniversityExpr s
     , UserJoinedType s
+    , TotalLessonsNumExpr s
+    , TotalExercisesNumExpr s
     )
 type CourseQ s =
     Q
@@ -27,7 +40,7 @@ type CourseQ s =
         LearningJunkieDb
         s
         (CourseJoinedType s)
-type CourseReturnType = (Course, University, UserReturnType)
+type CourseReturnType = (Course, University, UserReturnType, TotalLessonsNum, TotalExercisesNum)
 
 allCoursesQuery :: CourseQ s
 allCoursesQuery = do
@@ -41,12 +54,42 @@ allCoursesQuery = do
 
     guard_ (_courseInstructor course `references_` user)
 
-    return (course, university, instructor)
+    (_, mbTotalLessonsNum) <-
+        leftJoin_
+            ( aggregate_
+                (\lesson -> (group_ (let ChapterId courseId _ = _lessonChapter lesson in courseId), as_ @Int32 $ countAll_))
+                $ do
+                    all_ (dbLessons db)
+            )
+            ( \(courseId, _) ->
+                courseId `references_` course
+            )
+
+    (_, mbTotalExercisesNum) <-
+        leftJoin_
+            ( nub_
+                $ aggregate_
+                    (\(_exercise, lesson) -> (group_ (let ChapterId courseId _ = _lessonChapter lesson in courseId), as_ @Int32 $ countAll_))
+                $ do
+                    exercise <- all_ (dbExercises db)
+
+                    lesson <- all_ (dbLessons db)
+
+                    guard_ (_exerciseLesson exercise `references_` lesson)
+
+                    return (exercise, lesson)
+            )
+            (\(courseId, _) -> courseId `references_` course)
+
+    let totalLessonsNum = maybe_ (val_ (0 :: Int32)) id mbTotalLessonsNum
+    let totalExercisesNum = maybe_ (val_ (0 :: Int32)) id mbTotalExercisesNum
+
+    return (course, university, instructor, totalLessonsNum, totalExercisesNum)
 
 courseByIdQuery :: Int32 -> CourseQ s
 courseByIdQuery courseId =
     filter_
-        ( \(course, _, _) ->
+        ( \(course, _, _, _, _) ->
             _courseId course ==. val_ courseId
         )
         allCoursesQuery
@@ -84,10 +127,10 @@ deleteCourseQuery courseId = delete (dbCourses db) (\r -> _courseId r ==. val_ c
 
 selectAllCourses :: AppM [CourseReturnType]
 selectAllCourses =
-    executeBeamDebug $
-        runSelectReturningList $
-            select $
-                allCoursesQuery
+    executeBeamDebug
+        . runSelectReturningList
+        . select
+        $ allCoursesQuery
 
 selectCourseById :: Int32 -> AppM (Maybe CourseReturnType)
 selectCourseById =
@@ -111,7 +154,7 @@ insertCourse newCourse universityId = executeBeamDebug $ do
 
     [instructor] <- runSelectReturningList $ select $ userByIdQuery instructorId
 
-    return (course, university, instructor)
+    return (course, university, instructor, 0, 0)
 
 updateCourse :: Int32 -> Attributes.Edit -> AppM CourseReturnType
 updateCourse courseId editCourse = executeBeamDebug $ do
@@ -128,7 +171,7 @@ updateCourse courseId editCourse = executeBeamDebug $ do
 
     [instructor] <- runSelectReturningList $ select $ userByIdQuery instructorId
 
-    return (course, university, instructor)
+    return (course, university, instructor, 0, 0)
 
 deleteCourse :: Int32 -> AppM ()
 deleteCourse =
@@ -137,13 +180,15 @@ deleteCourse =
         . deleteCourseQuery
 
 toCourseType :: CourseReturnType -> Course.Course
-toCourseType =
+toCourseType (course, university, instructor, totalLessonsNum, totalExercisesNum) =
     Course.Course
-        <$> (_courseId . tripleFst)
-        <*> (_courseTitle . tripleFst)
-        <*> (_courseDescription . tripleFst)
-        <*> (_courseDifficulty . tripleFst)
-        <*> (_courseBanner . tripleFst)
-        <*> (toUniversityType . tripleSnd)
-        <*> (toUserType . tripleThrd)
-        <*> (fromJSONB . _courseCompletionRequirements . tripleFst)
+        (_courseId course)
+        (_courseTitle course)
+        (_courseDescription course)
+        (_courseDifficulty course)
+        (_courseBanner course)
+        (toUniversityType university)
+        (toUserType instructor)
+        (fromJSONB . _courseCompletionRequirements $ course)
+        totalLessonsNum
+        totalExercisesNum
