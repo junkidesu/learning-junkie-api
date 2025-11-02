@@ -24,6 +24,9 @@ data UniversityAttributes f = UniversityAttributes
 type New = UniversityAttributes Identity
 type Edit = UniversityAttributes Maybe
 
+emptyEditUniversity :: Edit
+emptyEditUniversity = UniversityAttributes Nothing Nothing Nothing Nothing Nothing
+
 deriving instance Show New
 deriving instance Eq New
 deriving instance Generic New

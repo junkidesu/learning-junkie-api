@@ -143,7 +143,7 @@ selectUniversityInstructors universityId =
       select $
         universityInstructorsQuery universityId
 
-insertUser :: Attributes.New -> Role -> Maybe Int32 -> AppM (User, Maybe University)
+insertUser :: Attributes.New -> Role -> Maybe Int32 -> AppM UserReturnType
 insertUser newUser newUserRole newUserUniversity = executeBeamDebug $ do
   hashedPassword <- hashPassword . mkPassword . T.strip . Attributes.password $ newUser
 
@@ -158,7 +158,7 @@ insertUser newUser newUserRole newUserUniversity = executeBeamDebug $ do
 
       return (user, university)
 
-updateUser :: Int32 -> Attributes.Edit -> Maybe Role -> Maybe (Maybe Int32) -> AppM (Maybe (User, Maybe University))
+updateUser :: Int32 -> Attributes.Edit -> Maybe Role -> Maybe (Maybe Int32) -> AppM (Maybe UserReturnType)
 updateUser userId editUser editUserRole editUserUniversity =
   executeBeamDebug $ do
     users <-

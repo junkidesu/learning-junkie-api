@@ -10,6 +10,7 @@ import qualified LearningJunkie.Universities.Web.Courses as Courses
 import qualified LearningJunkie.Universities.Web.Create as Create
 import qualified LearningJunkie.Universities.Web.Delete as Delete
 import qualified LearningJunkie.Universities.Web.Instructors as Instructors
+import qualified LearningJunkie.Universities.Web.Logo as Logo
 import qualified LearningJunkie.Universities.Web.Representatives as Representatives
 import qualified LearningJunkie.Universities.Web.Update as Update
 import LearningJunkie.Web.AppM (AppM)
@@ -29,6 +30,7 @@ type API =
                                     :> Representatives.API
                                 :<|> "courses"
                                     :> Courses.API
+                                :<|> Logo.API
                            )
                      )
            )
@@ -44,4 +46,5 @@ server =
                 Instructors.server universityId
                     :<|> Representatives.server universityId
                     :<|> Courses.server universityId
+                    :<|> Logo.server universityId
              )

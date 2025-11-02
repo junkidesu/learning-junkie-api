@@ -125,6 +125,8 @@ library
       LearningJunkie.Universities.Web.Instructors
       LearningJunkie.Universities.Web.Instructors.Add
       LearningJunkie.Universities.Web.Instructors.All
+      LearningJunkie.Universities.Web.Logo
+      LearningJunkie.Universities.Web.Logo.Upload
       LearningJunkie.Universities.Web.Representatives
       LearningJunkie.Universities.Web.Representatives.Add
       LearningJunkie.Universities.Web.Representatives.All
