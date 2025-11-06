@@ -3,11 +3,11 @@ module LearningJunkie.Web.Environment where
 import Data.Pool (Pool)
 import Data.Text (Text)
 import Database.Beam.Postgres (Connection)
-import Network.Minio (ConnectInfo, MinioConn)
+import Network.Minio (MinioConn)
 import Servant.Auth.Server (JWTSettings)
 
 data Env = Development | Production
-    deriving (Show, Read)
+    deriving (Show, Read, Eq)
 
 data Environment = Environment
     { dbConnection :: Pool Connection

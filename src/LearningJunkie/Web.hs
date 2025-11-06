@@ -5,18 +5,17 @@
 module LearningJunkie.Web (startApp) where
 
 import Configuration.Dotenv (defaultConfig, loadFile, onMissingFile)
+import Control.Monad (when)
 import Control.Monad.Trans.Reader (ReaderT (runReaderT))
 import Data.Maybe (fromMaybe)
-import Data.String (IsString (fromString))
 import qualified Data.Text as Text
 import LearningJunkie.Database (connectToDb)
 import qualified LearningJunkie.Web.API as Web
 import LearningJunkie.Web.AppM (AppM)
 import LearningJunkie.Web.Cors (myCors)
-import LearningJunkie.Web.Environment (Env, Environment (Environment))
+import LearningJunkie.Web.Environment (Env (Development), Environment (Environment))
 import LearningJunkie.Web.Minio (connectMinio)
 import qualified LearningJunkie.Web.OpenApi as OpenApi
-import Network.Minio (ConnectInfo)
 import Network.Wai.Handler.Warp (defaultSettings, runSettings, setLogger, setPort)
 import Network.Wai.Logger (withStdoutLogger)
 import Servant
@@ -33,7 +32,13 @@ api = Proxy
 
 makeApp :: IO Application
 makeApp = do
-    onMissingFile (loadFile defaultConfig) (putStrLn "Missing environment variables")
+    currentEnvString <- fromMaybe "Production" <$> lookupEnv "ENV"
+
+    let
+        currentEnv :: Env
+        currentEnv = read currentEnvString
+
+    when (currentEnv == Development) $ onMissingFile (loadFile defaultConfig) (putStrLn "No .env file")
 
     conns <- connectToDb
 
@@ -42,12 +47,6 @@ makeApp = do
     serverName <- fromMaybe "http://localhost:3003/" <$> lookupEnv "SERVER_URL"
 
     bucketName <- fromMaybe "learning-junkie-aws-bucket" <$> lookupEnv "BUCKET_NAME"
-
-    currentEnvString <- fromMaybe "Production" <$> lookupEnv "ENV"
-
-    let
-        currentEnv :: Env
-        currentEnv = read currentEnvString
 
     minioConnection <- connectMinio currentEnv
 
