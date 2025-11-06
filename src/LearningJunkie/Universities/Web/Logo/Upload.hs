@@ -5,7 +5,6 @@
 module LearningJunkie.Universities.Web.Logo.Upload where
 
 import Control.Monad.IO.Class (MonadIO (liftIO))
-import Control.Monad.Trans.Reader (asks)
 import qualified Data.ByteString as BS
 import Data.Int (Int32)
 import qualified Data.Text as T
@@ -17,7 +16,6 @@ import qualified LearningJunkie.Universities.University.Attributes as Attributes
 import LearningJunkie.Web.AppM (AppM)
 import qualified LearningJunkie.Web.Auth.Permissions as Permissions
 import qualified LearningJunkie.Web.Auth.User as Auth
-import LearningJunkie.Web.Environment (Environment (minioBucket))
 import LearningJunkie.Web.JWTAuth (JWTAuth)
 import LearningJunkie.Web.Minio (uploadFileMinio)
 import Servant
@@ -66,13 +64,11 @@ handler universityId (Authenticated authUser) multipartData = Permissions.requir
                     Left e -> do
                         liftIO $ print e
                         throwError err400{errBody = "File not uploaded"}
-                    Right _ -> do
-                        bucketUrl <- asks minioBucket
-
+                    Right objectUrl -> do
                         university <-
                             updateUniversity
                                 universityId
-                                Attributes.emptyEditUniversity{Attributes.logo = Just (Just (bucketUrl <> "/" <> logoFilePath))}
+                                Attributes.emptyEditUniversity{Attributes.logo = Just (Just objectUrl)}
 
                         return $ toUniversityType university
 handler _ _ _ = throwError err401

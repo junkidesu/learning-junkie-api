@@ -2,49 +2,68 @@
 
 module LearningJunkie.Web.Minio where
 
-import Conduit (runConduit, sourceToList, yield)
+import Conduit (sourceToList, yield)
+import Configuration.Dotenv (defaultConfig, loadFile, onMissingFile)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.Trans.Reader (asks)
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
 import LearningJunkie.Web.AppM (AppM)
-import LearningJunkie.Web.Environment (Environment (minioConnection))
+import LearningJunkie.Web.Environment (Env (Development, Production), Environment (env, minioBucket, minioConnection))
 import Network.HTTP.Client
+import Network.HTTP.Conduit (tlsManagerSettings)
 import Network.Minio
-import Servant (err500)
 
-connectMinio :: IO MinioConn
-connectMinio =
+connectMinio :: Env -> IO MinioConn
+connectMinio currentEnv =
   do
-    connectInfo <- setCredsFrom [fromMinioEnv] "http://localhost:9000" -- we shall use localhost for now - no longer using AWS S3
-    manager <- newManager defaultManagerSettings
+    onMissingFile (loadFile defaultConfig) (putStrLn "Missing environment variables")
+
+    connectInfo <- case currentEnv of
+      Production -> setRegion "eu-north-1" <$> setCredsFrom [fromAWSEnv, fromMinioEnv] awsCI
+      Development -> setCredsFrom [fromMinioEnv] "http://localhost:9000"
+
+    manager <- newManager tlsManagerSettings
 
     mkMinioConn
       connectInfo
       manager
 
-uploadFileMinio :: T.Text -> T.Text -> BS.ByteString -> AppM (Either MinioErr ())
+uploadFileMinio :: T.Text -> T.Text -> BS.ByteString -> AppM (Either MinioErr T.Text)
 uploadFileMinio filePath fileCType file = do
   minioConn <- asks minioConnection
+  bn <- asks minioBucket
+  currentEnv <- asks env
 
-  liftIO $
-    runMinioWith minioConn $
-      putObject
-        "learning-junkie-aws-bucket"
-        filePath
-        (yield file)
-        Nothing
-        defaultPutObjectOptions{pooContentType = Just fileCType}
+  eitherRes <-
+    liftIO $
+      runMinioWith minioConn $
+        putObject
+          bn
+          filePath
+          (yield file)
+          Nothing
+          defaultPutObjectOptions{pooContentType = Just fileCType}
+
+  case eitherRes of
+    Left e -> pure $ Left e
+    Right _ -> do
+      case currentEnv of
+        Development -> do
+          pure $ Right $ "http://localhost:9000" <> "/" <> bn <> "/" <> filePath
+        Production -> do
+          pure $ Right $ "https://learning-junkie-bucket.s3.amazonaws.com" <> "/" <> filePath
 
 getFileMinio :: T.Text -> AppM (Either MinioErr BS.ByteString)
 getFileMinio objectName = do
   minioConn <- asks minioConnection
+  bucketName <- asks minioBucket
 
   liftIO $ do
     runMinioWith minioConn $ do
       gor <-
         getObject
-          "learning-junkie-aws-bucket"
+          bucketName
           objectName
           defaultGetObjectOptions
       result <- sourceToList $ gorObjectStream gor

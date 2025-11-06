@@ -7,14 +7,16 @@ module LearningJunkie.Web (startApp) where
 import Configuration.Dotenv (defaultConfig, loadFile, onMissingFile)
 import Control.Monad.Trans.Reader (ReaderT (runReaderT))
 import Data.Maybe (fromMaybe)
+import Data.String (IsString (fromString))
 import qualified Data.Text as Text
 import LearningJunkie.Database (connectToDb)
 import qualified LearningJunkie.Web.API as Web
 import LearningJunkie.Web.AppM (AppM)
 import LearningJunkie.Web.Cors (myCors)
-import LearningJunkie.Web.Environment (Environment (Environment))
+import LearningJunkie.Web.Environment (Env, Environment (Environment))
 import LearningJunkie.Web.Minio (connectMinio)
 import qualified LearningJunkie.Web.OpenApi as OpenApi
+import Network.Minio (ConnectInfo)
 import Network.Wai.Handler.Warp (defaultSettings, runSettings, setLogger, setPort)
 import Network.Wai.Logger (withStdoutLogger)
 import Servant
@@ -35,11 +37,19 @@ makeApp = do
 
     conns <- connectToDb
 
-    minioConnection <- connectMinio
-
     myKey <- readKey "JWT-secret"
 
     serverName <- fromMaybe "http://localhost:3003/" <$> lookupEnv "SERVER_URL"
+
+    bucketName <- fromMaybe "learning-junkie-aws-bucket" <$> lookupEnv "BUCKET_NAME"
+
+    currentEnvString <- fromMaybe "Production" <$> lookupEnv "ENV"
+
+    let
+        currentEnv :: Env
+        currentEnv = read currentEnvString
+
+    minioConnection <- connectMinio currentEnv
 
     let
         jwtCfg = defaultJWTSettings myKey
@@ -47,10 +57,11 @@ makeApp = do
         environment =
             Environment
                 conns
-                "http://localhost:9000/learning-junkie-aws-bucket"
+                (Text.pack bucketName)
                 minioConnection
                 jwtCfg
                 (Text.pack serverName)
+                currentEnv
 
     return
         . myCors

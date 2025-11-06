@@ -5,7 +5,6 @@
 module LearningJunkie.Users.Web.Self.Avatar.Upload (API, handler) where
 
 import Control.Monad.IO.Class (MonadIO (liftIO))
-import Control.Monad.Trans.Reader (asks)
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
 import Data.UUID (toText)
@@ -15,7 +14,6 @@ import LearningJunkie.Users.User (User)
 import qualified LearningJunkie.Users.User.Attributes as Attributes
 import LearningJunkie.Web.AppM (AppM)
 import qualified LearningJunkie.Web.Auth.User as Auth
-import LearningJunkie.Web.Environment (Environment (minioBucket))
 import LearningJunkie.Web.JWTAuth (JWTAuth)
 import LearningJunkie.Web.Minio (uploadFileMinio)
 import Servant
@@ -56,13 +54,11 @@ handler (Authenticated authUser) multipartData = do
                 Left e -> do
                     liftIO $ print e
                     throwError err400{errBody = "File not uploaded"}
-                Right _ -> do
-                    bucketUrl <- asks minioBucket
-
+                Right objectUrl -> do
                     mbUser <-
                         updateUser
                             (Auth.id authUser)
-                            Attributes.emptyEditUser{Attributes.avatar = Just (Just (bucketUrl <> "/" <> avatarFilePath))}
+                            Attributes.emptyEditUser{Attributes.avatar = Just (Just objectUrl)}
                             Nothing
                             Nothing
 
