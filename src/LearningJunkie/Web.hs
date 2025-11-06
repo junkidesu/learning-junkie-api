@@ -13,7 +13,7 @@ import LearningJunkie.Database (connectToDb)
 import qualified LearningJunkie.Web.API as Web
 import LearningJunkie.Web.AppM (AppM)
 import LearningJunkie.Web.Cors (myCors)
-import LearningJunkie.Web.Environment (Env (Development), Environment (Environment))
+import LearningJunkie.Web.Environment (Env (Development, Production), Environment (Environment))
 import LearningJunkie.Web.Minio (connectMinio)
 import qualified LearningJunkie.Web.OpenApi as OpenApi
 import Network.Wai.Handler.Warp (defaultSettings, runSettings, setLogger, setPort)
@@ -32,7 +32,7 @@ api = Proxy
 
 makeApp :: IO Application
 makeApp = do
-    currentEnvString <- fromMaybe "Production" <$> lookupEnv "ENV"
+    currentEnvString <- fromMaybe "Development" <$> lookupEnv "HASKELL_ENV"
 
     let
         currentEnv :: Env
@@ -42,7 +42,9 @@ makeApp = do
 
     conns <- connectToDb
 
-    myKey <- readKey "JWT-secret"
+    myKey <- case currentEnv of
+        Development -> readKey "JWT-secret"
+        Production -> readKey "/etc/secrets/JWT-secret"
 
     serverName <- fromMaybe "http://localhost:3003/" <$> lookupEnv "SERVER_URL"
 
