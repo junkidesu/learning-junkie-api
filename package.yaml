@@ -66,6 +66,7 @@ dependencies:
 - process 
 - lucid
 - servant-lucid
+- pandoc
 
 ghc-options:
 - -Wall

@@ -1,6 +1,7 @@
 module LearningJunkie.CourseCompletions.Database where
 
 import Data.Int (Int32)
+import Data.UUID (UUID)
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
 import Database.Beam.Postgres (Postgres)
@@ -44,6 +45,17 @@ courseCompletionsByCourseIdQ :: Int32 -> CourseCompletionQ s
 courseCompletionsByCourseIdQ courseId =
     filter_ (\(_, _, _course@(course, _, _, _, _)) -> _courseId course ==. val_ courseId) allCourseCompletionsQ
 
+courseCompletionsByUserAndCourseIdQ :: Int32 -> Int32 -> CourseCompletionQ s
+courseCompletionsByUserAndCourseIdQ userId courseId =
+    filter_ (\(_, _user@(user, _), _) -> _userId user ==. val_ userId) $
+        courseCompletionsByCourseIdQ courseId
+
+courseCompletionByCertificateIdQ :: UUID -> CourseCompletionQ s
+courseCompletionByCertificateIdQ certificateId =
+    filter_
+        (\(courseCompletion, _, _) -> _courseCompletionId courseCompletion ==. val_ certificateId)
+        allCourseCompletionsQ
+
 insertCourseCompletionQ :: Int32 -> Int32 -> SqlInsert Postgres CourseCompletionT
 insertCourseCompletionQ userId courseId =
     insert (dbCourseCompletions db) $
@@ -61,6 +73,23 @@ selectCourseCompletionsByUserId =
         . runSelectReturningList
         . select
         . courseCompletionsByUserIdQ
+
+selectCourseCompletionByUserAndCourseId ::
+    Int32 ->
+    Int32 ->
+    AppM (Maybe CourseCompletionReturnType)
+selectCourseCompletionByUserAndCourseId userId courseId =
+    executeBeamDebug $
+        runSelectReturningFirst $
+            select $
+                courseCompletionsByUserAndCourseIdQ userId courseId
+
+selectCourseCompletionByCertificateId :: UUID -> AppM (Maybe CourseCompletionReturnType)
+selectCourseCompletionByCertificateId =
+    executeBeamDebug
+        . runSelectReturningFirst
+        . select
+        . courseCompletionByCertificateIdQ
 
 insertCourseCompletion :: Int32 -> Int32 -> AppM CourseCompletionReturnType
 insertCourseCompletion userId courseId = executeBeamDebug $ do

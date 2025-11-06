@@ -6,6 +6,8 @@ module LearningJunkie.Web (startApp) where
 
 import Configuration.Dotenv (defaultConfig, loadFile, onMissingFile)
 import Control.Monad.Trans.Reader (ReaderT (runReaderT))
+import Data.Maybe (fromMaybe)
+import qualified Data.Text as Text
 import LearningJunkie.Database (connectToDb)
 import qualified LearningJunkie.Web.API as Web
 import LearningJunkie.Web.AppM (AppM)
@@ -17,6 +19,7 @@ import Network.Wai.Handler.Warp (defaultSettings, runSettings, setLogger, setPor
 import Network.Wai.Logger (withStdoutLogger)
 import Servant
 import Servant.Auth.Server
+import System.Environment (lookupEnv)
 
 type LearningJunkieAPI = OpenApi.API :<|> Web.API
 
@@ -34,7 +37,9 @@ makeApp = do
 
     minioConnection <- connectMinio
 
-    myKey <- generateKey
+    myKey <- readKey "JWT-secret"
+
+    serverName <- fromMaybe "http://localhost:3003/" <$> lookupEnv "SERVER_URL"
 
     let
         jwtCfg = defaultJWTSettings myKey
@@ -45,6 +50,8 @@ makeApp = do
                 "http://localhost:9000/learning-junkie-aws-bucket"
                 minioConnection
                 jwtCfg
+                (Text.pack serverName)
+
     return
         . myCors
         $ serveWithContext

@@ -11,4 +11,5 @@ data Environment = Environment
     , minioBucket :: Text
     , minioConnection :: MinioConn
     , jwtSettings :: JWTSettings
+    , serverUrl :: Text
     }

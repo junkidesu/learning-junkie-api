@@ -58,11 +58,11 @@ handler universityId (Authenticated authUser) multipartData = Permissions.requir
 
                 avatarFileNameId <- toText <$> liftIO nextRandom
 
-                let avatarFilePath = "logos/" <> avatarFileNameId <> "." <> extension
+                let logoFilePath = "logos/" <> avatarFileNameId <> "." <> extension
 
-                avatarUploadResult <- uploadFileMinio avatarFilePath logoContentType payload
+                logoUploadResult <- uploadFileMinio logoFilePath logoContentType payload
 
-                case avatarUploadResult of
+                case logoUploadResult of
                     Left e -> do
                         liftIO $ print e
                         throwError err400{errBody = "File not uploaded"}
@@ -72,7 +72,7 @@ handler universityId (Authenticated authUser) multipartData = Permissions.requir
                         university <-
                             updateUniversity
                                 universityId
-                                Attributes.emptyEditUniversity{Attributes.logo = Just (Just (bucketUrl <> "/" <> avatarFilePath))}
+                                Attributes.emptyEditUniversity{Attributes.logo = Just (Just (bucketUrl <> "/" <> logoFilePath))}
 
                         return $ toUniversityType university
 handler _ _ _ = throwError err401

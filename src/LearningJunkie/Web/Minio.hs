@@ -2,7 +2,7 @@
 
 module LearningJunkie.Web.Minio where
 
-import Conduit (yield)
+import Conduit (runConduit, sourceToList, yield)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.Trans.Reader (asks)
 import qualified Data.ByteString as BS
@@ -11,6 +11,7 @@ import LearningJunkie.Web.AppM (AppM)
 import LearningJunkie.Web.Environment (Environment (minioConnection))
 import Network.HTTP.Client
 import Network.Minio
+import Servant (err500)
 
 connectMinio :: IO MinioConn
 connectMinio =
@@ -34,3 +35,18 @@ uploadFileMinio filePath fileCType file = do
         (yield file)
         Nothing
         defaultPutObjectOptions{pooContentType = Just fileCType}
+
+getFileMinio :: T.Text -> AppM (Either MinioErr BS.ByteString)
+getFileMinio objectName = do
+  minioConn <- asks minioConnection
+
+  liftIO $ do
+    runMinioWith minioConn $ do
+      gor <-
+        getObject
+          "learning-junkie-aws-bucket"
+          objectName
+          defaultGetObjectOptions
+      result <- sourceToList $ gorObjectStream gor
+
+      return $ head result

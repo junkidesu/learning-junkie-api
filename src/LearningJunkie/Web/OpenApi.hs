@@ -5,6 +5,7 @@ module LearningJunkie.Web.OpenApi (API, server) where
 
 import Control.Lens
 import Data.OpenApi hiding (server)
+import qualified LearningJunkie.Certificates.Web as Certificates
 import qualified LearningJunkie.Codex.Web as Codex
 import qualified LearningJunkie.Courses.Web as Courses
 import qualified LearningJunkie.Exercises.Web as Exercises
@@ -41,6 +42,9 @@ submissionsOps = subOperations (Proxy :: Proxy Submissions.API) (Proxy :: Proxy 
 codexOps :: Traversal' OpenApi Operation
 codexOps = subOperations (Proxy :: Proxy Codex.API) (Proxy :: Proxy Web.API)
 
+certificatesOps :: Traversal' OpenApi Operation
+certificatesOps = subOperations (Proxy :: Proxy Certificates.API) (Proxy :: Proxy Web.API)
+
 openApiDoc :: OpenApi
 openApiDoc =
     toOpenApi (Proxy :: Proxy Web.API)
@@ -63,6 +67,7 @@ openApiDoc =
         & applyTagsFor exercisesOps ["exercises" & description ?~ "Operations on exercises"]
         & applyTagsFor submissionsOps ["submissions" & description ?~ "Operations on submissions"]
         & applyTagsFor codexOps ["codex" & description ?~ "Code execution utility"]
+        & applyTagsFor certificatesOps ["certificates" & description ?~ "Operations on certificates"]
 
 server :: ServerT API AppM
 server = swaggerSchemaUIServerT openApiDoc

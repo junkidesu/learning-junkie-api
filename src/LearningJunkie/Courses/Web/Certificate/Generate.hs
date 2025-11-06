@@ -9,7 +9,7 @@ import LearningJunkie.CourseCompletions.Database (insertCourseCompletion, toCour
 import qualified LearningJunkie.Courses.Course.CompletionRequirements as Req
 import LearningJunkie.Courses.Database.Table (CourseT (_courseCompletionRequirements))
 import LearningJunkie.Database.Util (fromJSONB)
-import LearningJunkie.Progress.Database (progressByUserAndCourseIdQ, selectProgressByUserAndCourseId)
+import LearningJunkie.Progress.Database (selectProgressByUserAndCourseId)
 import LearningJunkie.Web.AppM (AppM)
 import qualified LearningJunkie.Web.Auth.User as Auth
 import LearningJunkie.Web.JWTAuth (JWTAuth)
@@ -54,7 +54,7 @@ handler courseId (Authenticated authUser) = do
                         && completedExercisesPercentage >= Req.exercisePercentage reqs
 
             if isCourseCompleted
-                then
+                then do
                     toCourseCompletionType
                         <$> insertCourseCompletion (Auth.id authUser) courseId
                 else throwError err400

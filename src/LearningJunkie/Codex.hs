@@ -20,9 +20,9 @@ executeCode environment program = do
                         Python -> "codex/python/" ++ randomFileName ++ ".py"
                         Haskell -> "codex/haskell/" ++ randomFileName ++ ".hs"
                 dockerFileLocation = case environment of
-                        Node -> "dockerfiles/node/Dockerfile"
-                        Python -> "dockerfiles/python/Dockerfile"
-                        Haskell -> "dockerfiles/haskell/Dockerfile"
+                        Node -> "codex/node/Dockerfile"
+                        Python -> "codex/python/Dockerfile"
+                        Haskell -> "codex/haskell/Dockerfile"
 
         writeFile temporaryFilePath program
 
