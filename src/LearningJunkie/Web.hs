@@ -4,12 +4,13 @@
 
 module LearningJunkie.Web (startApp) where
 
-import Configuration.Dotenv (defaultConfig, loadFile, onMissingFile)
+import Configuration.Dotenv (defaultConfig, loadFile)
 import Control.Exception (IOException, try)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.Trans.Maybe (MaybeT (runMaybeT), hoistMaybe)
 import Control.Monad.Trans.Reader (ReaderT (runReaderT))
 import qualified Data.Text as Text
+import LearningJunkie.Certificates.EmbedStatic (initializeStaticFiles)
 import LearningJunkie.Database (connectToDb)
 import qualified LearningJunkie.Web.API as Web
 import LearningJunkie.Web.AppM (AppM)
@@ -33,6 +34,8 @@ api = Proxy
 
 initializeEnvironment :: MaybeT IO Environment
 initializeEnvironment = do
+    liftIO initializeStaticFiles
+
     eitherLoaded <- liftIO (try (loadFile defaultConfig) :: IO (Either IOException ()))
 
     case eitherLoaded of

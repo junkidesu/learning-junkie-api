@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       LearningJunkie.Attribute
+      LearningJunkie.Certificates.EmbedStatic
       LearningJunkie.Certificates.Html.Certificate
       LearningJunkie.Certificates.Html.Verification
       LearningJunkie.Certificates.Web
@@ -125,6 +126,7 @@ library
       LearningJunkie.Universities.Web.ById
       LearningJunkie.Universities.Web.Courses
       LearningJunkie.Universities.Web.Courses.Add
+      LearningJunkie.Universities.Web.Courses.All
       LearningJunkie.Universities.Web.Create
       LearningJunkie.Universities.Web.Delete
       LearningJunkie.Universities.Web.Instructors
@@ -194,6 +196,7 @@ library
     , diagrams-lib
     , diagrams-rasterific
     , dotenv
+    , file-embed
     , http-client
     , http-conduit
     , http-media
@@ -203,7 +206,6 @@ library
     , lucid
     , minio-hs
     , openapi3
-    , pandoc
     , password
     , postgresql-simple
     , process
@@ -252,6 +254,7 @@ executable learning-junkie-api-exe
     , diagrams-lib
     , diagrams-rasterific
     , dotenv
+    , file-embed
     , http-client
     , http-conduit
     , http-media
@@ -262,7 +265,6 @@ executable learning-junkie-api-exe
     , lucid
     , minio-hs
     , openapi3
-    , pandoc
     , password
     , postgresql-simple
     , process
@@ -312,6 +314,7 @@ test-suite learning-junkie-api-test
     , diagrams-lib
     , diagrams-rasterific
     , dotenv
+    , file-embed
     , http-client
     , http-conduit
     , http-media
@@ -322,7 +325,6 @@ test-suite learning-junkie-api-test
     , lucid
     , minio-hs
     , openapi3
-    , pandoc
     , password
     , postgresql-simple
     , process

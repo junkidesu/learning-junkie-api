@@ -12,11 +12,11 @@ import qualified LearningJunkie.Courses.Course.Attributes as Attributes
 import LearningJunkie.Courses.Database.Table
 import LearningJunkie.Database
 import LearningJunkie.Database.Util (executeBeamDebug, fromJSONB, updateIfChanged)
-import LearningJunkie.Enrollments.Database.Table (EnrollmentT (_enrollmentCourse), PrimaryKey (EnrollmentId))
+import LearningJunkie.Enrollments.Database.Table (EnrollmentT (_enrollmentCourse))
 import LearningJunkie.Exercises.Database.Table (ExerciseT (_exerciseLesson))
 import LearningJunkie.Lessons.Database.Table (LessonT (_lessonChapter))
 import LearningJunkie.Universities.Database
-import LearningJunkie.Universities.Database.Table (PrimaryKey (UniversityId), University)
+import LearningJunkie.Universities.Database.Table (PrimaryKey (UniversityId), University, UniversityT (_universityId))
 import LearningJunkie.Users.Database
 import LearningJunkie.Users.Database.Table (PrimaryKey (UserId))
 import LearningJunkie.Web.AppM (AppM)
@@ -135,6 +135,12 @@ courseByIdQuery courseId =
         )
         allCoursesQuery
 
+coursesByUniversityIdQ :: Int32 -> CourseQ s
+coursesByUniversityIdQ universityId =
+    filter_
+        (\(_, university, _, _, _, _) -> _universityId university ==. val_ universityId)
+        allCoursesQuery
+
 insertCourseQuery :: Attributes.New -> Int32 -> SqlInsert Postgres CourseT
 insertCourseQuery newCourse universityId = do
     insert (dbCourses db) $
@@ -179,6 +185,13 @@ selectCourseById =
         . runSelectReturningFirst
         . select
         . courseByIdQuery
+
+selectCoursesByUniversityId :: Int32 -> AppM [CourseReturnType]
+selectCoursesByUniversityId =
+    executeBeamDebug
+        . runSelectReturningList
+        . select
+        . coursesByUniversityIdQ
 
 insertCourse :: Attributes.New -> Int32 -> AppM CourseReturnType
 insertCourse newCourse universityId = executeBeamDebug $ do
