@@ -6,9 +6,11 @@ This repository contains the source code for the Learning Junkie REST API.
 
 - [Haskell](https://www.haskell.org/)
 - [Servant](https://docs.servant.dev/en/stable/index.html) (API)
+- [Beam](https://hackage.haskell.org/package/beam-core) (DB)
 - [PostgreSQL](https://www.postgresql.org/) (DB)
-- [Diagrams](https://diagrams.github.io/) (Certificate Generation)
+- [Lucid](https://hackage.haskell.org/package/lucid) (Certificate Generation)
 - [Amazon S3](https://aws.amazon.com/s3/) (Storage)
+- [MinIO](https://www.min.io/) (Storage, local environment)
 - [Docker](https://www.docker.com/) 
 - [GitHub Actions](https://docs.github.com/en/actions) (CI/CD)
 
@@ -34,7 +36,7 @@ Stack and Cabal can be installed either independently or with the [GHCup](https:
 
 #### Services
 
-The application uses PostgreSQL for the database and Amazon S3 for storage. Thus, a running PostgreSQL server (either local or remote), as well as a publicly readable [Amazon S3 Bucket](https://aws.amazon.com/s3/), are required.
+The application uses PostgreSQL for the database and Amazon S3 for storage. Thus, a running PostgreSQL server (either local or remote), as well as a publicly readable [Amazon S3 Bucket](https://aws.amazon.com/s3/), are required. Moreover, it is needed to have the `JWT-secret` file at the root of the repository, so as to support JWT authentication.
 
 #### Environment Variables
 
@@ -57,7 +59,7 @@ You may start the application along with a local PostgreSQL server using Docker 
 $ docker compose -f docker-compose.dev.yml up
 ```
 
-You still need to provide the necessary environment variables, though.
+You still need to supply the necessary environment variables, though.
 
 ## Documentation
 

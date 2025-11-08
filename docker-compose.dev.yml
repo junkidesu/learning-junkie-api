@@ -12,8 +12,8 @@ services:
       - ./postgres_data/:/var/lib/postgresql/data/
 
   app:
-    image: learning-junkie-api
-    build: .
+    image: ghcr.io/junkidesu/learning-junkie-api:main
+    # build: .
     ports:
       - 3003:3003
     depends_on:
@@ -24,10 +24,14 @@ services:
       - db
       - codex 
       - minio
+    env_file: "./.env"
     environment:
-      - DATABASE_URL=postgres://postgres:example@db:5432/postgres
+      - DATABASE_URL=${DATABASE_URL}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - HASKELL_ENV=${HASKELL_ENV}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - SERVER_URL=${SERVER_URL}
 
   codex:
       image: ghcr.io/junkidesu/learning-junkie-codex:main
