@@ -40,9 +40,10 @@ handler exerciseId (Authenticated authUser) newSubmission = do
 
             if isEnrolled
                 then do
-                    result@(Result state mbGrade mbComment) <- autoGradeExercise newSubmission (toExerciseType exercise)
-
-                    liftIO $ print result
+                    _result@(Result state mbGrade mbComment) <-
+                        autoGradeExercise
+                            newSubmission
+                            (toExerciseType exercise)
 
                     toSubmissionType
                         <$> insertSubmission

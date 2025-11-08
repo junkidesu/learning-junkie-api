@@ -29,7 +29,7 @@ handler courseId (Authenticated authUser) = do
 
     case mbProgress of
         Nothing -> throwError err404
-        Just (_, (course, _, _, totalLessonsNum, totalExercisesNum), completedLessonsNum, completedExercisesNum) -> do
+        Just _progress@(_, (course, _, _, totalLessonsNum, totalExercisesNum), completedLessonsNum, completedExercisesNum) -> do
             let
                 completedLessonsPercentage :: Int32
                 completedLessonsPercentage =

@@ -40,7 +40,13 @@ type CourseQ s =
         LearningJunkieDb
         s
         (CourseJoinedType s)
-type CourseReturnType = (Course, University, UserReturnType, TotalLessonsNum, TotalExercisesNum)
+type CourseReturnType =
+    ( Course
+    , University
+    , UserReturnType
+    , TotalLessonsNum
+    , TotalExercisesNum
+    )
 
 allCoursesQuery :: CourseQ s
 allCoursesQuery = do
@@ -57,7 +63,12 @@ allCoursesQuery = do
     (_, mbTotalLessonsNum) <-
         leftJoin_
             ( aggregate_
-                (\lesson -> (group_ (let ChapterId courseId _ = _lessonChapter lesson in courseId), as_ @Int32 $ countAll_))
+                ( \lesson ->
+                    ( group_
+                        (let ChapterId courseId _ = _lessonChapter lesson in courseId)
+                    , as_ @Int32 $ countAll_
+                    )
+                )
                 $ do
                     all_ (dbLessons db)
             )
@@ -69,7 +80,12 @@ allCoursesQuery = do
         leftJoin_
             ( nub_
                 $ aggregate_
-                    (\(_exercise, lesson) -> (group_ (let ChapterId courseId _ = _lessonChapter lesson in courseId), as_ @Int32 $ countAll_))
+                    ( \(_exercise, lesson) ->
+                        ( group_
+                            (let ChapterId courseId _ = _lessonChapter lesson in courseId)
+                        , as_ @Int32 $ countAll_
+                        )
+                    )
                 $ do
                     exercise <- all_ (dbExercises db)
 

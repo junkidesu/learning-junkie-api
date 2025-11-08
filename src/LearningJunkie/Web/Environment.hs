@@ -6,14 +6,14 @@ import Database.Beam.Postgres (Connection)
 import Network.Minio (MinioConn)
 import Servant.Auth.Server (JWTSettings)
 
-data Env = Development | Production
+data HaskellEnv = Development | Production
     deriving (Show, Read, Eq)
 
 data Environment = Environment
-    { dbConnection :: Pool Connection
-    , minioBucket :: Text
+    { env :: HaskellEnv
+    , dbConnection :: Pool Connection
+    , bucket :: Text
     , minioConnection :: MinioConn
     , jwtSettings :: JWTSettings
     , serverUrl :: Text
-    , env :: Env
     }

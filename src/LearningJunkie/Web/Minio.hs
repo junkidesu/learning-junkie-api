@@ -9,18 +9,18 @@ import Control.Monad.Trans.Reader (asks)
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
 import LearningJunkie.Web.AppM (AppM)
-import LearningJunkie.Web.Environment (Env (Development, Production), Environment (env, minioBucket, minioConnection))
+import LearningJunkie.Web.Environment (Environment (bucket, env, minioConnection), HaskellEnv (Development, Production))
 import Network.HTTP.Client
 import Network.HTTP.Conduit (tlsManagerSettings)
 import Network.Minio
 
-connectMinio :: Env -> IO MinioConn
+connectMinio :: HaskellEnv -> IO MinioConn
 connectMinio currentEnv =
   do
     onMissingFile (loadFile defaultConfig) (putStrLn "Missing environment variables")
 
     connectInfo <- case currentEnv of
-      Production -> setRegion "eu-north-1" <$> setCredsFrom [fromAWSEnv, fromMinioEnv] awsCI
+      Production -> setRegion "eu-north-1" <$> setCredsFrom [fromAWSEnv] awsCI
       Development -> setCredsFrom [fromMinioEnv] "http://localhost:9000"
 
     manager <- newManager tlsManagerSettings
@@ -32,7 +32,7 @@ connectMinio currentEnv =
 uploadFileMinio :: T.Text -> T.Text -> BS.ByteString -> AppM (Either MinioErr T.Text)
 uploadFileMinio filePath fileCType file = do
   minioConn <- asks minioConnection
-  bn <- asks minioBucket
+  bn <- asks bucket
   currentEnv <- asks env
 
   eitherRes <-
@@ -57,7 +57,7 @@ uploadFileMinio filePath fileCType file = do
 getFileMinio :: T.Text -> AppM (Either MinioErr BS.ByteString)
 getFileMinio objectName = do
   minioConn <- asks minioConnection
-  bucketName <- asks minioBucket
+  bucketName <- asks bucket
 
   liftIO $ do
     runMinioWith minioConn $ do

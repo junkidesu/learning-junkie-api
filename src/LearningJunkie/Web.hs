@@ -5,15 +5,16 @@
 module LearningJunkie.Web (startApp) where
 
 import Configuration.Dotenv (defaultConfig, loadFile, onMissingFile)
-import Control.Monad (when)
+import Control.Exception (IOException, try)
+import Control.Monad.IO.Class (MonadIO (liftIO))
+import Control.Monad.Trans.Maybe (MaybeT (runMaybeT), hoistMaybe)
 import Control.Monad.Trans.Reader (ReaderT (runReaderT))
-import Data.Maybe (fromMaybe)
 import qualified Data.Text as Text
 import LearningJunkie.Database (connectToDb)
 import qualified LearningJunkie.Web.API as Web
 import LearningJunkie.Web.AppM (AppM)
 import LearningJunkie.Web.Cors (myCors)
-import LearningJunkie.Web.Environment (Env (Development, Production), Environment (Environment))
+import LearningJunkie.Web.Environment (Environment (Environment, jwtSettings), HaskellEnv)
 import LearningJunkie.Web.Minio (connectMinio)
 import qualified LearningJunkie.Web.OpenApi as OpenApi
 import Network.Wai.Handler.Warp (defaultSettings, runSettings, setLogger, setPort)
@@ -30,39 +31,51 @@ server = OpenApi.server :<|> Web.server
 api :: Proxy LearningJunkieAPI
 api = Proxy
 
-makeApp :: IO Application
-makeApp = do
-    currentEnvString <- fromMaybe "Development" <$> lookupEnv "HASKELL_ENV"
+initializeEnvironment :: MaybeT IO Environment
+initializeEnvironment = do
+    eitherLoaded <- liftIO (try (loadFile defaultConfig) :: IO (Either IOException ()))
 
-    let
-        currentEnv :: Env
-        currentEnv = read currentEnvString
+    case eitherLoaded of
+        Left _ -> do
+            liftIO $ putStrLn "Dotenv file not found, loading supplied variables"
 
-    when (currentEnv == Development) $ onMissingFile (loadFile defaultConfig) (putStrLn "No .env file")
+            loadVariables
+        Right _ -> do
+            liftIO $ putStrLn "Found Dotenv. Loading the file..."
 
-    conns <- connectToDb
+            loadVariables
+  where
+    loadVariables = do
+        haskellEnvString <- hoistMaybe =<< liftIO (lookupEnv "HASKELL_ENV")
 
-    myKey <- case currentEnv of
-        Development -> readKey "JWT-secret"
-        Production -> readKey "/etc/secrets/JWT-secret"
+        haskellEnv <- liftIO (readIO haskellEnvString :: IO HaskellEnv)
 
-    serverName <- fromMaybe "http://localhost:3003/" <$> lookupEnv "SERVER_URL"
+        conns <- liftIO connectToDb
 
-    bucketName <- fromMaybe "learning-junkie-aws-bucket" <$> lookupEnv "BUCKET_NAME"
+        bucketName <- Text.pack <$> (hoistMaybe =<< liftIO (lookupEnv "BUCKET_NAME"))
 
-    minioConnection <- connectMinio currentEnv
+        minioConn <- liftIO $ connectMinio haskellEnv
 
-    let
-        jwtCfg = defaultJWTSettings myKey
-        cfg = defaultCookieSettings :. jwtCfg :. EmptyContext
-        environment =
+        jwts <- liftIO $ defaultJWTSettings <$> readKey "JWT-secret"
+
+        serverUrl <- Text.pack <$> (hoistMaybe =<< liftIO (lookupEnv "SERVER_URL"))
+
+        return $
             Environment
+                haskellEnv
                 conns
-                (Text.pack bucketName)
-                minioConnection
-                jwtCfg
-                (Text.pack serverName)
-                currentEnv
+                bucketName
+                minioConn
+                jwts
+                serverUrl
+
+makeApp :: MaybeT IO Application
+makeApp = do
+    environment <- initializeEnvironment
+
+    let
+        jwtCfg = jwtSettings environment
+        cfg = defaultCookieSettings :. jwtCfg :. EmptyContext
 
     return
         . myCors
@@ -77,10 +90,14 @@ makeApp = do
 
 startApp :: IO ()
 startApp = do
-    app <- makeApp
-    withStdoutLogger $ \aplogger -> do
-        let settings =
-                setPort 3003 $
-                    setLogger aplogger defaultSettings
+    mbApp <- runMaybeT makeApp
 
-        runSettings settings app
+    case mbApp of
+        Nothing -> putStrLn "Could not initialize environment. Perhaps some environment variables are missing?"
+        Just app ->
+            withStdoutLogger $ \aplogger -> do
+                let settings =
+                        setPort 3003 $
+                            setLogger aplogger defaultSettings
+
+                runSettings settings app
