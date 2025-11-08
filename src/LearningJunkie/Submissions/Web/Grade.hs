@@ -29,15 +29,29 @@ handler (Authenticated authUser) submissionId manualGrade = do
 
     case mbSubmission of
         Nothing -> throwError err404
-        Just _submission@(_, _, _exercise@(_, _lesson@(_, _course@(_, _, _instructor@(user, _), _, _)))) -> do
-            -- we first check if the teacher is allowed to change the submission
-            let
-                userId :: Int32
-                userId = _userId user
+        Just
+            _submission@( _
+                            , _
+                            , _exercise@( _
+                                            , _lesson@( _
+                                                        , _course@( _
+                                                                    , _
+                                                                    , _instructor@(user, _)
+                                                                    , _
+                                                                    , _
+                                                                    , _
+                                                                    )
+                                                        )
+                                            )
+                            ) -> do
+                -- we first check if the teacher is allowed to change the submission
+                let
+                    userId :: Int32
+                    userId = _userId user
 
-            -- Cannot grade if the instructor is not from the course
-            when (Auth.id authUser /= userId) $ throwError err401
+                -- Cannot grade if the instructor is not from the course
+                when (Auth.id authUser /= userId) $ throwError err401
 
-            -- first let's check the state of the exercise. If it is success, cannot change manually.
-            toSubmissionType <$> modifySubmissionGrade submissionId manualGrade
+                -- first let's check the state of the exercise. If it is success, cannot change manually.
+                toSubmissionType <$> modifySubmissionGrade submissionId manualGrade
 handler _ _ _ = throwError err401

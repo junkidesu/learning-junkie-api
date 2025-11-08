@@ -56,7 +56,7 @@ lessonCompletionsByCourseIdQ courseId = do
 
     guard_ $ _lessonCompletionUser lessonCompletion `references_` user
 
-    foundLesson@(lesson, _course@(course, _, _, _, _)) <- allLessonsQuery
+    foundLesson@(lesson, _course@(course, _, _, _, _, _)) <- allLessonsQuery
 
     guard_ $ _lessonCompletionLesson lessonCompletion `references_` lesson
 

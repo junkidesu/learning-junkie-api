@@ -31,7 +31,7 @@ allCourseCompletionsQ = do
 
     guard_ $ _courseCompletionUser courseCompletion `references_` user
 
-    foundCourse@(course, _, _, _, _) <- allCoursesQuery
+    foundCourse@(course, _, _, _, _, _) <- allCoursesQuery
 
     guard_ $ _courseCompletionCourse courseCompletion `references_` course
 
@@ -43,7 +43,7 @@ courseCompletionsByUserIdQ userId =
 
 courseCompletionsByCourseIdQ :: Int32 -> CourseCompletionQ s
 courseCompletionsByCourseIdQ courseId =
-    filter_ (\(_, _, _course@(course, _, _, _, _)) -> _courseId course ==. val_ courseId) allCourseCompletionsQ
+    filter_ (\(_, _, _course@(course, _, _, _, _, _)) -> _courseId course ==. val_ courseId) allCourseCompletionsQ
 
 courseCompletionsByUserAndCourseIdQ :: Int32 -> Int32 -> CourseCompletionQ s
 courseCompletionsByUserAndCourseIdQ userId courseId =

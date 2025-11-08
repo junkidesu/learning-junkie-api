@@ -49,7 +49,7 @@ type ProgressReturnType =
 
 progressByUserIdQ :: Int32 -> ProgressQ s
 progressByUserIdQ userId = do
-    _foundEnrollment@(_enrollment, foundUser, foundCourse@(course, _, _, _, _)) <-
+    _foundEnrollment@(_enrollment, foundUser, foundCourse@(course, _, _, _, _, _)) <-
         enrollmentsByUserIdQ userId
 
     let
@@ -59,7 +59,7 @@ progressByUserIdQ userId = do
         leftJoin_
             ( subselect_
                 $ aggregate_
-                    ( \(_, _, (_, _course@(lessonCourse, _, _, _, _))) ->
+                    ( \(_, _, (_, _course@(lessonCourse, _, _, _, _, _))) ->
                         ( group_ (_courseId lessonCourse)
                         , as_ @Int32 $ countAll_
                         )
@@ -75,7 +75,7 @@ progressByUserIdQ userId = do
         leftJoin_
             ( subselect_
                 $ aggregate_
-                    ( \(_, _, _exercise@(_, _lesson@(_, _course@(exerciseCourse, _, _, _, _)))) ->
+                    ( \(_, _, _exercise@(_, _lesson@(_, _course@(exerciseCourse, _, _, _, _, _)))) ->
                         ( group_ (_courseId exerciseCourse)
                         , as_ @Int32 $ countAll_
                         )
@@ -93,7 +93,7 @@ progressByUserIdQ userId = do
 progressByUserAndCourseIdQ :: Int32 -> Int32 -> ProgressQ s
 progressByUserAndCourseIdQ userId courseId =
     filter_
-        ( \(_, _course@(course, _, _, _, _), _, _) ->
+        ( \(_, _course@(course, _, _, _, _, _), _, _) ->
             _courseId course ==. val_ courseId
         )
         $ progressByUserIdQ userId

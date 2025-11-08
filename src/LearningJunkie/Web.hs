@@ -14,7 +14,7 @@ import LearningJunkie.Database (connectToDb)
 import qualified LearningJunkie.Web.API as Web
 import LearningJunkie.Web.AppM (AppM)
 import LearningJunkie.Web.Cors (myCors)
-import LearningJunkie.Web.Environment (Environment (Environment, jwtSettings), HaskellEnv)
+import LearningJunkie.Web.Environment (Environment (Environment, jwtSettings), HaskellEnv (Development, Production))
 import LearningJunkie.Web.Minio (connectMinio)
 import qualified LearningJunkie.Web.OpenApi as OpenApi
 import Network.Wai.Handler.Warp (defaultSettings, runSettings, setLogger, setPort)
@@ -58,7 +58,14 @@ initializeEnvironment = do
 
         minioConn <- liftIO $ connectMinio haskellEnv
 
-        jwts <- liftIO $ defaultJWTSettings <$> readKey "JWT-secret"
+        jwts <-
+            liftIO $
+                defaultJWTSettings
+                    <$> readKey
+                        ( case haskellEnv of
+                            Development -> "JWT-secret"
+                            Production -> "/etc/secrets/JWT-secret"
+                        )
 
         serverUrl <- Text.pack <$> (hoistMaybe =<< liftIO (lookupEnv "SERVER_URL"))
 

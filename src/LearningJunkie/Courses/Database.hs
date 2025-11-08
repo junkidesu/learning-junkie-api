@@ -12,6 +12,7 @@ import qualified LearningJunkie.Courses.Course.Attributes as Attributes
 import LearningJunkie.Courses.Database.Table
 import LearningJunkie.Database
 import LearningJunkie.Database.Util (executeBeamDebug, fromJSONB, updateIfChanged)
+import LearningJunkie.Enrollments.Database.Table (EnrollmentT (_enrollmentCourse), PrimaryKey (EnrollmentId))
 import LearningJunkie.Exercises.Database.Table (ExerciseT (_exerciseLesson))
 import LearningJunkie.Lessons.Database.Table (LessonT (_lessonChapter))
 import LearningJunkie.Universities.Database
@@ -26,6 +27,9 @@ type TotalLessonsNumExpr s = QExpr Postgres s Int32
 type TotalExercisesNum = Int32
 type TotalExercisesNumExpr s = QExpr Postgres s Int32
 
+type EnrollmentsCount = Int32
+type EnrollmentsCountExpr s = QExpr Postgres s Int32
+
 type CourseExpr s = CourseT (QExpr Postgres s)
 type CourseJoinedType s =
     ( CourseExpr s
@@ -33,6 +37,7 @@ type CourseJoinedType s =
     , UserJoinedType s
     , TotalLessonsNumExpr s
     , TotalExercisesNumExpr s
+    , EnrollmentsCountExpr s
     )
 type CourseQ s =
     Q
@@ -46,6 +51,7 @@ type CourseReturnType =
     , UserReturnType
     , TotalLessonsNum
     , TotalExercisesNum
+    , EnrollmentsCount
     )
 
 allCoursesQuery :: CourseQ s
@@ -97,15 +103,34 @@ allCoursesQuery = do
             )
             (\(courseId, _) -> courseId `references_` course)
 
+    (_, mbEnrollmentsCount) <-
+        leftJoin_
+            ( nub_
+                $ aggregate_
+                    ( \r ->
+                        ( group_
+                            ( let courseId =
+                                    _enrollmentCourse r
+                               in courseId
+                            )
+                        , as_ @Int32 $ countAll_
+                        )
+                    )
+                $ do
+                    all_ (dbEnrollments db)
+            )
+            (\(courseId, _) -> courseId `references_` course)
+
     let totalLessonsNum = maybe_ (val_ (0 :: Int32)) id mbTotalLessonsNum
     let totalExercisesNum = maybe_ (val_ (0 :: Int32)) id mbTotalExercisesNum
+    let enrollmentsCount = maybe_ (val_ (0 :: Int32)) id mbEnrollmentsCount
 
-    return (course, university, instructor, totalLessonsNum, totalExercisesNum)
+    return (course, university, instructor, totalLessonsNum, totalExercisesNum, enrollmentsCount)
 
 courseByIdQuery :: Int32 -> CourseQ s
 courseByIdQuery courseId =
     filter_
-        ( \(course, _, _, _, _) ->
+        ( \(course, _, _, _, _, _) ->
             _courseId course ==. val_ courseId
         )
         allCoursesQuery
@@ -170,7 +195,7 @@ insertCourse newCourse universityId = executeBeamDebug $ do
 
     [instructor] <- runSelectReturningList $ select $ userByIdQuery instructorId
 
-    return (course, university, instructor, 0, 0)
+    return (course, university, instructor, 0, 0, 0)
 
 updateCourse :: Int32 -> Attributes.Edit -> AppM CourseReturnType
 updateCourse courseId editCourse = executeBeamDebug $ do
@@ -187,7 +212,7 @@ updateCourse courseId editCourse = executeBeamDebug $ do
 
     [instructor] <- runSelectReturningList $ select $ userByIdQuery instructorId
 
-    return (course, university, instructor, 0, 0)
+    return (course, university, instructor, 0, 0, 0)
 
 deleteCourse :: Int32 -> AppM ()
 deleteCourse =
@@ -196,7 +221,7 @@ deleteCourse =
         . deleteCourseQuery
 
 toCourseType :: CourseReturnType -> Course.Course
-toCourseType (course, university, instructor, totalLessonsNum, totalExercisesNum) =
+toCourseType (course, university, instructor, totalLessonsNum, totalExercisesNum, enrollmentsCount) =
     Course.Course
         (_courseId course)
         (_courseTitle course)
@@ -208,3 +233,4 @@ toCourseType (course, university, instructor, totalLessonsNum, totalExercisesNum
         (fromJSONB . _courseCompletionRequirements $ course)
         totalLessonsNum
         totalExercisesNum
+        enrollmentsCount

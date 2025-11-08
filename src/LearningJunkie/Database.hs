@@ -19,7 +19,6 @@ import LearningJunkie.Lessons.Database.Table (LessonT, PrimaryKey (LessonId))
 import LearningJunkie.Submissions.Database.Table (SubmissionT)
 import LearningJunkie.Universities.Database.Table (UniversityT)
 import LearningJunkie.Users.Database.Table (PrimaryKey (UserId), UserT)
-import System.Environment (getEnv)
 
 data LearningJunkieDb f = LearningJunkieDb
     { dbUniversities :: f (TableEntity UniversityT)

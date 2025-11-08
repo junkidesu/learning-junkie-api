@@ -6,9 +6,9 @@ import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runIn
 import Database.Beam.Postgres (PgJSONB (PgJSONB), Postgres)
 import LearningJunkie.Chapters.Database.Table (PrimaryKey (ChapterId))
 import LearningJunkie.Courses.Database
-import LearningJunkie.Courses.Database.Table (Course, CourseT (_courseId), PrimaryKey (CourseId))
+import LearningJunkie.Courses.Database.Table (CourseT (_courseId), PrimaryKey (CourseId))
 import LearningJunkie.Database (LearningJunkieDb (dbLessons), db)
-import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, updateIfChanged)
+import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
 import LearningJunkie.Lessons.Database.Table
 import qualified LearningJunkie.Lessons.Lesson as Lesson
 import qualified LearningJunkie.Lessons.Lesson.Attributes as Attributes
@@ -31,7 +31,7 @@ allLessonsQuery :: LessonQ s
 allLessonsQuery = do
     lesson <- all_ $ dbLessons db
 
-    joinedCourse@(course, _, _, _, _) <- allCoursesQuery
+    joinedCourse@(course, _, _, _, _, _) <- allCoursesQuery
 
     let ChapterId (CourseId courseId) _ = _lessonChapter lesson
 
@@ -107,7 +107,7 @@ selectAllLessons :: AppM [LessonReturnType]
 selectAllLessons =
     executeBeamDebug $
         runSelectReturningList $
-            select $
+            select
                 allLessonsQuery
 
 selectLessonsByChapter :: Int32 -> Int32 -> AppM [LessonReturnType]

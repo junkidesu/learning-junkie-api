@@ -23,6 +23,7 @@ data Course = Course
     , completionRequirements :: CompletionRequirements
     , totalLessonsNum :: Int32
     , totalExercisesNum :: Int32
+    , enrollmentsCount :: Int32
     }
     deriving (Generic, Show)
 

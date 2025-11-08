@@ -33,7 +33,7 @@ type EnrollmentReturnType =
 
 courseEnrollmentsByIdQuery :: Int32 -> EnrollmentQ s
 courseEnrollmentsByIdQuery courseId = do
-    foundCourse@(course, _, _, _, _) <- courseByIdQuery courseId
+    foundCourse@(course, _, _, _, _, _) <- courseByIdQuery courseId
 
     enrollment <- all_ $ dbEnrollments db
 
@@ -53,7 +53,7 @@ enrollmentsByUserIdQ userId = do
 
     guard_ $ _enrollmentUser enrollment `references_` user
 
-    foundCourse@(course, _, _, _, _) <- allCoursesQuery
+    foundCourse@(course, _, _, _, _, _) <- allCoursesQuery
 
     guard_ $ _enrollmentCourse enrollment `references_` course
 

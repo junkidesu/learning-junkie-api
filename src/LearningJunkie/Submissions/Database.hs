@@ -87,7 +87,7 @@ submissionsByCourseIdQ :: Int32 -> SubmissionQ s
 submissionsByCourseIdQ courseId = do
     submission <- allSubmissionsQ
 
-    (_exercise, _lesson@(_, _course@(course, _, _, _, _))) <- allExercisesQuery
+    (_exercise, _lesson@(_, _course@(course, _, _, _, _, _))) <- allExercisesQuery
 
     guard_ (_courseId course ==. val_ courseId)
 
