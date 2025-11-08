@@ -38,7 +38,7 @@ certificateHtml serverUrl courseCompletion =
           title_ $
             "Course Completion Certificate - " <> toHtml (toString certificateId)
 
-          link_ [rel_ "stylesheet", href_ (serverUrl <> "static/certificates/style.css")]
+          link_ [rel_ "stylesheet", href_ (serverUrl <> "/" <> "static/certificates/style.css")]
 
           toHtmlRaw
             ( "<script src=\""
@@ -50,6 +50,7 @@ certificateHtml serverUrl courseCompletion =
           toHtmlRaw
             ( "<script src=\""
                 <> serverUrl
+                <> "/"
                 <> "static/certificates/qrcode.js"
                 <> "\"></script>" ::
                 Text.Text

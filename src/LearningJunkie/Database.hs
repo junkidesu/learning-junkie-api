@@ -5,7 +5,6 @@
 
 module LearningJunkie.Database where
 
-import Configuration.Dotenv (defaultConfig, loadFile)
 import qualified Data.ByteString.UTF8 as BSU
 import Data.Pool (Pool, defaultPoolConfig, newPool, setNumStripes, withResource)
 import Database.Beam
@@ -68,12 +67,8 @@ db =
                             }
             }
 
-connectToDb :: IO (Pool Connection)
-connectToDb = do
-    loadFile defaultConfig
-
-    connectString <- getEnv "DATABASE_URL"
-
+connectToDb :: String -> IO (Pool Connection)
+connectToDb connectString = do
     newPool . setNumStripes (Just 2) $
         defaultPoolConfig
             (connectPostgreSQL $ BSU.fromString connectString)

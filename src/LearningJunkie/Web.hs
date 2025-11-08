@@ -50,7 +50,9 @@ initializeEnvironment = do
 
         haskellEnv <- liftIO (readIO haskellEnvString :: IO HaskellEnv)
 
-        conns <- liftIO connectToDb
+        connectString <- hoistMaybe =<< liftIO (lookupEnv "DATABASE_URL")
+
+        conns <- liftIO $ connectToDb connectString
 
         bucketName <- Text.pack <$> (hoistMaybe =<< liftIO (lookupEnv "BUCKET_NAME"))
 
