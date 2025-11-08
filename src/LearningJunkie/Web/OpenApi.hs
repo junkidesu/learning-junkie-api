@@ -39,9 +39,6 @@ exercisesOps = subOperations (Proxy :: Proxy Exercises.API) (Proxy :: Proxy Web.
 submissionsOps :: Traversal' OpenApi Operation
 submissionsOps = subOperations (Proxy :: Proxy Submissions.API) (Proxy :: Proxy Web.API)
 
-codexOps :: Traversal' OpenApi Operation
-codexOps = subOperations (Proxy :: Proxy Codex.API) (Proxy :: Proxy Web.API)
-
 certificatesOps :: Traversal' OpenApi Operation
 certificatesOps = subOperations (Proxy :: Proxy Certificates.API) (Proxy :: Proxy Web.API)
 
@@ -66,7 +63,6 @@ openApiDoc =
         & applyTagsFor lessonsOps ["lessons" & description ?~ "Operations on lessons"]
         & applyTagsFor exercisesOps ["exercises" & description ?~ "Operations on exercises"]
         & applyTagsFor submissionsOps ["submissions" & description ?~ "Operations on submissions"]
-        & applyTagsFor codexOps ["codex" & description ?~ "Code execution utility"]
         & applyTagsFor certificatesOps ["certificates" & description ?~ "Operations on certificates"]
 
 server :: ServerT API AppM

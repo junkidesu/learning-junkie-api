@@ -15,15 +15,24 @@ services:
     image: learning-junkie-api
     build: .
     ports:
-      - 3001:3001
+      - 3003:3003
     depends_on:
       - db
+      - codex
+      - minio
     links:
       - db
+      - codex 
+      - minio
     environment:
       - DATABASE_URL=postgres://postgres:example@db:5432/postgres
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+
+  codex:
+      image: ghcr.io/junkidesu/learning-junkie-codex:main
+      expose:
+        - "3001"
 
   adminer:
     image: adminer

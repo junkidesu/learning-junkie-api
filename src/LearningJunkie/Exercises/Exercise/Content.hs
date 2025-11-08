@@ -9,7 +9,7 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.OpenApi (ToSchema)
 import Data.Text
 import GHC.Generics (Generic)
-import LearningJunkie.Codex (Environment)
+import LearningJunkie.Codex.Environment (Environment)
 import LearningJunkie.Exercises.Exercise.Quiz.Option (Option)
 
 data Content

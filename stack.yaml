@@ -49,6 +49,9 @@ extra-deps:
 - github: haskell-beam/beam
   commit: b2e83c4bcbf818b4cc901d355f4f50e1e1a284a3
   subdir: beam-migrate
+- github: junkidesu/learning-junkie-codex
+  commit: 0e870c4117a7c3eab4540989e5782087b47f1b4d
+
 # Override default flag values for local packages and extra-deps
 # flags: {}
 

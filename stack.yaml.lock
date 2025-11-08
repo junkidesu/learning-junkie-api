@@ -41,6 +41,17 @@ packages:
   original:
     subdir: beam-migrate
     url: https://github.com/haskell-beam/beam/archive/b2e83c4bcbf818b4cc901d355f4f50e1e1a284a3.tar.gz
+- completed:
+    name: learning-junkie-codex
+    pantry-tree:
+      sha256: 77fb68841dab6de05f0a73eee22b32daca380f7f2f61732619135f76f189fd72
+      size: 1808
+    sha256: 3d7d928aa81f9386ec969109982e303fe9b53e09de1a909f640f57605da40ea5
+    size: 8653
+    url: https://github.com/junkidesu/learning-junkie-codex/archive/0e870c4117a7c3eab4540989e5782087b47f1b4d.tar.gz
+    version: 0.1.0.0
+  original:
+    url: https://github.com/junkidesu/learning-junkie-codex/archive/0e870c4117a7c3eab4540989e5782087b47f1b4d.tar.gz
 snapshots:
 - completed:
     sha256: 2fdd7d3e54540062ef75ca0a73ca3a804c527dbf8a4cadafabf340e66ac4af40

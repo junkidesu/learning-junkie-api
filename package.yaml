@@ -28,6 +28,7 @@ dependencies:
 - servant-auth-server
 - servant-auth-swagger
 - servant-multipart
+- servant-client
 - postgresql-simple
 - wai
 - time
@@ -67,6 +68,7 @@ dependencies:
 - lucid
 - servant-lucid
 - file-embed
+- learning-junkie-codex
 
 ghc-options:
 - -Wall

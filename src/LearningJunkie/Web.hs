@@ -18,10 +18,13 @@ import LearningJunkie.Web.Cors (myCors)
 import LearningJunkie.Web.Environment (Environment (Environment, jwtSettings), HaskellEnv (Development, Production))
 import LearningJunkie.Web.Minio (connectMinio)
 import qualified LearningJunkie.Web.OpenApi as OpenApi
+import Network.HTTP.Client (defaultManagerSettings, newManager)
+import Network.HTTP.Conduit (tlsManagerSettings)
 import Network.Wai.Handler.Warp (defaultSettings, runSettings, setLogger, setPort)
 import Network.Wai.Logger (withStdoutLogger)
 import Servant
 import Servant.Auth.Server
+import Servant.Client (BaseUrl (BaseUrl), Scheme (Http, Https), mkClientEnv)
 import System.Environment (lookupEnv)
 
 type LearningJunkieAPI = OpenApi.API :<|> Web.API
@@ -72,6 +75,16 @@ initializeEnvironment = do
 
         serverUrl <- Text.pack <$> (hoistMaybe =<< liftIO (lookupEnv "SERVER_URL"))
 
+        manager <- liftIO $ case haskellEnv of
+            Development -> newManager defaultManagerSettings
+            Production -> newManager tlsManagerSettings
+
+        let baseUrl = case haskellEnv of
+                Development -> BaseUrl Http "localhost" 3001 ""
+                Production -> BaseUrl Https "learning-junkie-codex-main.onrender.com" 443 ""
+
+        let clEnv = mkClientEnv manager baseUrl
+
         return $
             Environment
                 haskellEnv
@@ -80,6 +93,7 @@ initializeEnvironment = do
                 minioConn
                 jwts
                 serverUrl
+                clEnv
 
 makeApp :: MaybeT IO Application
 makeApp = do

@@ -36,12 +36,6 @@ library
       LearningJunkie.Chapters.Chapter.Attributes
       LearningJunkie.Chapters.Database
       LearningJunkie.Chapters.Database.Table
-      LearningJunkie.Codex
-      LearningJunkie.Codex.Environment
-      LearningJunkie.Codex.ExecutionResult
-      LearningJunkie.Codex.TestInput
-      LearningJunkie.Codex.Web
-      LearningJunkie.Codex.Web.Test
       LearningJunkie.CourseCompletions.CourseCompletion
       LearningJunkie.CourseCompletions.Database
       LearningJunkie.CourseCompletions.Database.Table
@@ -202,6 +196,7 @@ library
     , http-media
     , http-types
     , insert-ordered-containers
+    , learning-junkie-codex
     , lens
     , lucid
     , minio-hs
@@ -214,6 +209,7 @@ library
     , servant-auth
     , servant-auth-server
     , servant-auth-swagger
+    , servant-client
     , servant-lucid
     , servant-multipart
     , servant-openapi3
@@ -261,6 +257,7 @@ executable learning-junkie-api-exe
     , http-types
     , insert-ordered-containers
     , learning-junkie-api
+    , learning-junkie-codex
     , lens
     , lucid
     , minio-hs
@@ -273,6 +270,7 @@ executable learning-junkie-api-exe
     , servant-auth
     , servant-auth-server
     , servant-auth-swagger
+    , servant-client
     , servant-lucid
     , servant-multipart
     , servant-openapi3
@@ -321,6 +319,7 @@ test-suite learning-junkie-api-test
     , http-types
     , insert-ordered-containers
     , learning-junkie-api
+    , learning-junkie-codex
     , lens
     , lucid
     , minio-hs
@@ -333,6 +332,7 @@ test-suite learning-junkie-api-test
     , servant-auth
     , servant-auth-server
     , servant-auth-swagger
+    , servant-client
     , servant-lucid
     , servant-multipart
     , servant-openapi3

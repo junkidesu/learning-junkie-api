@@ -4,16 +4,21 @@
 module LearningJunkie.Exercises.Grading where
 
 import Control.Monad.IO.Class (MonadIO (liftIO))
+import Control.Monad.Trans.Reader (asks)
 import Data.Int (Int32)
 import Data.Text (Text, strip, toLower)
-import LearningJunkie.Codex (executeCode)
-import qualified LearningJunkie.Codex as LJC
+import LearningJunkie.Codex.Client (executeClient)
+import LearningJunkie.Codex.CodeInput (CodeInput (CodeInput))
+import qualified LearningJunkie.Codex.ExecutionResult as LJC
 import qualified LearningJunkie.Exercises.Exercise as E
 import qualified LearningJunkie.Exercises.Exercise.Content as EC
 import qualified LearningJunkie.Submissions.Submission.Attributes as S
 import qualified LearningJunkie.Submissions.Submission.Content as SC
 import LearningJunkie.Submissions.Submission.State (SubmissionState (Failure, Pending, Success))
 import LearningJunkie.Web.AppM (AppM)
+import LearningJunkie.Web.Environment (Environment (clientEnv))
+import Servant (err500, throwError)
+import Servant.Client (runClientM)
 
 data GradingResult = Result SubmissionState (Maybe Int32) (Maybe Text)
   deriving (Eq, Show, Read)
@@ -36,12 +41,21 @@ autoGradeExercise submission exercise =
       then return $ Result Success (Just $ E.maxGrade exercise) (Just "Correct")
       else return $ Result Failure (Just 0) (Just "Wrong quiz option")
   helper (SC.Coding submitted) (EC.Coding _ environment correct) = do
-    result <- liftIO $ executeCode environment submitted
+    clEnv <- asks clientEnv
 
-    case result of
-      LJC.Failure{} -> return $ Result Failure (Just 0) (Just $ "Code execution failure:\n" <> LJC.executionError result)
-      LJC.Success{} -> do
-        if strip (LJC.executionOutput result) == strip correct
-          then return $ Result Success (Just $ E.maxGrade exercise) (Just "Code execution successful and the result is as expected")
-          else return $ Result Failure (Just 0) (Just "The code output differs from the expected output")
+    eitherExecutionResult <-
+      liftIO $
+        runClientM
+          (executeClient (CodeInput submitted environment))
+          clEnv
+
+    case eitherExecutionResult of
+      Left _ -> throwError err500
+      Right result -> do
+        case result of
+          LJC.Failure{} -> return $ Result Failure (Just 0) (Just $ "Code execution failure:\n" <> LJC.executionError result)
+          LJC.Success{} -> do
+            if strip (LJC.executionOutput result) == strip correct
+              then return $ Result Success (Just $ E.maxGrade exercise) (Just "Code execution successful and the result is as expected")
+              else return $ Result Failure (Just 0) (Just "The code output differs from the expected output")
   helper _ _ = return $ Result Pending Nothing Nothing

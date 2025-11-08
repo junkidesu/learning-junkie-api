@@ -6,7 +6,7 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.OpenApi (ToSchema)
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import LearningJunkie.Codex (Environment)
+import LearningJunkie.Codex.Environment (Environment)
 import qualified LearningJunkie.Exercises.Exercise.Content as Content
 import LearningJunkie.Exercises.Exercise.Quiz.Option (Option)
 
