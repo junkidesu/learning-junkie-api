@@ -151,7 +151,9 @@ library
       LearningJunkie.Users.Web.Self.Avatar.Delete
       LearningJunkie.Users.Web.Self.Avatar.Upload
       LearningJunkie.Users.Web.Self.Completions
+      LearningJunkie.Users.Web.Self.LessonCompletions
       LearningJunkie.Users.Web.Self.Progress
+      LearningJunkie.Users.Web.Self.Submissions
       LearningJunkie.Users.Web.Self.Update
       LearningJunkie.Users.Web.Submissions
       LearningJunkie.Users.Web.Submissions.All
