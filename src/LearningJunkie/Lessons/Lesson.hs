@@ -8,6 +8,7 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.Int (Int32)
 import Data.OpenApi (ToSchema)
 import Data.Text (Text)
+import LearningJunkie.Chapters.Chapter (Chapter)
 import LearningJunkie.Lessons.Lesson.Component (Component)
 
 data Lesson = Lesson
@@ -16,6 +17,7 @@ data Lesson = Lesson
     , title :: Text
     , description :: Text
     , components :: [Component]
+    , chapter :: Chapter
     }
     deriving (Show, Generic)
 

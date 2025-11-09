@@ -4,7 +4,6 @@
 
 module LearningJunkie.Exercises.Web.Submissions.Add where
 
-import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Int (Int32)
 import LearningJunkie.Courses.Database.Table (CourseT (_courseId))
 import LearningJunkie.Enrollments.Database (checkEnrollment)
@@ -31,7 +30,7 @@ handler exerciseId (Authenticated authUser) newSubmission = do
 
     case mbExercise of
         Nothing -> throwError err404
-        Just exercise@(_, _lesson@(_, (course, _, _, _, _, _))) -> do
+        Just exercise@(_, _lesson@(_, _chapter@(_, _course@(course, _, _, _, _, _)))) -> do
             let
                 courseId :: Int32
                 courseId = _courseId course

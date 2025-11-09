@@ -9,7 +9,7 @@ import LearningJunkie.Database (LearningJunkieDb (dbLessonCompletions), db)
 import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd)
 import LearningJunkie.LessonCompletions.Database.Table (LessonCompletion, LessonCompletionT (LessonCompletion, _lessonCompletionId, _lessonCompletionLesson, _lessonCompletionTime, _lessonCompletionUser))
 import qualified LearningJunkie.LessonCompletions.LessonCompletion as LC
-import LearningJunkie.Lessons.Database (LessonJoinedType, LessonReturnType, allLessonsQuery, lessonByIdQuery, toLessonType)
+import LearningJunkie.Lessons.Database (LessonJoinedType, LessonReturnType, allLessonsQ, lessonByIdQuery, toLessonType)
 import LearningJunkie.Lessons.Database.Table (PrimaryKey (LessonId))
 import LearningJunkie.Users.Database (UserJoinedType, UserReturnType, allUsersQuery, toUserType, userByIdQuery)
 import LearningJunkie.Users.Database.Table (PrimaryKey (UserId))
@@ -28,7 +28,7 @@ allLessonCompletionsByUserIdQ userId = do
 
     guard_ $ _lessonCompletionUser lessonCompletion `references_` user
 
-    foundLesson@(lesson, _) <- allLessonsQuery
+    foundLesson@(lesson, _) <- allLessonsQ
 
     guard_ $ _lessonCompletionLesson lessonCompletion `references_` lesson
 
@@ -56,7 +56,7 @@ lessonCompletionsByCourseIdQ courseId = do
 
     guard_ $ _lessonCompletionUser lessonCompletion `references_` user
 
-    foundLesson@(lesson, _course@(course, _, _, _, _, _)) <- allLessonsQuery
+    foundLesson@(lesson, _chapter@(_, _course@(course, _, _, _, _, _))) <- allLessonsQ
 
     guard_ $ _lessonCompletionLesson lessonCompletion `references_` lesson
 

@@ -34,12 +34,14 @@ handler (Authenticated authUser) submissionId manualGrade = do
                             , _
                             , _exercise@( _
                                             , _lesson@( _
-                                                        , _course@( _
-                                                                    , _
-                                                                    , _instructor@(user, _)
-                                                                    , _
-                                                                    , _
-                                                                    , _
+                                                        , _chapter@( _
+                                                                    , _course@( _
+                                                                                , _
+                                                                                , _instructor@(user, _)
+                                                                                , _
+                                                                                , _
+                                                                                , _
+                                                                                )
                                                                     )
                                                         )
                                             )

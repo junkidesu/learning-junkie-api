@@ -7,29 +7,48 @@ import Database.Beam.Postgres (Postgres)
 import qualified LearningJunkie.Chapters.Chapter as Chapter
 import qualified LearningJunkie.Chapters.Chapter.Attributes as Attributes
 import LearningJunkie.Chapters.Database.Table
+import LearningJunkie.Courses.Database (CourseJoinedType, CourseReturnType, allCoursesQuery, courseByIdQuery, toCourseType)
 import LearningJunkie.Courses.Database.Table (PrimaryKey (CourseId))
 import LearningJunkie.Database (LearningJunkieDb (dbChapters), db)
 import LearningJunkie.Database.Util (executeBeamDebug)
 import LearningJunkie.Web.AppM (AppM)
 
-type ChapterDBType s = ChapterT (QExpr Postgres s)
-type ChapterQuery s =
+type ChapterExpr s = ChapterT (QExpr Postgres s)
+type ChapterJoinedType s = (ChapterExpr s, CourseJoinedType s)
+type ChapterQ s =
     Q
         Postgres
         LearningJunkieDb
         s
-        (ChapterDBType s)
+        (ChapterJoinedType s)
+type ChapterReturnType = (Chapter, CourseReturnType)
 
-allCourseChaptersQuery :: Int32 -> ChapterQuery s
-allCourseChaptersQuery courseId =
-    do
-        chapter <- all_ $ dbChapters db
+allChaptersQ :: ChapterQ s
+allChaptersQ = do
+    chapter <- all_ $ dbChapters db
 
-        let CourseId chapterCourseId = _chapterCourse chapter
+    foundCourse@(course, _, _, _, _, _) <- allCoursesQuery
 
-        guard_ (chapterCourseId ==. val_ courseId)
+    guard_ (_chapterCourse chapter `references_` course)
 
-        return chapter
+    return (chapter, foundCourse)
+
+allCourseChaptersQ :: Int32 -> ChapterQ s
+allCourseChaptersQ courseId =
+    filter_
+        ( \(chapter, _) ->
+            let CourseId chapterCourseId = _chapterCourse chapter
+             in chapterCourseId ==. val_ courseId
+        )
+        allChaptersQ
+
+chapterByCourseIdAndNumberQ :: Int32 -> Int32 -> ChapterQ s
+chapterByCourseIdAndNumberQ courseId chapterNumber =
+    filter_
+        ( \(chapter, _) ->
+            _chapterChapterNumber chapter ==. val_ chapterNumber
+        )
+        $ allCourseChaptersQ courseId
 
 insertChapterQuery :: Int32 -> Attributes.New -> SqlInsert Postgres ChapterT
 insertChapterQuery courseId newChapter =
@@ -43,23 +62,33 @@ insertChapterQuery courseId newChapter =
                 (val_ $ Attributes.banner newChapter)
             ]
 
-insertChapter :: Int32 -> Attributes.New -> AppM Chapter
+insertChapter :: Int32 -> Attributes.New -> AppM ChapterReturnType
 insertChapter courseId newChapter = executeBeamDebug $ do
-    [chapter] <- runInsertReturningList $ insertChapterQuery courseId newChapter
+    [chapter] <-
+        runInsertReturningList $
+            insertChapterQuery
+                courseId
+                newChapter
 
-    return chapter
+    Just foundCourse <-
+        runSelectReturningFirst $
+            select $
+                courseByIdQuery courseId
 
-selectAllCourseChapters :: Int32 -> AppM [Chapter]
+    return (chapter, foundCourse)
+
+selectAllCourseChapters :: Int32 -> AppM [ChapterReturnType]
 selectAllCourseChapters =
     executeBeamDebug
         . runSelectReturningList
         . select
-        . allCourseChaptersQuery
+        . allCourseChaptersQ
 
-toChapterType :: Chapter -> Chapter.Chapter
+toChapterType :: ChapterReturnType -> Chapter.Chapter
 toChapterType =
     Chapter.Chapter
-        <$> _chapterChapterNumber
-        <*> _chapterTitle
-        <*> _chapterDescription
-        <*> _chapterBanner
+        <$> _chapterChapterNumber . fst
+        <*> _chapterTitle . fst
+        <*> _chapterDescription . fst
+        <*> _chapterBanner . fst
+        <*> toCourseType . snd

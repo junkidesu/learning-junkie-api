@@ -11,7 +11,7 @@ import qualified LearningJunkie.Exercises.Exercise as Exercise
 import qualified LearningJunkie.Exercises.Exercise.Attributes as Attributes
 import LearningJunkie.Exercises.Exercise.Content.Response (toContentResponse)
 import qualified LearningJunkie.Exercises.Exercise.Response as ExerciseResponse
-import LearningJunkie.Lessons.Database (LessonJoinedType, LessonReturnType, allLessonsQuery, lessonByIdQuery)
+import LearningJunkie.Lessons.Database (LessonJoinedType, LessonReturnType, allLessonsQ, lessonByIdQuery)
 import LearningJunkie.Lessons.Database.Table (LessonT (_lessonId), PrimaryKey (LessonId))
 import LearningJunkie.Web.AppM (AppM)
 
@@ -24,7 +24,7 @@ allExercisesQuery :: ExerciseQuery s
 allExercisesQuery = do
     exercise <- all_ $ dbExercises db
 
-    foundLesson@(lesson, _) <- allLessonsQuery
+    foundLesson@(lesson, _) <- allLessonsQ
 
     guard_ (_exerciseLesson exercise ==. LessonId (_lessonId lesson))
 

@@ -59,7 +59,7 @@ progressByUserIdQ userId = do
         leftJoin_
             ( subselect_
                 $ aggregate_
-                    ( \(_, _, (_, _course@(lessonCourse, _, _, _, _, _))) ->
+                    ( \(_, _, (_, _chapter@(_, _course@(lessonCourse, _, _, _, _, _)))) ->
                         ( group_ (_courseId lessonCourse)
                         , as_ @Int32 $ countAll_
                         )
@@ -75,7 +75,7 @@ progressByUserIdQ userId = do
         leftJoin_
             ( subselect_
                 $ aggregate_
-                    ( \(_, _, _exercise@(_, _lesson@(_, _course@(exerciseCourse, _, _, _, _, _)))) ->
+                    ( \(_, _, _exercise@(_, _lesson@(_, _chapter@(_, _course@(exerciseCourse, _, _, _, _, _))))) ->
                         ( group_ (_courseId exerciseCourse)
                         , as_ @Int32 $ countAll_
                         )

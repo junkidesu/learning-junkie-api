@@ -119,7 +119,7 @@ checkScope (Permission SameInstructor _ Lesson) authUser objectId = do
 
     case mbLesson of
         Nothing -> throwError err404
-        Just (_, (_, _, (instructor, _), _, _, _)) -> do
+        Just (_lesson, _chapter@(_, _course@(_, _, (instructor, _), _, _, _))) -> do
             let sameInstructor = _userId instructor == Auth.id authUser
             unless sameInstructor $ throwError err401
 checkScope (Permission SameInstructor _ Exercise) authUser exerciseId = do
@@ -127,7 +127,7 @@ checkScope (Permission SameInstructor _ Exercise) authUser exerciseId = do
 
     case mbExercise of
         Nothing -> throwError err404
-        Just (_, (_, (_, _, (instructor, _), _, _, _))) -> do
+        Just (_lesson, _chapter@(_, _course@(_, (_, _, (instructor, _), _, _, _)))) -> do
             let sameInstructor = _userId instructor == Auth.id authUser
             unless sameInstructor $ throwError err401{errBody = "Same instructor required"}
 checkScope _ _ _ = throwError err401
