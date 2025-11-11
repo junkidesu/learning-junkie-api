@@ -12,6 +12,7 @@ import qualified LearningJunkie.Users.Web.Progress as Progress
 import qualified LearningJunkie.Users.Web.Register as Register
 import qualified LearningJunkie.Users.Web.Self as Self
 import qualified LearningJunkie.Users.Web.Submissions as Submissions
+import qualified LearningJunkie.Users.Web.Teaches as Teaches
 import LearningJunkie.Web.AppM (AppM)
 import Servant
 
@@ -26,6 +27,7 @@ type API =
             :> ( Submissions.API
                   :<|> Enrollments.API
                   :<|> Progress.API
+                  :<|> Teaches.API
                )
        )
 
@@ -40,4 +42,5 @@ server =
             Submissions.server userId
               :<|> Enrollments.server userId
               :<|> Progress.handler userId
+              :<|> Teaches.handler userId
          )
