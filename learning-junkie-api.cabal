@@ -52,6 +52,8 @@ library
       LearningJunkie.Courses.Web.Chapters
       LearningJunkie.Courses.Web.Chapters.Add
       LearningJunkie.Courses.Web.Chapters.All
+      LearningJunkie.Courses.Web.Chapters.ByNumber
+      LearningJunkie.Courses.Web.Chapters.Delete
       LearningJunkie.Courses.Web.Chapters.Lessons
       LearningJunkie.Courses.Web.Chapters.Lessons.Add
       LearningJunkie.Courses.Web.Chapters.Lessons.All

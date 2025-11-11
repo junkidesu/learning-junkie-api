@@ -140,8 +140,8 @@ CREATE TABLE IF NOT EXISTS lessons (
 	title TEXT NOT NULL,
 	description TEXT NOT NULL,
 	components JSONB NOT NULL,
-	FOREIGN KEY(chapter__course__id, chapter__chapter_number) 
-	REFERENCES chapters(chapter_number, course__id)
+	FOREIGN KEY(chapter__course__id, chapter__chapter_number) 	
+	REFERENCES chapters(chapter_number, course__id) ON DELETE CASCADE
 );
 
 INSERT INTO lessons (lesson_number, chapter__course__id, chapter__chapter_number, title, description, components)
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS exercises (
 	description TEXT NOT NULL,
 	content JSONB NOT NULL,
 	lesson__id INT NOT NULL,
-	FOREIGN KEY (lesson__id) REFERENCES lessons(id)
+	FOREIGN KEY (lesson__id) REFERENCES lessons(id) ON DELETE CASCADE
 );
 
 INSERT INTO exercises (lesson__id, title, max_grade, description, content)
@@ -186,8 +186,8 @@ CREATE TABLE IF NOT EXISTS submissions (
 	grade INT,
 	comment TEXT,
 	submitted TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
-	FOREIGN KEY (user__id) REFERENCES users(id),
-	FOREIGN KEY (exercise__id) REFERENCES exercises(id)
+	FOREIGN KEY (user__id) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (exercise__id) REFERENCES exercises(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS lesson_completions (
@@ -195,8 +195,8 @@ CREATE TABLE IF NOT EXISTS lesson_completions (
 	user__id INT NOT NULL,
 	lesson__id INT NOT NULL,
 	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
-	FOREIGN KEY (user__id) REFERENCES users(id),
-	FOREIGN KEY (lesson__id) REFERENCES lessons(id),
+	FOREIGN KEY (user__id) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (lesson__id) REFERENCES lessons(id) ON DELETE CASCADE,
 	UNIQUE (user__id, lesson__id)
 );
 
@@ -205,7 +205,7 @@ CREATE TABLE IF NOT EXISTS course_completions (
 	user__id INT NOT NULL,
 	course__id INT NOT NULL,
 	time TIMESTAMPTZ DEFAULT (now() at time zone('utc')),
-	FOREIGN KEY (user__id) REFERENCES users(id),
-	FOREIGN KEY (course__id) REFERENCES courses(id),
+	FOREIGN KEY (user__id) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (course__id) REFERENCES courses(id) ON DELETE CASCADE,
 	UNIQUE (user__id, course__id)
 );

@@ -12,6 +12,7 @@ import LearningJunkie.Courses.Database.Table (PrimaryKey (CourseId))
 import LearningJunkie.Database (LearningJunkieDb (dbChapters), db)
 import LearningJunkie.Database.Util (executeBeamDebug)
 import LearningJunkie.Web.AppM (AppM)
+import Servant (NoContent)
 
 type ChapterExpr s = ChapterT (QExpr Postgres s)
 type ChapterJoinedType s = (ChapterExpr s, CourseJoinedType s)
@@ -62,6 +63,18 @@ insertChapterQuery courseId newChapter =
                 (val_ $ Attributes.banner newChapter)
             ]
 
+deleteChapterQ :: Int32 -> Int32 -> SqlDelete Postgres ChapterT
+deleteChapterQ courseId chapterNumber =
+    delete
+        (dbChapters db)
+        ( \chapter ->
+            let CourseId chapterCourseId = _chapterCourse chapter
+             in chapterCourseId
+                    ==. val_ courseId
+                    &&. _chapterChapterNumber chapter
+                    ==. val_ chapterNumber
+        )
+
 insertChapter :: Int32 -> Attributes.New -> AppM ChapterReturnType
 insertChapter courseId newChapter = executeBeamDebug $ do
     [chapter] <-
@@ -83,6 +96,19 @@ selectAllCourseChapters =
         . runSelectReturningList
         . select
         . allCourseChaptersQ
+
+selectChapterByCourseIdAndNumber :: Int32 -> Int32 -> AppM (Maybe ChapterReturnType)
+selectChapterByCourseIdAndNumber courseId chapterNumber =
+    executeBeamDebug $
+        runSelectReturningFirst $
+            select $
+                chapterByCourseIdAndNumberQ courseId chapterNumber
+
+deleteChapter :: Int32 -> Int32 -> AppM ()
+deleteChapter courseId chapterNumber =
+    executeBeamDebug $
+        runDelete $
+            deleteChapterQ courseId chapterNumber
 
 toChapterType :: ChapterReturnType -> Chapter.Chapter
 toChapterType =
