@@ -156,6 +156,8 @@ library
       LearningJunkie.Users.Web.Self.LessonCompletions
       LearningJunkie.Users.Web.Self.Progress
       LearningJunkie.Users.Web.Self.Submissions
+      LearningJunkie.Users.Web.Self.Submissions.All
+      LearningJunkie.Users.Web.Self.Submissions.Successful
       LearningJunkie.Users.Web.Self.Update
       LearningJunkie.Users.Web.Submissions
       LearningJunkie.Users.Web.Submissions.All

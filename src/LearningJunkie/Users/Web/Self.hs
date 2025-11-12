@@ -26,4 +26,4 @@ server =
         :<|> Progress.handler
         :<|> Completions.handler
         :<|> LessonCompletions.handler
-        :<|> Submissions.handler
+        :<|> Submissions.server

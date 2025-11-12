@@ -122,6 +122,13 @@ selectSubmissionsByUserId =
         . select
         . submissionsByUserIdQ
 
+selectUniqueSubmissionsByUserId :: Int32 -> AppM [SubmissionReturnType]
+selectUniqueSubmissionsByUserId =
+    executeBeamDebug
+        . runSelectReturningList
+        . select
+        . uniqueSubmissionsByUserIdQ
+
 selectSubmissionsByCourseId :: Int32 -> AppM [SubmissionReturnType]
 selectSubmissionsByCourseId =
     executeBeamDebug
