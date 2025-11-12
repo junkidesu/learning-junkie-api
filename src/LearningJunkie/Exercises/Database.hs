@@ -11,7 +11,7 @@ import qualified LearningJunkie.Exercises.Exercise as Exercise
 import qualified LearningJunkie.Exercises.Exercise.Attributes as Attributes
 import LearningJunkie.Exercises.Exercise.Content.Response (toContentResponse)
 import qualified LearningJunkie.Exercises.Exercise.Response as ExerciseResponse
-import LearningJunkie.Lessons.Database (LessonJoinedType, LessonReturnType, allLessonsQ, lessonByIdQuery)
+import LearningJunkie.Lessons.Database (LessonJoinedType, LessonReturnType, allLessonsQ, lessonByIdQuery, toLessonType)
 import LearningJunkie.Lessons.Database.Table (LessonT (_lessonId), PrimaryKey (LessonId))
 import LearningJunkie.Web.AppM (AppM)
 
@@ -112,13 +112,12 @@ toExerciseType =
 
 toExerciseResponseType :: ExerciseReturnType -> ExerciseResponse.ExerciseResponse
 toExerciseResponseType =
-    ( ExerciseResponse.ExerciseResponse
-        <$> _exerciseId
-        <*> _exerciseTitle
-        <*> _exerciseDescription
-        <*> _exerciseMaxGrade
-        <*> toContentResponse . fromJSONB . _exerciseContent
-    )
-        . fst
+    ExerciseResponse.ExerciseResponse
+        <$> _exerciseId . fst
+        <*> _exerciseTitle . fst
+        <*> _exerciseDescription . fst
+        <*> _exerciseMaxGrade . fst
+        <*> toContentResponse . fromJSONB . _exerciseContent . fst
+        <*> toLessonType . snd
   where
     fromJSONB (PgJSONB a) = a

@@ -9,6 +9,7 @@ import Data.OpenApi
 import Data.Text
 import GHC.Generics (Generic)
 import LearningJunkie.Exercises.Exercise.Content.Response (ContentResponse)
+import LearningJunkie.Lessons.Lesson (Lesson)
 
 data ExerciseResponse = ExerciseResponse
     { id :: Int32
@@ -16,6 +17,7 @@ data ExerciseResponse = ExerciseResponse
     , description :: Text
     , maxGrade :: Int32
     , content :: ContentResponse
+    , lesson :: Lesson
     }
     deriving (Show, Generic)
 

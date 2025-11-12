@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS lessons (
 	description TEXT NOT NULL,
 	components JSONB NOT NULL,
 	FOREIGN KEY(chapter__course__id, chapter__chapter_number) 	
-	REFERENCES chapters(chapter_number, course__id) ON DELETE CASCADE
+	REFERENCES chapters(course__id, chapter_number) ON DELETE CASCADE
 );
 
 INSERT INTO lessons (lesson_number, chapter__course__id, chapter__chapter_number, title, description, components)
