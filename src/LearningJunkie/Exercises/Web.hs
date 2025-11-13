@@ -8,20 +8,27 @@ import qualified LearningJunkie.Exercises.Web.All as All
 import qualified LearningJunkie.Exercises.Web.ById as ById
 import qualified LearningJunkie.Exercises.Web.Delete as Delete
 import qualified LearningJunkie.Exercises.Web.Submissions as Submissions
+import qualified LearningJunkie.Exercises.Web.Update as Update
 import LearningJunkie.Web.AppM (AppM)
 import Servant
 
 type API =
     "exercises"
         :> ( All.API
-                :<|> ById.API
-                :<|> Delete.API
-                :<|> (Capture' '[Required, Description "ID of the exercise"] "id" Int32 :> Submissions.API)
+                :<|> ( Capture' '[Required, Description "ID of the exercise"] "id" Int32
+                        :> ( ById.API
+                                :<|> Update.API
+                                :<|> Delete.API
+                                :<|> Submissions.API
+                           )
+                     )
            )
 
 server :: ServerT API AppM
 server =
     All.handler
-        :<|> ById.handler
-        :<|> Delete.handler
-        :<|> Submissions.server
+        :<|> \exerciseId ->
+            ById.handler exerciseId
+                :<|> Update.handler exerciseId
+                :<|> Delete.handler exerciseId
+                :<|> Submissions.server exerciseId

@@ -83,6 +83,7 @@ library
       LearningJunkie.Exercises.Web.Submissions
       LearningJunkie.Exercises.Web.Submissions.Add
       LearningJunkie.Exercises.Web.Submissions.All
+      LearningJunkie.Exercises.Web.Update
       LearningJunkie.LessonCompletions.Database
       LearningJunkie.LessonCompletions.Database.Table
       LearningJunkie.LessonCompletions.LessonCompletion

@@ -1,11 +1,12 @@
 module LearningJunkie.Exercises.Database where
 
+import Control.Exception (catch)
 import Data.Int (Int32)
 import Database.Beam
-import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList))
+import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
 import Database.Beam.Postgres
 import LearningJunkie.Database (LearningJunkieDb (dbExercises), db)
-import LearningJunkie.Database.Util (executeBeamDebug)
+import LearningJunkie.Database.Util (executeBeamDebug, updateIfChanged)
 import LearningJunkie.Exercises.Database.Table
 import qualified LearningJunkie.Exercises.Exercise as Exercise
 import qualified LearningJunkie.Exercises.Exercise.Attributes as Attributes
@@ -55,6 +56,18 @@ insertExerciseQuery lessonId newExercise =
                 (LessonId $ val_ lessonId)
             ]
 
+updateExerciseQ :: Int32 -> Attributes.Edit -> SqlUpdate Postgres ExerciseT
+updateExerciseQ exerciseId editExercise =
+    update
+        (dbExercises db)
+        ( \r ->
+            updateIfChanged _exerciseTitle r (Attributes.title editExercise)
+                <> updateIfChanged _exerciseDescription r (Attributes.description editExercise)
+                <> updateIfChanged _exerciseMaxGrade r (Attributes.maxGrade editExercise)
+                <> updateIfChanged _exerciseContent r (PgJSONB <$> Attributes.content editExercise)
+        )
+        (\r -> _exerciseId r ==. val_ exerciseId)
+
 deleteExerciseQuery :: Int32 -> SqlDelete Postgres ExerciseT
 deleteExerciseQuery exerciseId = delete (dbExercises db) (\r -> _exerciseId r ==. val_ exerciseId)
 
@@ -86,6 +99,21 @@ insertExercise lessonId newExercise = executeBeamDebug $ do
             insertExerciseQuery
                 lessonId
                 newExercise
+
+    Just lesson <-
+        runSelectReturningFirst $
+            select $
+                lessonByIdQuery lessonId
+
+    return (exercise, lesson)
+
+updateExercise :: Int32 -> Attributes.Edit -> AppM ExerciseReturnType
+updateExercise exerciseId editExercise = executeBeamDebug $ do
+    [exercise] <-
+        runUpdateReturningList $
+            updateExerciseQ exerciseId editExercise
+
+    let LessonId lessonId = _exerciseLesson exercise
 
     Just lesson <-
         runSelectReturningFirst $

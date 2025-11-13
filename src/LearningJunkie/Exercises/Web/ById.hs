@@ -11,7 +11,6 @@ import Servant
 
 type API =
     Summary "Get exercise by ID"
-        :> Capture' '[Required, Description "ID of the exercise"] "id" Int32
         :> Get '[JSON] ExerciseResponse
 
 handler :: Int32 -> AppM ExerciseResponse

@@ -15,11 +15,10 @@ import Servant.Auth.Server (AuthResult (Authenticated))
 type API =
     Summary "Delete exercise by ID"
         :> JWTAuth
-        :> Capture' '[Required, Description "ID of the exercise"] "id" Int32
         :> Verb 'DELETE 204 '[JSON] NoContent
 
-handler :: AuthResult Auth.AuthUser -> Int32 -> AppM NoContent
-handler (Authenticated authUser) exerciseId =
+handler :: Int32 -> AuthResult Auth.AuthUser -> AppM NoContent
+handler exerciseId (Authenticated authUser) =
     Permissions.requirePermissionWithId
         authUser
         ( Permissions.Permission
