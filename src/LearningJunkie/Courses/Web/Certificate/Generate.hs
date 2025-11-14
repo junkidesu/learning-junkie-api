@@ -33,17 +33,23 @@ handler courseId (Authenticated authUser) = do
             let
                 completedLessonsPercentage :: Int32
                 completedLessonsPercentage =
-                    floor
-                        ( 100 * (fromIntegral completedLessonsNum / fromIntegral totalLessonsNum) ::
-                            Double
-                        )
+                    if totalLessonsNum == 0
+                        then 100
+                        else
+                            floor
+                                ( 100 * (fromIntegral completedLessonsNum / fromIntegral totalLessonsNum) ::
+                                    Double
+                                )
 
                 completedExercisesPercentage :: Int32
                 completedExercisesPercentage =
-                    floor
-                        ( 100 * (fromIntegral completedExercisesNum / fromIntegral totalExercisesNum) ::
-                            Double
-                        )
+                    if totalExercisesNum == 0
+                        then 100
+                        else
+                            floor
+                                ( 100 * (fromIntegral completedExercisesNum / fromIntegral totalExercisesNum) ::
+                                    Double
+                                )
             let
                 reqs :: Req.CompletionRequirements
                 reqs = fromJSONB $ _courseCompletionRequirements course
