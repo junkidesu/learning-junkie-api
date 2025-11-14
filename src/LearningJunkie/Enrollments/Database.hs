@@ -16,15 +16,13 @@ import LearningJunkie.Users.Database.Table
 import LearningJunkie.Web.AppM (AppM)
 
 type EnrollmentExpr s = EnrollmentT (QExpr Postgres s)
+type EnrollmentJoinedType s = (EnrollmentExpr s, UserJoinedType s, CourseJoinedType s)
 type EnrollmentQ s =
     Q
         Postgres
         LearningJunkieDb
         s
-        ( EnrollmentExpr s
-        , UserJoinedType s
-        , CourseJoinedType s
-        )
+        (EnrollmentJoinedType s)
 type EnrollmentReturnType =
     ( Enrollment
     , UserReturnType

@@ -5,15 +5,15 @@ module LearningJunkie.Progress.Database where
 import Data.Int (Int32)
 import Database.Beam
 import Database.Beam.Postgres (Postgres)
-import LearningJunkie.Courses.Database (CourseJoinedType, CourseReturnType, toCourseType)
+import LearningJunkie.Courses.Database (toCourseType)
 import LearningJunkie.Courses.Database.Table (CourseT (_courseId))
 import LearningJunkie.Database (LearningJunkieDb)
 import LearningJunkie.Database.Util (executeBeamDebug)
-import LearningJunkie.Enrollments.Database (enrollmentsByUserIdQ)
+import LearningJunkie.Enrollments.Database (EnrollmentJoinedType, EnrollmentReturnType, enrollmentsByUserIdQ, toEnrollmentType)
 import LearningJunkie.LessonCompletions.Database (allLessonCompletionsByUserIdQ)
 import qualified LearningJunkie.Progress.Progress as Progress
 import LearningJunkie.Submissions.Database (uniqueSubmissionsByUserIdQ)
-import LearningJunkie.Users.Database (UserJoinedType, UserReturnType, toUserType)
+import LearningJunkie.Users.Database (toUserType)
 import LearningJunkie.Web.AppM (AppM)
 
 type CompletedLessonsNum = Int32
@@ -27,29 +27,23 @@ type ProgressQ s =
         Postgres
         LearningJunkieDb
         s
-        ( UserJoinedType s
-        , CourseJoinedType s
-        , CompletedLessonsNumExpr s
-        , CompletedExercisesNumExpr s
-        )
+        (ProgressJoinedType s)
 
 type ProgressJoinedType s =
-    ( UserJoinedType s
-    , CourseJoinedType s
+    ( EnrollmentJoinedType s
     , CompletedLessonsNumExpr s
     , CompletedExercisesNumExpr s
     )
 
 type ProgressReturnType =
-    ( UserReturnType
-    , CourseReturnType
+    ( EnrollmentReturnType
     , CompletedLessonsNum
     , CompletedExercisesNum
     )
 
 progressByUserIdQ :: Int32 -> ProgressQ s
 progressByUserIdQ userId = do
-    _foundEnrollment@(_enrollment, foundUser, foundCourse@(course, _, _, _, _, _)) <-
+    foundEnrollment@(_enrollment, _, (course, _, _, _, _, _)) <-
         enrollmentsByUserIdQ userId
 
     let
@@ -88,12 +82,12 @@ progressByUserIdQ userId = do
     let
         completedExercisesNum = maybe_ (val_ (0 :: Int32)) id mbCompletedExercisesNum
 
-    return (foundUser, foundCourse, completedLessonsNum, completedExercisesNum)
+    return (foundEnrollment, completedLessonsNum, completedExercisesNum)
 
 progressByUserAndCourseIdQ :: Int32 -> Int32 -> ProgressQ s
 progressByUserAndCourseIdQ userId courseId =
     filter_
-        ( \(_, _course@(course, _, _, _, _, _), _, _) ->
+        ( \((_, _, _course@(course, _, _, _, _, _)), _, _) ->
             _courseId course ==. val_ courseId
         )
         $ progressByUserIdQ userId
@@ -117,9 +111,8 @@ selectProgressByUserAndCourseId userId courseId = do
         Just progress -> return $ Just progress
 
 toProgressType :: ProgressReturnType -> Progress.Progress
-toProgressType (user, course, completedLessonsNum, completedExercisesNum) =
+toProgressType (enrollment, completedLessonsNum, completedExercisesNum) =
     Progress.Progress
-        (toUserType user)
-        (toCourseType course)
+        (toEnrollmentType enrollment)
         completedLessonsNum
         completedExercisesNum

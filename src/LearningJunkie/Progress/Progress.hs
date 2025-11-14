@@ -6,12 +6,10 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.Int (Int32)
 import Data.OpenApi (ToSchema)
 import GHC.Generics (Generic)
-import LearningJunkie.Courses.Course (Course)
-import LearningJunkie.Users.User (User)
+import LearningJunkie.Enrollments.Enrollment (Enrollment)
 
 data Progress = Progress
-    { user :: User
-    , course :: Course
+    { enrollment :: Enrollment
     , lessonsCompleted :: Int32
     , exercisesCompleted :: Int32
     }
