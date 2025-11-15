@@ -20,6 +20,20 @@ type LessonCompletionJoinedType s = (LessonCompletionExpr s, UserJoinedType s, L
 type LessonCompletionQ s = Q Postgres LearningJunkieDb s (LessonCompletionJoinedType s)
 type LessonCompletionReturnType = (LessonCompletion, UserReturnType, LessonReturnType)
 
+allLessonCompletionsQ :: LessonCompletionQ s
+allLessonCompletionsQ = do
+    lessonCompletion <- all_ $ dbLessonCompletions db
+
+    foundUser@(user, _) <- allUsersQuery
+
+    guard_ $ _lessonCompletionUser lessonCompletion `references_` user
+
+    foundLesson@(lesson, _) <- allLessonsQ
+
+    guard_ $ _lessonCompletionLesson lessonCompletion `references_` lesson
+
+    return (lessonCompletion, foundUser, foundLesson)
+
 allLessonCompletionsByUserIdQ :: Int32 -> LessonCompletionQ s
 allLessonCompletionsByUserIdQ userId = do
     lessonCompletion <- all_ $ dbLessonCompletions db

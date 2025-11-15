@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS users (
 	password_hash TEXT NOT NULL,
 	avatar TEXT,
 	university__id INT,
-	FOREIGN KEY (university__id) REFERENCES universities(id) ON DELETE SET NULL
+	FOREIGN KEY (university__id) REFERENCES universities(id) ON DELETE CASCADE
 );
 
 -- admins

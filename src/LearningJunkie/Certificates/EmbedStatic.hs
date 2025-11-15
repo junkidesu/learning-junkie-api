@@ -12,10 +12,12 @@ staticDir = $(embedDir "static/certificates")
 
 initializeStaticFiles :: IO ()
 initializeStaticFiles = do
-  createDirectoryIfMissing True "static/certificates"
+  let staticDirectory = "static/certificates"
+
+  createDirectoryIfMissing True staticDirectory
 
   forM_ staticDir $ \(filepath, file) -> do
     fileExists <- doesFileExist filepath
 
     unless fileExists $
-      BS.writeFile filepath file
+      BS.writeFile (staticDirectory <> "/" <> filepath) file

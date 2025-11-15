@@ -29,9 +29,9 @@ type EnrollmentReturnType =
     , CourseReturnType
     )
 
-courseEnrollmentsByIdQuery :: Int32 -> EnrollmentQ s
-courseEnrollmentsByIdQuery courseId = do
-    foundCourse@(course, _, _, _, _, _) <- courseByIdQuery courseId
+allEnrollmentsQ :: EnrollmentQ s
+allEnrollmentsQ = do
+    foundCourse@(course, _, _, _, _, _) <- allCoursesQuery
 
     enrollment <- all_ $ dbEnrollments db
 
@@ -43,19 +43,23 @@ courseEnrollmentsByIdQuery courseId = do
 
     return (enrollment, foundUser, foundCourse)
 
+courseEnrollmentsByIdQuery :: Int32 -> EnrollmentQ s
+courseEnrollmentsByIdQuery courseId = do
+    filter_
+        ( \(enrollment, _, _) ->
+            let CourseId cId = _enrollmentCourse enrollment
+             in cId ==. val_ courseId
+        )
+        allEnrollmentsQ
+
 enrollmentsByUserIdQ :: Int32 -> EnrollmentQ s
 enrollmentsByUserIdQ userId = do
-    foundUser@(user, _) <- userByIdQuery userId
-
-    enrollment <- all_ $ dbEnrollments db
-
-    guard_ $ _enrollmentUser enrollment `references_` user
-
-    foundCourse@(course, _, _, _, _, _) <- allCoursesQuery
-
-    guard_ $ _enrollmentCourse enrollment `references_` course
-
-    return (enrollment, foundUser, foundCourse)
+    filter_
+        ( \(enrollment, _, _) ->
+            let UserId uId = _enrollmentUser enrollment
+             in uId ==. val_ userId
+        )
+        allEnrollmentsQ
 
 checkEnrollmentQ :: Int32 -> Int32 -> EnrollmentQ s
 checkEnrollmentQ courseId userId = do

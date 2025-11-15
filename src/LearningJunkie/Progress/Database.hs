@@ -5,15 +5,13 @@ module LearningJunkie.Progress.Database where
 import Data.Int (Int32)
 import Database.Beam
 import Database.Beam.Postgres (Postgres)
-import LearningJunkie.Courses.Database (toCourseType)
 import LearningJunkie.Courses.Database.Table (CourseT (_courseId))
 import LearningJunkie.Database (LearningJunkieDb)
 import LearningJunkie.Database.Util (executeBeamDebug)
-import LearningJunkie.Enrollments.Database (EnrollmentJoinedType, EnrollmentReturnType, enrollmentsByUserIdQ, toEnrollmentType)
-import LearningJunkie.LessonCompletions.Database (allLessonCompletionsByUserIdQ)
+import LearningJunkie.Enrollments.Database (EnrollmentJoinedType, EnrollmentReturnType, allEnrollmentsQ, enrollmentsByUserIdQ, toEnrollmentType)
+import LearningJunkie.LessonCompletions.Database (allLessonCompletionsByUserIdQ, allLessonCompletionsQ)
 import qualified LearningJunkie.Progress.Progress as Progress
 import LearningJunkie.Submissions.Database (uniqueSubmissionsByUserIdQ)
-import LearningJunkie.Users.Database (toUserType)
 import LearningJunkie.Web.AppM (AppM)
 
 type CompletedLessonsNum = Int32
