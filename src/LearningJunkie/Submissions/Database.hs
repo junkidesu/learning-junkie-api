@@ -94,6 +94,11 @@ submissionsByCourseIdQ courseId = do
 
     return submission
 
+pendingSubmissionsQ :: Int32 -> SubmissionQ s
+pendingSubmissionsQ courseId =
+    filter_ (\r -> undefined) $
+        submissionsByCourseIdQ courseId
+
 selectAllSubmissions :: AppM [SubmissionReturnType]
 selectAllSubmissions =
     executeBeamDebug
