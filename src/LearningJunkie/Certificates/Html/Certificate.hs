@@ -32,7 +32,7 @@ certificateHtml serverUrl courseCompletion =
       instructorName = User.name . Course.instructor . CC.course $ courseCompletion
       completionDate = show . utctDay . CC.time $ courseCompletion
       certificateId = CC.id courseCompletion
-      verificationUrl = serverUrl <> "certificates/" <> Text.pack (toString certificateId) <> "/verify"
+      verificationUrl = serverUrl <> "/" <> "certificates" <> "/" <> Text.pack (toString certificateId) <> "/verify"
    in doctypehtml_ $ do
         head_ $ do
           title_ $
