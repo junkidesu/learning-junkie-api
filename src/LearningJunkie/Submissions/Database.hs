@@ -7,7 +7,8 @@ import Data.Text (Text)
 import Database.Beam
 import Database.Beam.Backend.SQL.BeamExtensions (MonadBeamInsertReturning (runInsertReturningList), MonadBeamUpdateReturning (runUpdateReturningList))
 import Database.Beam.Postgres (PgJSONB (PgJSONB), Postgres)
-import LearningJunkie.Courses.Database.Table (CourseT (_courseId))
+import LearningJunkie.Chapters.Database.Table (ChapterT (_chapterCourse))
+import LearningJunkie.Courses.Database.Table (CourseT (_courseId), PrimaryKey (CourseId))
 import LearningJunkie.Database (LearningJunkieDb (dbSubmissions), db)
 import LearningJunkie.Database.Util (executeBeamDebug, tripleFst, tripleSnd, tripleThrd, updateIfChanged)
 import LearningJunkie.Exercises.Database (ExerciseJoinedType, ExerciseReturnType, allExercisesQuery, exerciseByIdQuery, toExerciseResponseType)
@@ -16,7 +17,7 @@ import LearningJunkie.Submissions.Database.Table
 import qualified LearningJunkie.Submissions.Submission as Submission
 import qualified LearningJunkie.Submissions.Submission.Attributes as Attributes
 import LearningJunkie.Submissions.Submission.ManualGrade (ManualGrade (comment, grade, state))
-import LearningJunkie.Submissions.Submission.State (SubmissionState (Success))
+import LearningJunkie.Submissions.Submission.State (SubmissionState (Pending, Success))
 import LearningJunkie.Users.Database (UserJoinedType, UserReturnType, allUsersQuery, toUserType, userByIdQuery)
 import LearningJunkie.Users.Database.Table (PrimaryKey (UserId), UserT (_userId))
 import LearningJunkie.Web.AppM (AppM)
@@ -84,20 +85,19 @@ uniqueSubmissionsByUserIdQ userId = do
     return foundSubmission
 
 submissionsByCourseIdQ :: Int32 -> SubmissionQ s
-submissionsByCourseIdQ courseId = do
-    submission <- allSubmissionsQ
-
-    (_exercise, _lesson@(_, _chapter@(_, (course, _, _, _, _, _)))) <-
-        allExercisesQuery
-
-    guard_ (_courseId course ==. val_ courseId)
-
-    return submission
+submissionsByCourseIdQ courseId =
+    filter_
+        ( \(_, _, _exercise@(_, _lesson@(_, _chapter@(chapter, _)))) ->
+            _chapterCourse chapter ==. CourseId (val_ courseId)
+        )
+        allSubmissionsQ
 
 pendingSubmissionsQ :: Int32 -> SubmissionQ s
 pendingSubmissionsQ courseId =
-    filter_ (\r -> undefined) $
-        submissionsByCourseIdQ courseId
+    nub_
+        $ filter_
+            (\_submission@(submission, _, _) -> _submissionState submission ==. val_ Pending)
+        $ submissionsByCourseIdQ courseId
 
 selectAllSubmissions :: AppM [SubmissionReturnType]
 selectAllSubmissions =
@@ -141,6 +141,13 @@ selectSubmissionsByCourseId =
         . select
         . submissionsByCourseIdQ
 
+selectPendingSubmissions :: Int32 -> AppM [SubmissionReturnType]
+selectPendingSubmissions =
+    executeBeamDebug
+        . runSelectReturningList
+        . select
+        . pendingSubmissionsQ
+
 insertSubmissionQ :: Int32 -> Int32 -> Attributes.New -> SubmissionState -> Maybe Int32 -> Maybe Text -> SqlInsert Postgres SubmissionT
 insertSubmissionQ userId exerciseId newSubmission initialState mbGrade mbComment =
     insert (dbSubmissions db) $
@@ -163,7 +170,7 @@ upgradeSubmissionGradeQ submissionId manualGrade =
         ( \r ->
             updateIfChanged _submissionGrade r (Just $ Just $ grade manualGrade)
                 <> updateIfChanged _submissionState r (Just $ state manualGrade)
-                <> updateIfChanged _submissionComment r (Just $ Just $ comment manualGrade)
+                <> updateIfChanged _submissionComment r (Just $ comment manualGrade)
         )
         (\r -> _submissionId r ==. val_ submissionId)
 

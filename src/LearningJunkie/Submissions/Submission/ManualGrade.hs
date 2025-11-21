@@ -12,7 +12,7 @@ import LearningJunkie.Submissions.Submission.State (SubmissionState)
 data ManualGrade = ManualGrade
     { grade :: Int32
     , state :: SubmissionState
-    , comment :: Text
+    , comment :: Maybe Text
     }
     deriving (Show, Generic)
 

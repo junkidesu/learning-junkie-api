@@ -61,6 +61,7 @@ library
       LearningJunkie.Courses.Web.Enrollments
       LearningJunkie.Courses.Web.Enrollments.All
       LearningJunkie.Courses.Web.Enrollments.Enroll
+      LearningJunkie.Courses.Web.Submissions.Pending
       LearningJunkie.Courses.Web.Update
       LearningJunkie.Database
       LearningJunkie.Database.Util

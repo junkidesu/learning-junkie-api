@@ -10,6 +10,7 @@ import qualified LearningJunkie.Courses.Web.Certificate.Generate as Certificate
 import qualified LearningJunkie.Courses.Web.Chapters as Chapters
 import qualified LearningJunkie.Courses.Web.Delete as Delete
 import qualified LearningJunkie.Courses.Web.Enrollments as Enrollments
+import qualified LearningJunkie.Courses.Web.Submissions.Pending as Submissions.Pending
 import qualified LearningJunkie.Courses.Web.Update as Update
 import LearningJunkie.Web.AppM (AppM)
 import Servant
@@ -24,6 +25,7 @@ type API =
                     :> ( Enrollments.API
                             :<|> Chapters.API
                             :<|> Certificate.API
+                            :<|> Submissions.Pending.API
                        )
            )
 
@@ -37,3 +39,4 @@ server =
             Enrollments.server courseId
                 :<|> Chapters.server courseId
                 :<|> Certificate.handler courseId
+                :<|> Submissions.Pending.handler courseId
