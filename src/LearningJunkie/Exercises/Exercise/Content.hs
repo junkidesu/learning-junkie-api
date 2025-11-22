@@ -37,6 +37,7 @@ data Content
         { requirements :: Text
         , environment :: Environment
         , correctOutput :: Text
+        , model :: Text
         }
     deriving (Show, Generic)
 

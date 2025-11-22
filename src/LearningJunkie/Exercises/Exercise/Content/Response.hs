@@ -39,7 +39,7 @@ toContentResponse (Content.TrueFalse q _) = TrueFalse q
 toContentResponse (Content.Essay t _) = Essay t
 toContentResponse (Content.Quiz q o _) = Quiz q o
 toContentResponse (Content.Project r) = Project r
-toContentResponse (Content.Coding r e _) = Coding r e
+toContentResponse (Content.Coding r e _ _) = Coding r e
 
 instance ToJSON ContentResponse
 instance FromJSON ContentResponse

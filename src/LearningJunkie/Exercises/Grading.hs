@@ -40,7 +40,7 @@ autoGradeExercise submission exercise =
     if submitted == correct
       then return $ Result Success (Just $ E.maxGrade exercise) (Just "Correct")
       else return $ Result Failure (Just 0) (Just "Wrong quiz option")
-  helper (SC.Coding submitted) (EC.Coding _ environment correct) = do
+  helper (SC.Coding submitted) (EC.Coding _ environment correct _) = do
     clEnv <- asks clientEnv
 
     eitherExecutionResult <-
