@@ -26,6 +26,7 @@ import Servant
 import Servant.Auth.Server
 import Servant.Client (BaseUrl (BaseUrl), Scheme (Http, Https), mkClientEnv)
 import System.Environment (lookupEnv)
+import UnliftIO.Directory (doesFileExist)
 
 type LearningJunkieAPI = OpenApi.API :<|> Web.API
 
@@ -67,10 +68,20 @@ initializeEnvironment = do
         jwts <-
             liftIO $
                 defaultJWTSettings
-                    <$> readKey
-                        ( case haskellEnv of
-                            Development -> "JWT-secret"
-                            Production -> "/etc/secrets/JWT-secret"
+                    <$> ( case haskellEnv of
+                            Development -> do
+                                fileExists <- doesFileExist "JWT-secret"
+
+                                if fileExists
+                                    then do
+                                        putStrLn "Loading JWT secret from file"
+                                        readKey "JWT-secret"
+                                    else do
+                                        putStrLn "Generating temporary JWT secret"
+                                        generateKey
+                            Production -> do
+                                putStrLn "Loading JWT secret from file"
+                                readKey "/etc/secrets/JWT-secret"
                         )
 
         serverUrl <- Text.pack <$> (hoistMaybe =<< liftIO (lookupEnv "SERVER_URL"))
