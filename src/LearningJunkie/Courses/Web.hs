@@ -5,6 +5,7 @@ module LearningJunkie.Courses.Web where
 
 import Data.Int (Int32)
 import qualified LearningJunkie.Courses.Web.All as All
+import qualified LearningJunkie.Courses.Web.Banner as Banner
 import qualified LearningJunkie.Courses.Web.ById as ById
 import qualified LearningJunkie.Courses.Web.Certificate.Generate as Certificate
 import qualified LearningJunkie.Courses.Web.Chapters as Chapters
@@ -26,6 +27,7 @@ type API =
                             :<|> Chapters.API
                             :<|> Certificate.API
                             :<|> Submissions.Pending.API
+                            :<|> Banner.API
                        )
            )
 
@@ -40,3 +42,4 @@ server =
                 :<|> Chapters.server courseId
                 :<|> Certificate.handler courseId
                 :<|> Submissions.Pending.handler courseId
+                :<|> Banner.server courseId

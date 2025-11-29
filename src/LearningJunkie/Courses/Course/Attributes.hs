@@ -38,3 +38,14 @@ deriving instance Eq Edit
 deriving instance Generic Edit
 deriving instance FromJSON Edit
 deriving instance ToSchema Edit
+
+emptyEditCourse :: Edit
+emptyEditCourse =
+        CourseAttributes
+                { title = Nothing
+                , description = Nothing
+                , difficulty = Nothing
+                , banner = Nothing
+                , instructor = Nothing
+                , completionRequirements = Nothing
+                }

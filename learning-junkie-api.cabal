@@ -47,6 +47,9 @@ library
       LearningJunkie.Courses.Database.Table
       LearningJunkie.Courses.Web
       LearningJunkie.Courses.Web.All
+      LearningJunkie.Courses.Web.Banner
+      LearningJunkie.Courses.Web.Banner.Remove
+      LearningJunkie.Courses.Web.Banner.Upload
       LearningJunkie.Courses.Web.ById
       LearningJunkie.Courses.Web.Certificate.Generate
       LearningJunkie.Courses.Web.Chapters
